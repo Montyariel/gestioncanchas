@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CanchaOS — Sistema de Gestión Deportiva</title>
+  <meta name="description" content="CanchaOS: gestión de canchas de fútbol y pádel. Reservas, stock y finanzas en tiempo real."/>
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Lexend:wght@600;700&display=swap" rel="stylesheet"/>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-tertiary": "#2b303d",
+            "surface-container-lowest": "#0c0e14",
+            "surface-container-low": "#191b22",
+            "primary": "#ffffff",
+            "surface-tint": "#abd600",
+            "surface-dim": "#111319",
+            "surface-container": "#1e1f26",
+            "primary-fixed-dim": "#abd600",
+            "secondary-container": "#00e3fd",
+            "on-error-container": "#ffdad6",
+            "inverse-surface": "#e2e2eb",
+            "surface-bright": "#373940",
+            "surface": "#111319",
+            "surface-container-highest": "#33343b",
+            "on-background": "#e2e2eb",
+            "outline": "#8e9379",
+            "on-surface-variant": "#c4c9ac",
+            "error-container": "#93000a",
+            "on-secondary-container": "#00616d",
+            "secondary-fixed-dim": "#00daf3",
+            "background": "#111319",
+            "error": "#ffb4ab",
+            "on-primary-container": "#556d00",
+            "outline-variant": "#444933",
+            "primary-container": "#c3f400",
+            "inverse-primary": "#506600",
+            "secondary-fixed": "#9cf0ff",
+            "primary-fixed": "#c3f400",
+            "on-secondary": "#00363d",
+            "secondary": "#bdf4ff",
+            "surface-container-high": "#282a30",
+            "on-surface": "#e2e2eb",
+            "surface-variant": "#33343b",
+            "tertiary-fixed": "#dee2f3",
+            "on-primary-fixed": "#161e00",
+            "tertiary": "#ffffff",
+            "on-primary": "#283500"
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"
+          },
+          fontFamily: {
+            "h2": ["Inter"], "body-md": ["Inter"], "stat-number": ["Lexend"],
+            "body-lg": ["Inter"], "h3": ["Inter"], "label-caps": ["Lexend"], "h1": ["Inter"]
+          },
+          fontSize: {
+            "h2": ["32px", {"lineHeight":"1.3","letterSpacing":"-0.01em","fontWeight":"600"}],
+            "body-md": ["16px", {"lineHeight":"1.6","fontWeight":"400"}],
+            "stat-number": ["28px", {"lineHeight":"1.0","letterSpacing":"-0.02em","fontWeight":"700"}],
+            "body-lg": ["18px", {"lineHeight":"1.6","fontWeight":"400"}],
+            "h3": ["24px", {"lineHeight":"1.4","fontWeight":"600"}],
+            "label-caps": ["12px", {"lineHeight":"1.0","letterSpacing":"0.08em","fontWeight":"600"}],
+            "h1": ["40px", {"lineHeight":"1.2","letterSpacing":"-0.02em","fontWeight":"700"}]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .icon-fill { font-variation-settings: 'FILL' 1; }
+    /* Loader */
+    .co-loader { position:fixed;inset:0;background:#111319;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s,visibility .5s; }
+    .co-loader.hidden { opacity:0;visibility:hidden;pointer-events:none; }
+    @keyframes spin { to { stroke-dashoffset: -176; } }
+    .loader-ring { animation: spin 1.2s linear infinite; transform-origin: center; }
+    /* Toast */
+    .toast-container { position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px; }
+    .toast { background:#1e1f26;border:1px solid #444933;border-radius:14px;padding:14px 18px;min-width:280px;max-width:360px;display:flex;align-items:center;gap:12px;font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:slideIn .3s ease;color:#e2e2eb; }
+    .toast--success { border-left:4px solid #c3f400; }
+    .toast--error   { border-left:4px solid #ffb4ab; }
+    .toast--info    { border-left:4px solid #bdf4ff; }
+    @keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:none;opacity:1} }
+    /* Modal overlay */
+    .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:all .2s cubic-bezier(.4,0,.2,1); }
+    .modal-overlay.open { opacity:1;visibility:visible; }
+    .co-modal { background:#1e1f26;border:1px solid #444933;border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,0.5);transform:translateY(16px) scale(.97);transition:transform .2s cubic-bezier(.4,0,.2,1); }
+    .modal-overlay.open .co-modal { transform:none; }
+    /* Skeleton */
+    .skeleton { background:linear-gradient(90deg,#1e1f26 25%,#282a30 50%,#1e1f26 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:10px; }
+    @keyframes shimmer { 0%{background-position:200% 0}100%{background-position:-200% 0} }
+    /* Scrollbar */
+    ::-webkit-scrollbar { width:5px;height:5px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:#444933;border-radius:10px; }
+    /* Nav active */
+    .nav-active { background:rgba(195,244,0,.1);color:#c3f400;border-right:4px solid #c3f400;font-weight:700; }
+    /* Sidebar mobile */
+    #sidebar { transition: transform .3s cubic-bezier(.4,0,.2,1); }
+    #sidebar.open { transform: translateX(0) !important; }
+  </style>
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body class="bg-background text-on-background antialiased flex h-screen overflow-hidden">
+
+  <!-- LOADER -->
+  <div class="co-loader" id="loader">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;color:#c3f400">
+      <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+        <circle cx="30" cy="30" r="28" stroke="#c3f400" stroke-width="2" stroke-dasharray="88 88" class="loader-ring"/>
+        <text x="50%" y="54%" text-anchor="middle" fill="#c3f400" font-size="16" font-family="Lexend" font-weight="700">CO</text>
+      </svg>
+      <span style="font-size:13px;font-weight:600;letter-spacing:1px">CanchaOS cargando...</span>
+    </div>
+  </div>
+
+  <!-- ===== SIDEBAR ===== -->
+  <nav id="sidebar" class="bg-slate-900 text-lime-400 h-screen w-64 fixed left-0 top-0 border-r border-slate-800 shadow-[4px_0_24px_rgba(0,0,0,0.3)] flex flex-col py-6 z-50 -translate-x-full md:translate-x-0">
+
+    <!-- Header / Brand -->
+    <div class="px-6 mb-8 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div style="width:40px;height:40px;background:#c3f400;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">⚽</div>
+        <div>
+          <h2 class="text-lime-400 font-bold leading-none" style="font-size:19px">CanchaOS</h2>
+          <p class="text-slate-400 mt-1" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">Sistema Deportivo</p>
+        </div>
+      </div>
+      <button id="sidebarClose" class="md:hidden text-slate-400 hover:text-lime-300">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Sucursal Switcher -->
+    <div class="px-6 mb-6">
+      <p class="text-slate-500 mb-2" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">Sede activa</p>
+      <div class="flex gap-2">
+        <button id="btnLanus" data-sucursal="lanus" class="flex-1 py-2 rounded-lg text-xs font-bold border transition-all" style="background:rgba(195,244,0,.1);color:#c3f400;border-color:#c3f400">🏟️ Lanús</button>
+        <button id="btnBelgrano" data-sucursal="belgrano" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-lime-400 hover:text-lime-400 transition-all">🏟️ Belgrano</button>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="px-6 mb-6">
+      <button id="nuevaReservaBtn" class="w-full py-3 rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm" style="background:#c3f400;color:#161e00">
+        <span class="material-symbols-outlined icon-fill" style="font-size:20px">add_circle</span>
+        Nueva Reserva
+      </button>
+    </div>
+
+    <!-- Nav -->
+    <div class="flex-1 overflow-y-auto px-4">
+      <p class="text-slate-600 px-4 mb-2" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">Principal</p>
+      <ul class="space-y-1 mb-4">
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="dashboard" id="nav-dashboard"><span class="material-symbols-outlined" style="font-size:20px">dashboard</span><span>Dashboard</span></a></li>
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="canchas" id="nav-canchas"><span class="material-symbols-outlined" style="font-size:20px">sports_soccer</span><span>Canchas</span><span id="badge-canchas" class="ml-auto text-xs bg-lime-400/20 text-lime-400 px-2 py-0.5 rounded-full" style="display:none">0</span></a></li>
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="agenda" id="nav-agenda"><span class="material-symbols-outlined" style="font-size:20px">calendar_month</span><span>Agenda</span></a></li>
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="reservas" id="nav-reservas"><span class="material-symbols-outlined" style="font-size:20px">bookmark_added</span><span>Reservas</span></a></li>
+      </ul>
+      <p class="text-slate-600 px-4 mb-2" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">Negocio</p>
+      <ul class="space-y-1">
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="buffet" id="nav-buffet"><span class="material-symbols-outlined" style="font-size:20px">fastfood</span><span>Buffet</span><span id="badge-stock" class="ml-auto text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full" style="display:none">!</span></a></li>
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="gastos" id="nav-gastos"><span class="material-symbols-outlined" style="font-size:20px">payments</span><span>Gastos</span></a></li>
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="goleadores" id="nav-goleadores"><span class="material-symbols-outlined" style="font-size:20px">military_tech</span><span>Goleadores</span></a></li>
+      </ul>
+      <p class="text-slate-600 px-4 mb-2 mt-4" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">Comunidad</p>
+      <ul class="space-y-1">
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="torneos" id="nav-torneos"><span class="material-symbols-outlined" style="font-size:20px">emoji_events</span><span>Torneos</span></a></li>
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="matchmaking" id="nav-matchmaking"><span class="material-symbols-outlined" style="font-size:20px">radar</span><span>Matchmaking</span></a></li>
+      </ul>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-4 mt-4 border-t border-slate-800 pt-4">
+      <div class="flex items-center gap-2 px-4 py-2">
+        <div class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></div>
+        <span class="text-slate-500 text-xs">Conectado a Supabase</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN WRAPPER ===== -->
+  <div class="flex-1 flex flex-col md:ml-64 relative h-full w-full">
+
+    <!-- TOP BAR -->
+    <header class="bg-slate-950/80 backdrop-blur-md border-b border-slate-800 shadow-2xl shadow-slate-950/50 sticky top-0 z-40 flex justify-between items-center px-6 h-16 w-full">
+      <div class="flex items-center gap-4">
+        <button id="menuBtn" class="md:hidden text-slate-400 hover:text-lime-300 transition-colors">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <!-- Breadcrumb -->
+        <div class="flex items-center gap-2 text-sm text-slate-400">
+          <span id="currentSucursalLabel" class="text-lime-400 font-bold">🏟️ Lanús</span>
+          <span class="material-symbols-outlined text-slate-600" style="font-size:16px">chevron_right</span>
+          <span id="currentViewLabel" class="text-slate-200 font-semibold">Dashboard</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="topbarTime" class="text-slate-400 text-sm font-semibold hidden sm:block"></div>
+        <button id="refreshBtn" class="text-slate-400 hover:text-lime-300 transition-colors w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-800">
+          <span class="material-symbols-outlined" style="font-size:20px">refresh</span>
+        </button>
+        <button class="text-slate-400 hover:text-lime-300 transition-colors w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-800">
+          <span class="material-symbols-outlined" style="font-size:20px">notifications</span>
+        </button>
+        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background:#c3f400;color:#161e00">A</div>
+      </div>
+    </header>
+
+    <!-- VIEW CONTAINER -->
+    <main class="flex-1 overflow-y-auto p-6 md:p-10 bg-surface" id="viewContainer">
+      <!-- JS renders views here -->
+    </main>
+  </div>
+
+  <!-- ===== MODAL RESERVA ===== -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="co-modal" id="modalReserva">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #444933">
+        <h2 style="font-size:18px;font-weight:800;color:#e2e2eb">Nueva Reserva</h2>
+        <button id="modalClose" style="color:#8e9379;padding:6px;border-radius:8px;transition:.2s" onmouseenter="this.style.color='#e2e2eb'" onmouseleave="this.style.color='#8e9379'">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div style="display:flex;align-items:center;padding:14px 24px;gap:8px;border-bottom:1px solid #444933">
+        <div class="step active" id="step1-indicator" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#c3f400">
+          <span style="width:26px;height:26px;border-radius:50%;border:2px solid #c3f400;background:rgba(195,244,0,.1);display:flex;align-items:center;justify-content:center;font-size:12px">1</span>Turno
+        </div>
+        <div style="flex:1;height:2px;background:#444933;border-radius:2px"></div>
+        <div class="step" id="step2-indicator" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#8e9379">
+          <span style="width:26px;height:26px;border-radius:50%;border:2px solid #444933;display:flex;align-items:center;justify-content:center;font-size:12px">2</span>Cliente
+        </div>
+        <div style="flex:1;height:2px;background:#444933;border-radius:2px"></div>
+        <div class="step" id="step3-indicator" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#8e9379">
+          <span style="width:26px;height:26px;border-radius:50%;border:2px solid #444933;display:flex;align-items:center;justify-content:center;font-size:12px">3</span>Pago
+        </div>
+      </div>
+      <div id="modalBody" style="padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:16px"></div>
+    </div>
+  </div>
+
+  <!-- ===== TOASTS ===== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ===== NICO AI CHAT ===== -->
+  <button id="nicoChatBtn" class="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50" style="background:#c3f400;color:#161e00">
+    <span class="material-symbols-outlined" style="font-size:28px">smart_toy</span>
+  </button>
+  
+  <div id="nicoChatWindow" class="fixed bottom-24 right-6 w-80 md:w-96 bg-surface-container-low border border-outline-variant rounded-2xl shadow-2xl z-50 flex flex-col hidden overflow-hidden transition-all duration-300 transform translate-y-4 opacity-0 h-[500px] max-h-[80vh]">
+    <div class="bg-slate-900 border-b border-slate-800 p-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl" style="background:#c3f400;color:#161e00">N</div>
+        <div>
+          <h3 class="font-bold text-lime-400 text-sm">Nico AI</h3>
+          <p class="text-xs text-slate-400">Asistente de SportPlex</p>
+        </div>
+      </div>
+      <button id="nicoChatCloseBtn" class="text-slate-400 hover:text-lime-300 transition-colors">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div id="nicoChatMessages" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3 scroll-smooth">
+      <div class="flex flex-col gap-1 items-start">
+        <div class="bg-slate-800 text-slate-200 px-4 py-2 rounded-2xl rounded-tl-sm text-sm max-w-[85%] leading-relaxed">
+          ¡Hola crack! ⚽ Soy Nico, tu asistente inteligente. ¿En qué te ayudo hoy? Probá preguntarme por los <strong class="text-lime-400">cumpleañeros</strong>.
+        </div>
+      </div>
+    </div>
+    <div class="p-3 bg-surface border-t border-slate-800 flex gap-2">
+      <input type="text" id="nicoChatInput" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-lime-400 transition-colors" placeholder="Escribile a Nico..." autocomplete="off" onkeypress="if(event.key === 'Enter') document.getElementById('nicoChatSendBtn').click()">
+      <button id="nicoChatSendBtn" class="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-lime-300 transition-colors" style="background:#c3f400;color:#161e00">
+        <span class="material-symbols-outlined" style="font-size:20px">send</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/supabase-client.js"></script>
+  <script src="js/views/dashboard.js"></script>
+  <script src="js/views/canchas.js"></script>
+  <script src="js/views/agenda.js"></script>
+  <script src="js/views/reservas.js"></script>
+  <script src="js/views/buffet.js"></script>
+  <script src="js/views/gastos.js"></script>
+  <script src="js/views/goleadores.js"></script>
+  <script src="js/views/torneos.js"></script>
+  <script src="js/views/matchmaking.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/nico-chat.js"></script>
+</body>
+</html>
