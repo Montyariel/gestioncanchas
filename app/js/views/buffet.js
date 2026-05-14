@@ -103,7 +103,14 @@ const BuffetView = {
     if (n.includes('hamburguesa')) return 'assets/images/champion_burger.png';
     if (n.includes('pancho')) return 'assets/images/executive_hotdog.png';
     if (n.includes('picada')) return 'assets/images/premium_picada.png';
-    if (n.includes('jugo') || n.includes('licuado') || n.includes('gatorade') || n.includes('powerade') || n.includes('coca') || n.includes('sprite') || n.includes('fanta') || n.includes('agua')) return 'assets/images/sports_drinks.png';
+    
+    if (n.includes('coca') || n.includes('cola')) return 'assets/images/coca_cola.png';
+    if (n.includes('sprite') || n.includes('fanta')) return 'assets/images/sprite.png';
+    if (n.includes('gatorade') || n.includes('powerade')) return 'assets/images/gatorade.png';
+    if (n.includes('red bull') || n.includes('speed')) return 'assets/images/red_bull.png';
+    if (n.includes('agua')) return 'assets/images/agua_mineral.png';
+    if (n.includes('jugo') || n.includes('licuado')) return 'assets/images/sports_drinks.png';
+
     if (n.includes('jorgito') || n.includes('alfajor')) return 'img/alfajor_jorgito.png';
     if (n.includes('quilmes')) return 'img/cerveza_quilmes.png';
     if (n.includes('heineken')) return 'img/cerveza_heineken.png';
@@ -136,8 +143,8 @@ const BuffetView = {
           ${stockBadge}
         </div>
         <div class="p-6 flex-1 flex flex-col">
-          <h4 class="font-h3 text-h3 text-on-surface mb-1">${s.item}</h4>
-          <p class="font-body-md text-body-md ${stockColor} mb-4 flex-1">
+          <h4 class="font-h3 text-h3 text-on-surface mb-1 line-clamp-2" title="${s.item}">${s.item}</h4>
+          <p class="font-body-md text-body-md ${stockColor} mb-4 mt-2 flex-1">
             ${s.cantidad > 0 ? `Disponible` : 'Agotado'}
           </p>
           <div class="flex items-center justify-between mt-auto">
