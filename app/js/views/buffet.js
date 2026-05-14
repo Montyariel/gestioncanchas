@@ -212,12 +212,23 @@ const BuffetView = {
       <div class="p-6 bg-surface-container border-t border-surface-container-highest">
         <div class="mb-4">
           <label class="font-label-caps text-label-caps text-on-surface-variant mb-2 block">DELIVERY TARGET</label>
-          <div class="relative">
+          <div class="relative mb-4">
             <select id="buffetDeliveryTarget" class="w-full bg-background border border-outline-variant rounded-lg py-3 px-4 appearance-none font-body-md text-on-surface focus:ring-1 focus:ring-primary-fixed focus:border-primary-fixed">
               <option value="bar">Pick up at Bar</option>
               <option value="cancha1">Send to Cancha 1</option>
               <option value="cancha2">Send to Cancha 2</option>
               <option value="cancha3">Send to Cancha 3</option>
+            </select>
+            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+          </div>
+          
+          <label class="font-label-caps text-label-caps text-on-surface-variant mb-2 block">MÉTODO DE PAGO</label>
+          <div class="relative">
+            <select id="buffetMetodoPago" class="w-full bg-background border border-outline-variant rounded-lg py-3 px-4 appearance-none font-body-md text-on-surface focus:ring-1 focus:ring-primary-fixed focus:border-primary-fixed">
+              <option value="Efectivo">Efectivo</option>
+              <option value="Mercado Pago">Mercado Pago</option>
+              <option value="Transferencia">Transferencia Bancaria</option>
+              <option value="Débito">Tarjeta Débito</option>
             </select>
             <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
           </div>
@@ -306,13 +317,15 @@ const BuffetView = {
           .limit(1);
 
         if (sesiones && sesiones.length > 0) {
-          const desc = this.cart.map(c => `${c.qty}x ${c.item}`).join(', ');
+          const descItems = this.cart.map(c => `${c.qty}x ${c.item}`).join(', ');
+          const metodoPago = document.getElementById('buffetMetodoPago')?.value || 'Efectivo';
+          
           await db.from('movimientos_caja').insert([{
             sesion_id: sesiones[0].id,
             tipo: 'ingreso',
             categoria: 'Venta Buffet',
             monto: total,
-            descripcion: `Venta Buffet: ${desc}`
+            descripcion: `[${metodoPago}] Venta Buffet: ${descItems}`
           }]);
         } else {
           console.warn("No hay caja abierta. La venta no se registró en el Libro Diario.");

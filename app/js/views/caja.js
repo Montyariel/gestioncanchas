@@ -176,8 +176,20 @@ const CajaView = {
               </button>
             </div>
           </div>
-          <div class="mt-4">
-            <input type="text" id="movDesc" class="w-full bg-surface border border-surface-container-highest rounded-lg px-3 py-2 text-sm text-on-surface focus:border-[#c3f400]" placeholder="Descripción / Aclaración (Opcional)">
+          <div class="mt-4 flex gap-4">
+            <div class="w-1/3">
+              <label class="block text-xs font-bold text-slate-400 mb-2">Método de Pago</label>
+              <select id="movMetodo" class="w-full bg-surface border border-surface-container-highest rounded-lg px-3 py-2 text-on-surface focus:border-[#c3f400]">
+                <option value="Efectivo">Efectivo</option>
+                <option value="Mercado Pago">Mercado Pago</option>
+                <option value="Transferencia">Transferencia Bancaria</option>
+                <option value="Débito">Tarjeta Débito</option>
+              </select>
+            </div>
+            <div class="w-2/3">
+              <label class="block text-xs font-bold text-slate-400 mb-2">Descripción (Opcional)</label>
+              <input type="text" id="movDesc" class="w-full bg-surface border border-surface-container-highest rounded-lg px-3 py-2 text-sm text-on-surface focus:border-[#c3f400]" placeholder="Detalles extra...">
+            </div>
           </div>
         </div>
 
@@ -279,7 +291,10 @@ const CajaView = {
     const tipo = document.getElementById('movTipo').value;
     const cat = document.getElementById('movCat').value;
     const monto = document.getElementById('movMonto').value;
-    const desc = document.getElementById('movDesc').value;
+    const metodo = document.getElementById('movMetodo').value;
+    const descRaw = document.getElementById('movDesc').value;
+    
+    const desc = `[${metodo}] ${descRaw}`.trim();
 
     if(!monto || monto <= 0) {
       App.toast('Monto inválido', 'error');
