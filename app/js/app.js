@@ -11,11 +11,14 @@ const App = {
     canchas:     { render: (s) => CanchasView.render(s),     label: 'Canchas' },
     agenda:      { render: (s) => AgendaView.render(s),      label: 'Agenda' },
     reservas:    { render: (s) => ReservasView.render(s),    label: 'Reservas' },
+    caja:        { render: (s) => CajaView.render(s),        label: 'Caja Diaria' },
     buffet:      { render: (s) => BuffetView.render(s),      label: 'Buffet' },
     gastos:      { render: (s) => GastosView.render(s),      label: 'Gastos' },
     goleadores:  { render: (s) => GoleadoresView.render(s),  label: 'Goleadores' },
     torneos:     { render: (s) => TorneosView.render(s),     label: 'Torneos' },
-    matchmaking: { render: (s) => MatchmakingView.render(s), label: 'Matchmaking' }
+    matchmaking: { render: (s) => MatchmakingView.render(s), label: 'Matchmaking' },
+    reportes:    { render: (s) => ReportesView.render(s),    label: 'Reportes' },
+    login:       { render: (s) => LoginView.render(s),       label: 'Acceso' }
   },
 
   // --- INIT ---
@@ -29,7 +32,25 @@ const App = {
     try {
       this.bindEvents();
       this.startClock();
-      await this.navigate('dashboard');
+      
+      const user = localStorage.getItem('sportplex_user');
+      if (!user) {
+        await this.navigate('login');
+      } else {
+        const u = JSON.parse(user);
+        if (typeof LoginView !== 'undefined' && LoginView.applyRoleRestrictions) {
+          LoginView.applyRoleRestrictions(u.rol);
+          const userNameEl = document.getElementById('userNameDisplay');
+          if (userNameEl) userNameEl.textContent = u.nombre.charAt(0).toUpperCase();
+        }
+        
+        // Redirección basada en roles si ya estaba logueado
+        if (u.rol === 'dueño' || u.rol === 'encargado') {
+          await this.navigate('dashboard');
+        } else {
+          await this.navigate('agenda');
+        }
+      }
     } catch(e) {
       console.error('CanchaOS init error:', e);
     } finally {

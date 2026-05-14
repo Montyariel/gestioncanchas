@@ -172,14 +172,19 @@
       </ul>
       <p class="text-slate-600 px-4 mb-2" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">Negocio</p>
       <ul class="space-y-1">
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="caja" id="nav-caja"><span class="material-symbols-outlined" style="font-size:20px">point_of_sale</span><span>Caja Diaria</span></a></li>
         <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="buffet" id="nav-buffet"><span class="material-symbols-outlined" style="font-size:20px">fastfood</span><span>Buffet</span><span id="badge-stock" class="ml-auto text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full" style="display:none">!</span></a></li>
-        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="gastos" id="nav-gastos"><span class="material-symbols-outlined" style="font-size:20px">payments</span><span>Gastos</span></a></li>
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="gastos" id="nav-gastos"><span class="material-symbols-outlined" style="font-size:20px">payments</span><span>Gastos Generales</span></a></li>
         <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="goleadores" id="nav-goleadores"><span class="material-symbols-outlined" style="font-size:20px">military_tech</span><span>Goleadores</span></a></li>
       </ul>
       <p class="text-slate-600 px-4 mb-2 mt-4" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">Comunidad</p>
       <ul class="space-y-1">
         <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="torneos" id="nav-torneos"><span class="material-symbols-outlined" style="font-size:20px">emoji_events</span><span>Torneos</span></a></li>
         <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="matchmaking" id="nav-matchmaking"><span class="material-symbols-outlined" style="font-size:20px">radar</span><span>Matchmaking</span></a></li>
+      </ul>
+      <p class="text-slate-600 px-4 mb-2 mt-4" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">Inteligencia</p>
+      <ul class="space-y-1">
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="reportes" id="nav-reportes"><span class="material-symbols-outlined" style="font-size:20px">insights</span><span>Reportes</span></a></li>
       </ul>
     </div>
 
@@ -213,10 +218,10 @@
         <button id="refreshBtn" class="text-slate-400 hover:text-lime-300 transition-colors w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-800">
           <span class="material-symbols-outlined" style="font-size:20px">refresh</span>
         </button>
-        <button class="text-slate-400 hover:text-lime-300 transition-colors w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-800">
-          <span class="material-symbols-outlined" style="font-size:20px">notifications</span>
+        <button class="text-slate-400 hover:text-lime-300 transition-colors w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-800" onclick="if(typeof LoginView!=='undefined') LoginView.logout()" title="Cerrar Sesión">
+          <span class="material-symbols-outlined" style="font-size:20px">logout</span>
         </button>
-        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background:#c3f400;color:#161e00">A</div>
+        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background:#c3f400;color:#161e00" id="userNameDisplay">A</div>
       </div>
     </header>
 
@@ -255,10 +260,66 @@
   <!-- ===== TOASTS ===== -->
   <div class="toast-container" id="toastContainer"></div>
 
+  <!-- ===== NICO PANEL DE ALERTAS ===== -->
+  <div id="nico-panel" class="fixed bottom-28 right-6 w-80 md:w-96 hidden opacity-0 translate-y-4 z-50 transition-all duration-300">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+      <!-- Header -->
+      <div class="px-4 py-3 border-b border-slate-800 flex items-center justify-between" style="background:linear-gradient(135deg,#1e1f26,#111319)">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background:#c3f400;color:#161e00">N</div>
+          <div>
+            <div class="text-lime-400 font-bold text-sm">Nico — Panel de Control</div>
+            <div class="text-slate-500 text-xs">Alertas y monitoreo 24/7</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="nico-run-checks" onclick="NicoAgent._runStartupChecks().then(()=>NicoPanel.refresh())" title="Actualizar"
+            class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-lime-400 hover:bg-slate-800 transition-all">
+            <span class="material-symbols-outlined" style="font-size:16px">refresh</span>
+          </button>
+          <button onclick="NicoPanel.toggle()" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-lime-400 hover:bg-slate-800 transition-all">
+            <span class="material-symbols-outlined" style="font-size:16px">close</span>
+          </button>
+        </div>
+      </div>
+      <!-- Status Bar -->
+      <div class="px-4 py-2 flex items-center gap-3" style="background:#111319;border-bottom:1px solid #1e1f26">
+        <div class="flex items-center gap-1.5">
+          <div class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></div>
+          <span class="text-slate-400" style="font-size:11px">Agente activo</span>
+        </div>
+        <div class="flex-1"></div>
+        <div id="nico-status-text" class="text-slate-500" style="font-size:10px">Monitoreando...</div>
+      </div>
+      <!-- Alerts Body -->
+      <div id="nico-panel-body" class="p-3 overflow-y-auto" style="max-height:340px">
+        <div style="text-align:center;padding:32px 16px;color:#8e9379">
+          <div style="font-size:30px;margin-bottom:8px">🤖</div>
+          <div style="font-size:13px;font-weight:600;color:#c4c9ac">Iniciando Nico Agent...</div>
+        </div>
+      </div>
+      <!-- Footer -->
+      <div class="px-4 py-3 border-t border-slate-800 flex gap-2" style="background:#111319">
+        <button onclick="NicoAgent.checkCumpleanios(); NicoPanel.refresh();" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-lime-400 hover:text-lime-400 transition-all">🎂 Cumples</button>
+        <button onclick="NicoAgent.checkStockCritico(); NicoPanel.refresh();" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-lime-400 hover:text-lime-400 transition-all">📦 Stock</button>
+        <button onclick="NicoAgent.checkPagosPendientes(); NicoPanel.refresh();" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-lime-400 hover:text-lime-400 transition-all">💳 Pagos</button>
+        <button onclick="NicoAgent.cierreCaja(); NicoPanel.refresh();" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-lime-400 hover:text-lime-400 transition-all">📊 Cierre</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== NICO AI CHAT ===== -->
-  <button id="nicoChatBtn" class="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform z-50" style="background:#c3f400;color:#161e00">
-    <span class="material-symbols-outlined" style="font-size:28px">smart_toy</span>
-  </button>
+  <div class="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-50">
+    <!-- Botón Panel Alertas -->
+    <button id="nico-panel-toggle" onclick="NicoPanel.toggle()" class="w-11 h-11 rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-transform relative" style="background:#1e1f26;border:1.5px solid #444933;color:#c3f400" title="Panel Nico 24/7">
+      <span class="material-symbols-outlined" style="font-size:20px">notifications_active</span>
+      <span id="nico-alert-badge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs font-bold items-center justify-content-center" style="display:none;background:#ffb4ab;color:#161e00;font-size:10px;display:flex;align-items:center;justify-content:center">0</span>
+    </button>
+    <!-- Botón Chat -->
+    <button id="nicoChatBtn" class="w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform" style="background:#c3f400;color:#161e00">
+      <span class="material-symbols-outlined" style="font-size:28px">smart_toy</span>
+    </button>
+  </div>
   
   <div id="nicoChatWindow" class="fixed bottom-24 right-6 w-80 md:w-96 bg-surface-container-low border border-outline-variant rounded-2xl shadow-2xl z-50 flex flex-col hidden overflow-hidden transition-all duration-300 transform translate-y-4 opacity-0 h-[500px] max-h-[80vh]">
     <div class="bg-slate-900 border-b border-slate-800 p-4 flex items-center justify-between">
@@ -294,12 +355,24 @@
   <script src="js/views/canchas.js"></script>
   <script src="js/views/agenda.js"></script>
   <script src="js/views/reservas.js"></script>
+  <script src="js/views/caja.js"></script>
   <script src="js/views/buffet.js"></script>
   <script src="js/views/gastos.js"></script>
   <script src="js/views/goleadores.js"></script>
   <script src="js/views/torneos.js"></script>
   <script src="js/views/matchmaking.js"></script>
+  <script src="js/nico-analytics.js"></script>
+  <script src="js/views/reportes.js"></script>
+  <script src="js/views/login.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/nico-agent.js"></script>
   <script src="js/nico-chat.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        NicoAgent.init().catch(e => console.error('[NicoAgent] Init error:', e));
+      }, 2500);
+    });
+  </script>
 </body>
 </html>

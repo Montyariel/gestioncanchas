@@ -58,6 +58,54 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         },
         required: ["sucursal_id", "hora_inicio", "hora_fin"]
       }
+    },
+    // 📊 CIERRE DE CAJA AUTOMÁTICO
+    {
+      name: "cierre_caja",
+      description: "Calcula el balance del día: ingresos, egresos y ganancia neta por sucursal.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          sucursal_id: { type: "string", description: "lanus o belgrano" },
+          fecha: { type: "string", description: "Fecha YYYY-MM-DD. Por defecto hoy." }
+        },
+        required: ["sucursal_id"]
+      }
+    },
+    // 💳 REVISAR PAGOS PENDIENTES
+    {
+      name: "check_pagos_pendientes",
+      description: "Revisa reservas con pago pendiente y genera recordatorios.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          sucursal_id: { type: "string", description: "lanus, belgrano, o ambas" }
+        },
+        required: []
+      }
+    },
+    // 🎂 CUMPLEAÑEROS DEL DÍA
+    {
+      name: "check_cumpleanios",
+      description: "Detecta clientes que cumplen años hoy y genera mensajes de WhatsApp con regalo.",
+      inputSchema: {
+        type: "object",
+        properties: {},
+        required: []
+      }
+    },
+    // 📦 STOCK CRÍTICO
+    {
+      name: "check_stock_critico",
+      description: "Detecta productos del buffet por debajo del mínimo (10 unidades) y emite alertas.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          sucursal_id: { type: "string", description: "lanus, belgrano, o ambas" },
+          umbral: { type: "number", description: "Mínimo de unidades (por defecto 10)" }
+        },
+        required: []
+      }
     }
   ]
 }));
@@ -154,6 +202,92 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       await supabase.from('turnos').update({ reservado: true, cliente_nombre: args.cliente_nombre }).eq('id', args.turno_id);
       
       return { content: [{ type: "text", text: `🔗 Link de pago generado: ${resp.init_point}` }] };
+    }
+
+    // --- CIERRE DE CAJA ---
+    if (name === "cierre_caja") {
+      const fecha = args.fecha || new Date().toISOString().split('T')[0];
+      const sucursales = args.sucursal_id === 'ambas' ? ['lanus', 'belgrano'] : [args.sucursal_id];
+      let reporte = `📊 CIERRE DE CAJA — ${fecha}\n${'═'.repeat(30)}\n`;
+      let totalNeto = 0;
+
+      for (const suc of sucursales) {
+        const { data: gastos } = await supabase.from('gastos').select('*').ilike('sucursal', `%${suc}%`).gte('created_at', fecha);
+        const { data: turnos } = await supabase.from('turnos').select('*, canchas(sucursal_id)').eq('fecha', fecha).eq('reservado', true);
+        const turnosSuc = (turnos || []).filter(t => t.canchas?.sucursal_id?.toLowerCase().includes(suc));
+        const ingresos = (gastos || []).filter(g => g.monto < 0).reduce((s, g) => s + Math.abs(g.monto), 0);
+        const egresos  = (gastos || []).filter(g => g.monto > 0).reduce((s, g) => s + g.monto, 0);
+        const neto = ingresos - egresos;
+        totalNeto += neto;
+        reporte += `\n🏟️ ${suc.toUpperCase()}\n  💰 Ingresos: $${ingresos.toLocaleString('es-AR')}\n  💸 Egresos:  $${egresos.toLocaleString('es-AR')}\n  💵 Neto:     $${neto.toLocaleString('es-AR')}\n  🏟️ Reservas: ${turnosSuc.length}\n`;
+      }
+
+      reporte += `\n${'─'.repeat(30)}\n🏆 GANANCIA NETA TOTAL: $${totalNeto.toLocaleString('es-AR')}`;
+      return { content: [{ type: "text", text: reporte }] };
+    }
+
+    // --- CHECK PAGOS PENDIENTES ---
+    if (name === "check_pagos_pendientes") {
+      const { data: pendientes } = await supabase
+        .from('reservas')
+        .select('cliente_nombre, created_at, canchas(nombre)')
+        .or('estado_pago.eq.pendiente,estado_pago.is.null')
+        .not('cliente_nombre', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (!pendientes?.length) return { content: [{ type: "text", text: "✅ ¡Todo pago, crack! No hay reservas pendientes." }] };
+
+      const lista = pendientes.map(r => `• ${r.cliente_nombre} — ${r.canchas?.nombre || 'Cancha'}`).join('\n');
+      const msg = `💳 PAGOS PENDIENTES (${pendientes.length}):\n\n${lista}\n\n⚡ Acción: Contactar a cada cliente con el link de Mercado Pago.`;
+      return { content: [{ type: "text", text: msg }] };
+    }
+
+    // --- CHECK CUMPLEAÑEROS ---
+    if (name === "check_cumpleanios") {
+      const hoy = new Date();
+      const sufijo = `-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+
+      const { data: clientes } = await supabase
+        .from('reservas')
+        .select('cliente_nombre, cumpleanios')
+        .not('cumpleanios', 'is', null)
+        .limit(500);
+
+      const seen = new Set();
+      const cumpleaneros = (clientes || []).filter(c => {
+        if (!c.cumpleanios || seen.has(c.cliente_nombre)) return false;
+        const match = String(c.cumpleanios).endsWith(sufijo);
+        if (match) seen.add(c.cliente_nombre);
+        return match;
+      });
+
+      if (!cumpleaneros.length) return { content: [{ type: "text", text: "No hay cumpleañeros registrados para hoy." }] };
+
+      const msgs = cumpleaneros.map(c => {
+        const waMsg = encodeURIComponent(`¡Hola ${c.cliente_nombre}! ⚽ Acá Nico de CanchaOS. ¡Muy feliz cumpleaños crack! 🎂 Tenés un Gatorade gratis o un 10% OFF en tu próxima reserva.`);
+        return `🎂 ${c.cliente_nombre}\nhttps://wa.me/?text=${waMsg}`;
+      }).join('\n\n');
+
+      return { content: [{ type: "text", text: `🎂 CUMPLEAÑEROS DE HOY:\n\n${msgs}` }] };
+    }
+
+    // --- CHECK STOCK CRÍTICO ---
+    if (name === "check_stock_critico") {
+      const umbral = args.umbral || 10;
+      const sucursales = args.sucursal_id && args.sucursal_id !== 'ambas'
+        ? [args.sucursal_id] : ['lanus', 'belgrano'];
+
+      let alertas = [];
+      for (const suc of sucursales) {
+        const { data: stock } = await supabase.from('stock').select('*').ilike('sucursal', `%${suc}%`);
+        const criticos = (stock || []).filter(s => s.cantidad < umbral);
+        alertas = alertas.concat(criticos.map(s => `⚠️ [${suc.toUpperCase()}] ${s.item}: ${s.cantidad} unidades`));
+      }
+
+      if (!alertas.length) return { content: [{ type: "text", text: `✅ Stock OK en todas las sedes. Todo por encima de ${umbral} unidades.` }] };
+
+      return { content: [{ type: "text", text: `📦 STOCK CRÍTICO:\n\n${alertas.join('\n')}\n\n🚨 Avisá a Ariel para reponer stock.` }] };
     }
 
   } catch (e) { return { content: [{ type: "text", text: "❌ Error: " + e.message }] }; }

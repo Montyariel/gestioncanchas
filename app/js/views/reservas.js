@@ -3,50 +3,54 @@ const ReservasView = {
   async render(sucursal) {
     const container = document.getElementById('viewContainer');
     container.innerHTML = `
-      <div class="page-header">
-        <div>
-          <h1 class="page-title">📋 Reservas</h1>
-          <p class="page-subtitle">Historial completo de reservas confirmadas</p>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn--ghost" onclick="ReservasView.showAbonoModal()">
-            📅 Abono Mensual
-          </button>
-          <button class="btn btn--primary" onclick="App.navigate('agenda')">
-            + Nueva Reserva
-          </button>
-        </div>
-      </div>
-
-      <!-- Filtros -->
-      <div class="card" style="margin-bottom:20px;padding:16px">
-        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-          <input class="form-input" id="filterCliente" placeholder="🔍 Buscar por cliente..." style="max-width:240px"
-            oninput="ReservasView.filterTable()" />
-          <select class="form-input form-select" id="filterEstado" style="max-width:180px" onchange="ReservasView.filterTable()">
-            <option value="">Todos los estados</option>
-            <option value="pagado">✅ Pagado</option>
-            <option value="pendiente">⏳ Pendiente</option>
-            <option value="cancelado">❌ Cancelado</option>
-          </select>
-          <div style="margin-left:auto;font-size:13px;color:var(--text-muted)" id="reservasCount"></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div id="reservasTable"><div class="skeleton" style="height:300px"></div></div>
-      </div>
-
-      <!-- MODAL ABONO MENSUAL -->
-      <div class="modal-overlay" id="abonoModalOverlay" onclick="if(event.target===this)ReservasView.closeAbonoModal()">
-        <div class="modal" style="max-width:480px">
-          <div class="modal-header">
-            <h2 class="modal-title">📅 Abono Mensual</h2>
-            <button class="modal-close" onclick="ReservasView.closeAbonoModal()">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <section class="grid grid-cols-1 gap-6 mb-8">
+        <div class="bg-surface-container-low rounded-xl p-8 border border-surface-container-highest flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h1 class="font-h1 text-h1 text-on-surface mb-1">📋 Historial de Reservas</h1>
+            <p class="text-on-surface-variant">Registro completo de reservas confirmadas y abonos · ${sucursal.charAt(0).toUpperCase()+sucursal.slice(1)}</p>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="ReservasView.showAbonoModal()" class="px-5 py-2.5 rounded-lg text-sm font-bold border border-slate-700 text-slate-300 hover:border-[#c3f400] hover:text-[#c3f400] transition-all flex items-center gap-2">
+              <span class="material-symbols-outlined" style="font-size:18px">calendar_month</span>
+              Abono Mensual
+            </button>
+            <button onclick="App.navigate('agenda')" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] transition-all flex items-center gap-2 shadow-lg shadow-[#c3f400]/20">
+              <span class="material-symbols-outlined" style="font-size:18px">add</span>
+              Nueva Reserva
             </button>
           </div>
-          <div class="modal-body" id="abonoModalBody">
+        </div>
+      </section>
+
+      <!-- Filtros -->
+      <section class="bg-surface-container rounded-xl p-4 border border-surface-container-highest mb-6 flex flex-wrap gap-4 items-center">
+        <div class="relative flex-1 min-w-[200px] max-w-[300px]">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="font-size:18px">search</span>
+          <input id="filterCliente" oninput="ReservasView.filterTable()" placeholder="Buscar por cliente..." class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg pl-10 pr-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
+        </div>
+        <select id="filterEstado" onchange="ReservasView.filterTable()" class="bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors cursor-pointer outline-none">
+          <option value="">Todos los estados</option>
+          <option value="pagado">✅ Pagado</option>
+          <option value="pendiente">⏳ Pendiente</option>
+          <option value="cancelado">❌ Cancelado</option>
+        </select>
+        <div class="ml-auto">
+          <span id="reservasCount" class="text-sm font-bold text-[#c3f400] bg-[#c3f400]/10 px-3 py-1.5 rounded-lg border border-[#c3f400]/20">Cargando...</span>
+        </div>
+      </section>
+
+      <section class="bg-surface-container rounded-xl border border-surface-container-highest overflow-hidden">
+        <div id="reservasTable"><div class="p-12 text-center flex flex-col items-center justify-center"><div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#c3f400] mb-4"></div><p class="text-slate-400 text-sm">Cargando reservas...</p></div></div>
+      </section>
+
+      <!-- MODAL ABONO MENSUAL -->
+      <div id="abonoModalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 transition-opacity" onclick="if(event.target===this)ReservasView.closeAbonoModal()" style="display: none;">
+        <div class="bg-surface-container rounded-2xl w-full max-w-lg border border-surface-container-highest shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div class="p-6 border-b border-surface-container-highest flex justify-between items-center bg-surface-container-low">
+            <h2 class="text-xl font-bold text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[#c3f400]">calendar_month</span> Abono Mensual</h2>
+            <button onclick="ReservasView.closeAbonoModal()" class="text-slate-400 hover:text-white transition-colors"><span class="material-symbols-outlined">close</span></button>
+          </div>
+          <div class="p-6 overflow-y-auto" id="abonoModalBody">
           </div>
         </div>
       </div>`;
@@ -72,37 +76,44 @@ const ReservasView = {
     const el = document.getElementById('reservasTable');
     if (!el) return;
     if (!reservas.length) {
-      el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><p class="empty-state-title">Sin reservas aún</p><p class="empty-state-text">Las reservas confirmadas aparecerán aquí</p></div>`;
+      el.innerHTML = `<div class="p-16 text-center flex flex-col items-center justify-center">
+        <span class="material-symbols-outlined text-5xl text-slate-600 mb-4">inventory_2</span>
+        <p class="text-on-surface font-bold text-lg mb-1">No hay reservas</p>
+        <p class="text-slate-400 text-sm">Aún no hay reservas que coincidan con la búsqueda.</p>
+      </div>`;
       return;
     }
     el.innerHTML = `
-      <div class="table-wrapper">
-        <table>
-          <thead><tr>
-            <th>Cliente</th>
-            <th>Cancha</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Precio</th>
-            <th>Estado pago</th>
-            <th>Acciones</th>
-          </tr></thead>
-          <tbody id="reservasTbody">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-surface-container-low border-b border-surface-container-highest">
+            <tr>
+              <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Cliente</th>
+              <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Cancha</th>
+              <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Fecha / Hora</th>
+              <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Precio</th>
+              <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Estado</th>
+              <th class="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="reservasTbody" class="divide-y divide-surface-container-highest">
             ${reservas.map(r => `
-              <tr data-cliente="${(r.cliente_nombre||'').toLowerCase()}" data-estado="${r.estado_pago||'pendiente'}">
-                <td>
-                  <div style="font-weight:700">${r.cliente_nombre || '—'}</div>
-                  ${r.cumpleanios ? `<div style="font-size:11px;color:var(--pink)">🎂 ${fmt.date(r.cumpleanios)}</div>` : ''}
+              <tr class="hover:bg-surface-container-high transition-colors group">
+                <td class="py-4 px-6">
+                  <div class="font-bold text-on-surface text-sm">${r.cliente_nombre || '—'}</div>
+                  ${r.cumpleanios ? `<div class="text-[11px] text-[#ffb4ab] mt-0.5 flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:12px">cake</span> ${fmt.date(r.cumpleanios)}</div>` : ''}
                 </td>
-                <td>${r.canchas?.nombre || r.turno_cancha || '—'}</td>
-                <td style="color:var(--text-muted);font-size:13px">${r.turno_fecha ? fmt.date(r.turno_fecha) : fmt.date(r.created_at)}</td>
-                <td><span class="badge badge--cyan">${r.turno_hora || '—'}</span></td>
-                <td style="font-weight:700;color:var(--accent)">${r.precio ? fmt.money(r.precio) : '—'}</td>
-                <td>${this.estadoBadge(r.estado_pago)}</td>
-                <td>
-                  <div style="display:flex;gap:6px;flex-wrap:wrap">
-                    ${r.estado_pago !== 'pagado' ? `<button class="btn btn--sm" style="background:var(--green-light);color:var(--green);border:1.5px solid var(--green)" onclick="ReservasView.marcarPagado(${r.id})">✅ Pagado</button>` : ''}
-                    ${r.turno_id ? `<button class="btn btn--danger btn--sm" onclick="ReservasView.cancelarReserva(${r.id}, ${r.turno_id})">❌</button>` : ''}
+                <td class="py-4 px-6 text-sm text-slate-300 font-medium">${r.canchas?.nombre || r.turno_cancha || '—'}</td>
+                <td class="py-4 px-6">
+                  <div class="text-sm text-slate-300">${r.turno_fecha ? fmt.date(r.turno_fecha) : fmt.date(r.created_at)}</div>
+                  <div class="text-xs font-bold text-cyan-400 mt-0.5">${r.turno_hora || '—'}</div>
+                </td>
+                <td class="py-4 px-6 font-bold text-[#c3f400] text-sm">${r.precio ? fmt.money(r.precio) : '—'}</td>
+                <td class="py-4 px-6">${this.estadoBadge(r.estado_pago)}</td>
+                <td class="py-4 px-6 text-right">
+                  <div class="flex gap-2 justify-end">
+                    ${r.estado_pago !== 'pagado' ? `<button onclick="ReservasView.marcarPagado(${r.id})" class="px-3 py-1.5 rounded-lg text-xs font-bold border border-[#c3f400] text-[#c3f400] hover:bg-[#c3f400] hover:text-[#161e00] transition-colors shadow-sm">✅ Pago</button>` : ''}
+                    ${r.turno_id ? `<button onclick="ReservasView.cancelarReserva(${r.id}, ${r.turno_id})" class="p-1.5 rounded-lg text-slate-400 hover:text-[#ffb4ab] hover:bg-[#ffb4ab]/10 transition-colors" title="Cancelar Reserva"><span class="material-symbols-outlined" style="font-size:18px">close</span></button>` : ''}
                   </div>
                 </td>
               </tr>`).join('')}
@@ -113,9 +124,9 @@ const ReservasView = {
 
   estadoBadge(estado) {
     const map = {
-      pagado:   `<span class="badge badge--green">✅ Pagado</span>`,
-      pendiente:`<span class="badge badge--yellow">⏳ Pendiente</span>`,
-      cancelado:`<span class="badge badge--red">❌ Cancelado</span>`
+      pagado:   `<span class="bg-[#c3f400]/10 text-[#c3f400] px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider inline-flex items-center gap-1 border border-[#c3f400]/20"><span class="material-symbols-outlined" style="font-size:12px">check_circle</span> Pagado</span>`,
+      pendiente:`<span class="bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider inline-flex items-center gap-1 border border-amber-500/20"><span class="material-symbols-outlined" style="font-size:12px">schedule</span> Pendiente</span>`,
+      cancelado:`<span class="bg-[#ffb4ab]/10 text-[#ffb4ab] px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider inline-flex items-center gap-1 border border-[#ffb4ab]/20"><span class="material-symbols-outlined" style="font-size:12px">cancel</span> Cancelado</span>`
     };
     return map[estado] || map['pendiente'];
   },
@@ -155,47 +166,53 @@ const ReservasView = {
   showAbonoModal() {
     const body = document.getElementById('abonoModalBody');
     body.innerHTML = `
-      <div class="form-group">
-        <label class="form-label">👤 Nombre del cliente</label>
-        <input class="form-input" id="abonoCliente" placeholder="Ej: Martín García" autofocus />
-      </div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">🏟️ Cancha</label>
-          <input class="form-input" id="abonoCancha" placeholder="Ej: Cancha 1" />
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">👤 Nombre del cliente</label>
+          <input id="abonoCliente" placeholder="Ej: Martín García" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" autofocus />
         </div>
-        <div class="form-group">
-          <label class="form-label">🕐 Horario fijo</label>
-          <input class="form-input" id="abonoHora" placeholder="Ej: 20:00" />
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">🏟️ Cancha</label>
+            <input id="abonoCancha" placeholder="Ej: Cancha 1" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">🕐 Horario fijo</label>
+            <input id="abonoHora" placeholder="Ej: 20:00" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">📆 Fechas del mes</label>
+            <select id="abonoFechas" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors cursor-pointer outline-none">
+              <option value="4">4 fechas</option>
+              <option value="5">5 fechas</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">💰 Precio por fecha ($)</label>
+            <input id="abonoPrecio" type="number" placeholder="0" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">🎂 Cumpleaños (opcional)</label>
+          <input id="abonoCumple" type="date" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
         </div>
       </div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">📆 Fechas del mes</label>
-          <select class="form-input form-select" id="abonoFechas">
-            <option value="4">4 fechas</option>
-            <option value="5">5 fechas</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">💰 Precio por fecha ($)</label>
-          <input class="form-input" id="abonoPrecio" type="number" placeholder="0" />
-        </div>
+      
+      <div id="abonoResumen" class="mt-6 p-4 bg-[#c3f400]/5 border border-[#c3f400]/20 rounded-xl hidden">
+        <div class="font-bold text-[#c3f400] text-sm mb-2">📊 Resumen del abono</div>
+        <div id="abonoResumenTexto" class="text-sm space-y-1 text-slate-300"></div>
       </div>
-      <div class="form-group">
-        <label class="form-label">🎂 Cumpleaños (opcional)</label>
-        <input class="form-input" id="abonoCumple" type="date" />
-      </div>
-      <div id="abonoResumen" style="margin-top:12px;padding:14px;background:var(--accent-light);border-radius:12px;font-size:14px;display:none">
-        <div style="font-weight:700;color:var(--accent);margin-bottom:4px">📊 Resumen del abono</div>
-        <div id="abonoResumenTexto"></div>
-      </div>
-      <div class="modal-footer" style="margin:0 -24px -24px;padding:16px 24px">
-        <button class="btn btn--ghost" onclick="ReservasView.closeAbonoModal()">Cancelar</button>
-        <button class="btn btn--ghost" onclick="ReservasView.calcularAbono()">Calcular 🔢</button>
-        <button class="btn btn--primary" onclick="ReservasView.confirmarAbono()">Confirmar Abono ⚽</button>
+      
+      <div class="mt-8 pt-6 border-t border-surface-container-highest flex justify-end gap-3">
+        <button onclick="ReservasView.closeAbonoModal()" class="px-5 py-2.5 rounded-lg text-sm font-bold border border-slate-700 text-slate-300 hover:bg-slate-800 transition-colors">Cancelar</button>
+        <button onclick="ReservasView.calcularAbono()" class="px-5 py-2.5 rounded-lg text-sm font-bold border border-[#c3f400] text-[#c3f400] hover:bg-[#c3f400]/10 transition-colors">Calcular 🔢</button>
+        <button onclick="ReservasView.confirmarAbono()" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] transition-colors shadow-lg shadow-[#c3f400]/20">Confirmar Abono ⚽</button>
       </div>`;
-    document.getElementById('abonoModalOverlay').classList.add('open');
+    const overlay = document.getElementById('abonoModalOverlay');
+    overlay.style.display = 'flex';
+    overlay.classList.remove('hidden');
   },
 
   calcularAbono() {
@@ -206,11 +223,11 @@ const ReservasView = {
     if (!precio || !cliente) { App.toast('Completá cliente y precio ⚠️', 'error'); return; }
     const total = precio * fechas;
     const desc = total * 0.1;
-    document.getElementById('abonoResumen').style.display = 'block';
+    document.getElementById('abonoResumen').classList.remove('hidden');
     document.getElementById('abonoResumenTexto').innerHTML = `
       <div>👤 <strong>${cliente}</strong> · ⏰ ${hora || '—'}</div>
       <div>📆 ${fechas} fechas × ${fmt.money(precio)} = <strong>${fmt.money(total)}</strong></div>
-      <div style="color:var(--green);margin-top:4px">🎁 Con descuento 10%: <strong>${fmt.money(total - desc)}</strong></div>`;
+      <div class="text-[#c3f400] mt-1 font-bold">🎁 Con descuento 10%: ${fmt.money(total - desc)}</div>`;
   },
 
   async confirmarAbono() {
@@ -230,6 +247,8 @@ const ReservasView = {
   },
 
   closeAbonoModal() {
-    document.getElementById('abonoModalOverlay').classList.remove('open');
+    const overlay = document.getElementById('abonoModalOverlay');
+    overlay.classList.add('hidden');
+    setTimeout(() => overlay.style.display = 'none', 300);
   }
 };
