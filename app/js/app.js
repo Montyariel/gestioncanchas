@@ -45,16 +45,37 @@ const App = {
         }
         
         // Redirección basada en roles si ya estaba logueado
-        if (u.rol === 'dueño' || u.rol === 'encargado') {
-          await this.navigate('dashboard');
-        } else {
-          await this.navigate('agenda');
-        }
+        await this.redirectUserBasedOnRole(u);
       }
     } catch(e) {
       console.error('CanchaOS init error:', e);
     } finally {
       setTimeout(hideLoader, 800);
+    }
+  },
+
+  async redirectUserBasedOnRole(u) {
+    if (u.rol === 'empleado') {
+      try {
+        // Verificar si hay caja abierta en la sucursal actual
+        const { data } = await db.from('sesiones_caja')
+          .select('id')
+          .eq('sucursal', this.state.sucursal)
+          .eq('estado', 'abierta')
+          .limit(1);
+          
+        if (!data || data.length === 0) {
+          await this.navigate('caja');
+          this.toast('👋 ¡Buen turno! Por favor, abrí la caja para comenzar.', 'info');
+        } else {
+          await this.navigate('agenda');
+        }
+      } catch(e) {
+        console.error("Error al verificar caja:", e);
+        await this.navigate('agenda');
+      }
+    } else {
+      await this.navigate('dashboard');
     }
   },
 

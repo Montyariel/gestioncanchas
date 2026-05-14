@@ -113,15 +113,8 @@ const LoginView = {
     // Control de permisos visuales (ocultar tabs si es empleado, etc)
     LoginView.applyRoleRestrictions(rol);
 
-    // Redirección basada en roles
-    if (rol === 'dueño') {
-      App.navigate('dashboard');
-    } else if (rol === 'encargado') {
-      // TODO: Crear vista de caja, por ahora dashboard
-      App.navigate('dashboard'); 
-    } else {
-      App.navigate('agenda'); // Empleado directo a la trinchera
-    }
+    // Redirección basada en roles y caja abierta (ahora centralizada en App)
+    App.redirectUserBasedOnRole({ rol: rol });
   },
 
   applyRoleRestrictions(rol) {
