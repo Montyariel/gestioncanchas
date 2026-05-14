@@ -34,7 +34,11 @@ INSERT INTO stock (sucursal, item, cantidad, precio_venta, categoria) VALUES
 ('lanus', 'Coca-Cola', 100, 350, 'Bebidas'),
 ('lanus', 'Sprite', 100, 300, 'Bebidas'),
 ('lanus', 'Gatorade', 100, 420, 'Bebidas'),
-('lanus', 'Red Bull', 50, 600, 'Bebidas');
+('lanus', 'Red Bull', 50, 600, 'Bebidas'),
+
+('lanus', 'Cerveza Lata Quilmes', 60, 600, 'Cervezas'),
+('lanus', 'Cerveza Botella Brahma', 60, 550, 'Cervezas'),
+('lanus', 'Cerveza Botella Heineken', 40, 950, 'Cervezas');
 
 
 -- BELGRANO
@@ -67,4 +71,8 @@ INSERT INTO stock (sucursal, item, cantidad, precio_venta, categoria) VALUES
 ('belgrano', 'Coca-Cola', 100, 350, 'Bebidas'),
 ('belgrano', 'Sprite', 100, 300, 'Bebidas'),
 ('belgrano', 'Gatorade', 100, 420, 'Bebidas'),
-('belgrano', 'Red Bull', 50, 600, 'Bebidas');
+('belgrano', 'Red Bull', 50, 600, 'Bebidas'),
+
+('belgrano', 'Cerveza Lata Quilmes', 60, 600, 'Cervezas'),
+('belgrano', 'Cerveza Botella Brahma', 60, 550, 'Cervezas'),
+('belgrano', 'Cerveza Botella Heineken', 40, 950, 'Cervezas');
