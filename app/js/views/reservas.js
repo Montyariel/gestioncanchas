@@ -146,8 +146,34 @@ const ReservasView = {
 
   async marcarPagado(reservaId) {
     try {
+      const reserva = this._allReservas.find(r => r.id === reservaId);
       await DB.updateReservaEstado(reservaId, 'pagado');
       App.toast('🎉 ¡GOLAZO! Pago registrado crack', 'success');
+
+      // Registrar en Caja Diaria
+      if (reserva && reserva.precio) {
+        const { data: sesiones } = await db
+          .from('sesiones_caja')
+          .select('id')
+          .eq('sucursal', this._sucursal)
+          .eq('estado', 'abierta')
+          .order('fecha_apertura', { ascending: false })
+          .limit(1);
+
+        if (sesiones && sesiones.length > 0) {
+          await db.from('movimientos_caja').insert([{
+            sesion_id: sesiones[0].id,
+            tipo: 'ingreso',
+            categoria: 'Alquiler Cancha',
+            monto: reserva.precio,
+            descripcion: `Pago Reserva: ${reserva.cliente_nombre || 'Cliente'}`
+          }]);
+        } else {
+          console.warn("No hay caja abierta para registrar el pago de la reserva.");
+          App.toast("⚠️ Pago registrado, pero la Caja está cerrada. Abrí la caja para futuros registros.", "error");
+        }
+      }
+
       await this.load(this._sucursal);
     } catch(e) { App.toast('Error: ' + e.message, 'error'); }
   },
@@ -240,6 +266,30 @@ const ReservasView = {
     if (!cliente || !precio) { App.toast('Completá los datos obligatorios ⚠️', 'error'); return; }
     try {
       await DB.registrarAbono({ cliente, cancha, hora, fechas, precio_unitario: precio, cumpleanios: cumple, sucursal: this._sucursal });
+      
+      const totalAbono = precio * fechas;
+      
+      // Registrar en Caja Diaria
+      const { data: sesiones } = await db
+        .from('sesiones_caja')
+        .select('id')
+        .eq('sucursal', this._sucursal)
+        .eq('estado', 'abierta')
+        .order('fecha_apertura', { ascending: false })
+        .limit(1);
+
+      if (sesiones && sesiones.length > 0) {
+        await db.from('movimientos_caja').insert([{
+          sesion_id: sesiones[0].id,
+          tipo: 'ingreso',
+          categoria: 'Alquiler Cancha',
+          monto: totalAbono,
+          descripcion: `Abono Mensual: ${cliente} (${fechas} fechas)`
+        }]);
+      } else {
+        App.toast("⚠️ Abono registrado, pero la Caja está cerrada.", "error");
+      }
+
       App.toast(`🎉 ¡GOLAZO DE MEDIA CANCHA! Abono de ${cliente} registrado (${fechas} fechas)`, 'success');
       this.closeAbonoModal();
       await this.load(this._sucursal);

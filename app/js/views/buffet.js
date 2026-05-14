@@ -285,6 +285,34 @@ const BuffetView = {
       }
       
       const total = this.cart.reduce((sum, item) => sum + item.precio_venta * item.qty, 0);
+      
+      // Intentar registrar el ingreso en la Caja Diaria (si hay una abierta)
+      try {
+        const { data: sesiones } = await db
+          .from('sesiones_caja')
+          .select('id')
+          .eq('sucursal', this.sucursal)
+          .eq('estado', 'abierta')
+          .order('fecha_apertura', { ascending: false })
+          .limit(1);
+
+        if (sesiones && sesiones.length > 0) {
+          const desc = this.cart.map(c => `${c.qty}x ${c.item}`).join(', ');
+          await db.from('movimientos_caja').insert([{
+            sesion_id: sesiones[0].id,
+            tipo: 'ingreso',
+            categoria: 'Venta Buffet',
+            monto: total,
+            descripcion: `Venta Buffet: ${desc}`
+          }]);
+        } else {
+          console.warn("No hay caja abierta. La venta no se registró en el Libro Diario.");
+          App.toast("⚠️ Venta realizada, pero la Caja está cerrada. Abrí la caja para futuros registros.", "error");
+        }
+      } catch (errCaja) {
+        console.error("Error registrando en caja:", errCaja);
+      }
+
       App.toast(`✅ Venta registrada: ${fmt.money(total)}`, 'success');
       
       // Reload stock from DB and clear cart
