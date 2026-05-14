@@ -363,7 +363,6 @@ const CajaView = {
 
       document.getElementById('modalOverlay').classList.remove('open');
       App.toast(`Turno cerrado. Diferencia: $${diferencia}`, diferencia < 0 ? 'error' : 'success');
-      this.loadCajaState(this.sesionActiva.sucursal);
 
       // Notificamos a Nico Agent si hubo diferencia negativa
       if (diferencia < 0) {
@@ -379,9 +378,109 @@ const CajaView = {
         }
       }
 
+      // Generar Reporte de Cierre y Opciones de Envío
+      this.mostrarReporteCierre(esperado, real, diferencia);
+
+      // Limpiar y recargar estado de caja (para ocultar el turno actual en el fondo)
+      this.loadCajaState(this.sesionActiva.sucursal);
+
     } catch (err) {
       console.error(err);
       App.toast('Error al cerrar la caja.', 'error');
     }
+  },
+
+  mostrarReporteCierre(esperado, real, diferencia) {
+    const inicial = parseFloat(this.sesionActiva.monto_inicial || 0);
+    
+    // Categorizar ingresos/egresos para un reporte más profesional
+    let catIngresos = {};
+    let catEgresos = {};
+    let totalIngresos = 0;
+    let totalEgresos = 0;
+
+    this.movimientos.forEach(m => {
+      const mnt = parseFloat(m.monto);
+      if(m.tipo === 'ingreso') {
+        totalIngresos += mnt;
+        catIngresos[m.categoria] = (catIngresos[m.categoria] || 0) + mnt;
+      } else {
+        totalEgresos += mnt;
+        catEgresos[m.categoria] = (catEgresos[m.categoria] || 0) + mnt;
+      }
+    });
+
+    const usr = JSON.parse(localStorage.getItem('sportplex_user')) || {};
+    const nombreEmpl = usr.nombre || 'Empleado';
+
+    const fecha = new Date().toLocaleDateString('es-AR');
+    const hora = new Date().toLocaleTimeString('es-AR', {hour: '2-digit', minute:'2-digit'});
+
+    let desgloseIngresos = Object.keys(catIngresos).map(k => `  • ${k}: $${catIngresos[k].toLocaleString()}`).join('\\n');
+    if(!desgloseIngresos) desgloseIngresos = "  No hubo ingresos.";
+
+    let desgloseEgresos = Object.keys(catEgresos).map(k => `  • ${k}: $${catEgresos[k].toLocaleString()}`).join('\\n');
+    if(!desgloseEgresos) desgloseEgresos = "  No hubo egresos.";
+
+    const difTexto = diferencia === 0 ? '✅ CAJA PERFECTA ($0)' : (diferencia > 0 ? `🤑 SOBRANTE: $${diferencia.toLocaleString()}` : `⚠️ FALTANTE: -$${Math.abs(diferencia).toLocaleString()}`);
+
+    const reporteTexto = `🏟️ *CIERRE DE CAJA - SPORTPLEX ${this.sesionActiva.sucursal.toUpperCase()}* 🏟️
+📅 Fecha: ${fecha} | ⏰ Hora: ${hora}
+👤 Responsable: ${nombreEmpl.toUpperCase()}
+
+*RESUMEN FINANCIERO:*
+💵 Fondo Inicial: $${inicial.toLocaleString()}
+🟢 Ingresos: +$${totalIngresos.toLocaleString()}
+🔴 Egresos: -$${totalEgresos.toLocaleString()}
+
+*ARQUEO FÍSICO:*
+🧾 Sistema Esperaba: $${esperado.toLocaleString()}
+💰 Efectivo Contado: $${real.toLocaleString()}
+${difTexto}
+
+*DESGLOSE DE INGRESOS:*
+${desgloseIngresos}
+
+*DESGLOSE DE EGRESOS:*
+${desgloseEgresos}
+
+_Generado automáticamente por CanchaOS_`;
+
+    const encodedReport = encodeURIComponent(reporteTexto);
+    // Cambiar por los números o correos reales de los dueños
+    const waLink = `https://wa.me/?text=${encodedReport}`;
+    const mailLink = `mailto:admin@sportplex.com?subject=Cierre%20Caja%20${this.sesionActiva.sucursal}%20${fecha}&body=${encodedReport}`;
+
+    const overlay = document.getElementById('modalOverlay');
+    const body = document.getElementById('modalBody');
+    
+    document.querySelector('#modalReserva h2').innerHTML = '<span class="material-symbols-outlined text-[#c3f400]">receipt_long</span> Reporte de Cierre Generado';
+    
+    body.innerHTML = `
+      <div class="bg-surface-container rounded-xl text-center flex flex-col">
+        <p class="text-slate-300 mb-4 text-sm">El turno se cerró correctamente. Aquí tenés el reporte resumido listo para enviar a administración.</p>
+        
+        <div class="bg-[#111319] p-4 rounded-lg border border-surface-container-highest text-left mb-6 overflow-y-auto max-h-[300px]">
+          <pre class="text-xs text-slate-400 font-mono whitespace-pre-wrap">${reporteTexto.replace(/\\n/g, '<br>')}</pre>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href="${waLink}" target="_blank" class="flex-1 py-3.5 rounded-lg font-bold bg-[#25D366] text-white hover:bg-[#1ebe57] transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#25D366]/20">
+            <span class="material-symbols-outlined">chat</span>
+            Enviar por WhatsApp
+          </a>
+          <a href="${mailLink}" target="_blank" class="flex-1 py-3.5 rounded-lg font-bold bg-surface-container-highest text-white hover:bg-surface-bright transition-all flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">mail</span>
+            Enviar por Email
+          </a>
+        </div>
+        
+        <button onclick="document.getElementById('modalOverlay').classList.remove('open')" class="mt-4 w-full py-3 rounded-lg font-bold border border-surface-container-highest text-slate-400 hover:text-white transition-all">
+          Cerrar
+        </button>
+      </div>
+    `;
+
+    overlay.classList.add('open');
   }
 };
