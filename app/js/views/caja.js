@@ -5,7 +5,7 @@ const CajaView = {
 
   async render(sucursal) {
     const container = document.getElementById('viewContainer');
-    const role = (JSON.parse(localStorage.getItem('sportplex_user')) || {}).rol || 'empleado';
+    const role = (JSON.parse(localStorage.getItem('canchaos_user')) || {}).rol || 'empleado';
     
     // UI Layout principal
     container.innerHTML = `
@@ -425,7 +425,7 @@ const CajaView = {
       }
     });
 
-    const usr = JSON.parse(localStorage.getItem('sportplex_user')) || {};
+    const usr = JSON.parse(localStorage.getItem('canchaos_user')) || {};
     const nombreEmpl = usr.nombre || 'Empleado';
 
     const fecha = new Date().toLocaleDateString('es-AR');
@@ -439,7 +439,7 @@ const CajaView = {
 
     const difTexto = diferencia === 0 ? '✅ CAJA PERFECTA ($0)' : (diferencia > 0 ? `🤑 SOBRANTE: $${diferencia.toLocaleString()}` : `⚠️ FALTANTE: -$${Math.abs(diferencia).toLocaleString()}`);
 
-    const reporteTexto = `🏟️ *CIERRE DE CAJA - SPORTPLEX ${this.sesionActiva.sucursal.toUpperCase()}* 🏟️
+    const reporteTexto = `🏟️ *CIERRE DE CAJA - CANCHAOS ${this.sesionActiva.sucursal.toUpperCase()}* 🏟️
 📅 Fecha: ${fecha} | ⏰ Hora: ${hora}
 👤 Responsable: ${nombreEmpl.toUpperCase()}
 
@@ -464,7 +464,7 @@ _Generado automáticamente por CanchaOS_`;
     const encodedReport = encodeURIComponent(reporteTexto);
     // Cambiar por los números o correos reales de los dueños
     const waLink = `https://wa.me/?text=${encodedReport}`;
-    const mailLink = `mailto:admin@sportplex.com?subject=Cierre%20Caja%20${this.sesionActiva.sucursal}%20${fecha}&body=${encodedReport}`;
+    const mailLink = `mailto:admin@canchaos.com?subject=Cierre%20Caja%20${this.sesionActiva.sucursal}%20${fecha}&body=${encodedReport}`;
 
     const overlay = document.getElementById('modalOverlay');
     const body = document.getElementById('modalBody');

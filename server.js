@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Server } = require("@modelcontextprotocol/sdk/server/index.js");
 const { StdioServerTransport } = require("@modelcontextprotocol/sdk/server/stdio.js");
 const { CallToolRequestSchema, ListToolsRequestSchema } = require("@modelcontextprotocol/sdk/types.js");
@@ -5,9 +6,9 @@ const { createClient } = require("@supabase/supabase-js");
 const { MercadoPagoConfig, Preference } = require('mercadopago');
 
 // 1. CONFIGURACIÓN CENTRAL
-const supabase = createClient('https://vcwqhxuyngqcnpptirtb.supabase.co', 'sb_publishable_KC_PbsOU5-S20oOOMZW-SQ_OsAZeeNl');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 const client = new MercadoPagoConfig({ 
-  accessToken: 'APP_USR-5221439410750753-050922-39aa72f43a055cd28b86996cc019b9ab-3390919754' 
+  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN
 });
 
 const server = new Server(
@@ -169,7 +170,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       await supabase.from('stock').update({ cantidad: prod.cantidad - args.cantidad }).eq('id', prod.id);
       const total = (prod.precio_venta || 0) * args.cantidad;
-      await supabase.from('gastos').insert([{ sucursal: args.sucursal_id, concepto: `Venta Buffet: ${prod.item} x${args.cantidad}`, monto: -total }]);
+      await supabase.from('movimientos').insert([{ sucursal: args.sucursal_id, tipo: 'ingreso', categoria: 'Venta Buffet', concepto: `Venta Buffet: ${prod.item} x${args.cantidad}`, monto: total }]);
 
       return { content: [{ type: "text", text: `✅ ¡GOL! Vendido: ${prod.item} x${args.cantidad}. Total: $${total}.` }] };
     }
@@ -212,11 +213,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       let totalNeto = 0;
 
       for (const suc of sucursales) {
-        const { data: gastos } = await supabase.from('gastos').select('*').ilike('sucursal', `%${suc}%`).gte('created_at', fecha);
+        const { data: movs } = await supabase.from('movimientos').select('*').ilike('sucursal', `%${suc}%`).gte('created_at', fecha);
         const { data: turnos } = await supabase.from('turnos').select('*, canchas(sucursal_id)').eq('fecha', fecha).eq('reservado', true);
         const turnosSuc = (turnos || []).filter(t => t.canchas?.sucursal_id?.toLowerCase().includes(suc));
-        const ingresos = (gastos || []).filter(g => g.monto < 0).reduce((s, g) => s + Math.abs(g.monto), 0);
-        const egresos  = (gastos || []).filter(g => g.monto > 0).reduce((s, g) => s + g.monto, 0);
+        const ingresos = (movs || []).filter(m => m.tipo === 'ingreso').reduce((s, m) => s + m.monto, 0);
+        const egresos  = (movs || []).filter(m => m.tipo === 'egreso').reduce((s, m) => s + m.monto, 0);
         const neto = ingresos - egresos;
         totalNeto += neto;
         reporte += `\n🏟️ ${suc.toUpperCase()}\n  💰 Ingresos: $${ingresos.toLocaleString('es-AR')}\n  💸 Egresos:  $${egresos.toLocaleString('es-AR')}\n  💵 Neto:     $${neto.toLocaleString('es-AR')}\n  🏟️ Reservas: ${turnosSuc.length}\n`;

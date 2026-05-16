@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/:match*",
+      "destination": "/serve-app.js"
+    },
+    {
+      "source": "/create-preference",
+      "destination": "/serve-app.js"
+    },
+    {
+      "source": "/((?!api/|create-preference).*\\..*)",
+      "destination": "/app/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/app/index.html"
+    }
+  ]
+}

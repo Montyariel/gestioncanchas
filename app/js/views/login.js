@@ -1,7 +1,15 @@
 // ===== VISTA: LOGIN =====
 const LoginView = {
   async render() {
-    // Escondemos el sidebar y topbar si estamos en el login
+    const { data: { session } } = await db.auth.getSession().catch(() => ({ data: { session: null } }));
+    if (session?.user) {
+      const userData = await LoginView._cargarUsuario(session.user.id);
+      if (userData) {
+        LoginView._iniciarSesion(userData);
+        return;
+      }
+    }
+
     const sidebar = document.getElementById('sidebar');
     const topbar = document.getElementById('topbar');
     const mainContent = document.getElementById('mainContent');
@@ -20,7 +28,6 @@ const LoginView = {
       <div class="min-h-screen w-full flex items-center justify-center p-4" style="background-color: var(--surface);">
         <div class="bg-surface-container rounded-2xl border border-surface-container-highest p-8 max-w-md w-full shadow-2xl relative overflow-hidden">
           
-          <!-- Elementos decorativos -->
           <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#c3f400]/10 rounded-full blur-3xl pointer-events-none"></div>
           <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -28,16 +35,18 @@ const LoginView = {
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-surface-container-high border border-surface-container-highest mb-4 shadow-lg">
               <span class="material-symbols-outlined text-4xl text-[#c3f400]">sports_tennis</span>
             </div>
-            <h1 class="text-3xl font-black text-on-surface tracking-tight">Sport<span class="text-[#c3f400]">Plex</span></h1>
+            <h1 class="text-3xl font-black text-on-surface tracking-tight">Cancha<span class="text-[#c3f400]">OS</span></h1>
             <p class="text-on-surface-variant mt-2 text-sm font-medium">Acceso seguro al sistema</p>
           </div>
+
+          <div id="loginError" class="hidden mb-4 p-3 rounded-lg text-sm font-medium" style="background:rgba(255,180,171,.15);color:#ffb4ab;border:1px solid rgba(255,180,171,.3)"></div>
 
           <div class="space-y-5 relative z-10">
             <div>
               <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Correo Electrónico</label>
               <div class="relative">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" style="font-size: 20px;">mail</span>
-                <input id="loginEmail" type="email" placeholder="admin@sportplex.com" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg pl-10 pr-4 py-3 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
+                <input id="loginEmail" type="email" placeholder="admin@canchaos.com" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg pl-10 pr-4 py-3 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
               </div>
             </div>
             <div>
@@ -48,11 +57,10 @@ const LoginView = {
               </div>
             </div>
 
-            <!-- MOCK DE ROLES PARA DESARROLLO -->
             <div class="pt-2 border-t border-surface-container-highest mt-6">
               <label class="block text-xs font-bold text-[#c3f400] uppercase tracking-wider mb-2 flex items-center gap-1">
                 <span class="material-symbols-outlined" style="font-size: 14px;">developer_mode</span>
-                Simulador de Rol (Desarrollo)
+                Modo desarrollo (sin auth real)
               </label>
               <select id="loginRoleMock" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors cursor-pointer outline-none">
                 <option value="dueño">👑 Dueño (Acceso Total)</option>
@@ -65,56 +73,99 @@ const LoginView = {
               Ingresar al Sistema
               <span class="material-symbols-outlined" style="font-size: 20px;">login</span>
             </button>
+
+            <div class="text-center pt-2">
+              <button onclick="LoginView.loginReal()" class="text-xs text-slate-500 hover:text-[#c3f400] transition-colors underline underline-offset-2">
+                ¿Ya tenés cuenta? Usar autenticación real →
+              </button>
+            </div>
           </div>
         </div>
       </div>
     `;
   },
 
+  async loginReal() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorEl = document.getElementById('loginError');
+
+    if (!email || !password) {
+      LoginView._mostrarError('Completá email y contraseña');
+      return;
+    }
+
+    try {
+      const { data, error } = await db.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      const userData = await LoginView._cargarUsuario(data.user.id);
+      if (!userData) {
+        await db.from('perfiles').insert([{
+          id: data.user.id,
+          nombre: email.split('@')[0],
+          rol: 'empleado',
+          sucursal: 'ambas'
+        }]);
+        const { data: nuevo } = await db.from('perfiles').select('*').eq('id', data.user.id).single();
+        if (nuevo) LoginView._iniciarSesion(nuevo);
+        return;
+      }
+
+      LoginView._iniciarSesion(userData);
+    } catch (e) {
+      LoginView._mostrarError('Error: ' + e.message);
+    }
+  },
+
+  async _cargarUsuario(userId) {
+    try {
+      const { data } = await db.from('perfiles').select('*').eq('id', userId).maybeSingle();
+      return data;
+    } catch { return null; }
+  },
+
+  _mostrarError(msg) {
+    const el = document.getElementById('loginError');
+    if (el) { el.textContent = msg; el.classList.remove('hidden'); }
+  },
+
   login() {
     const email = document.getElementById('loginEmail').value;
     const rol = document.getElementById('loginRoleMock').value;
     
-    // Guardamos la sesión (mock temporal)
-    localStorage.setItem('sportplex_user', JSON.stringify({ 
-      email: email || 'admin@sportplex.com', 
+    localStorage.setItem('canchaos_user', JSON.stringify({ 
+      email: email || 'admin@canchaos.com', 
       rol: rol,
       nombre: email ? email.split('@')[0] : 'Administrador'
     }));
     
+    const userData = { email: email || 'admin@canchaos.com', rol, nombre: email ? email.split('@')[0] : 'Administrador' };
+    LoginView._iniciarSesion(userData);
+  },
+
+  _iniciarSesion(userData) {
+    const rol = userData.rol || 'empleado';
     App.toast(`¡Bienvenido! Rol activo: ${rol.toUpperCase()}`, 'success');
 
-    // Restaurar UI
     const sidebar = document.getElementById('sidebar');
     const topbar = document.getElementById('topbar');
     const mainContent = document.getElementById('mainContent');
     
-    if (sidebar) {
-      sidebar.classList.remove('hidden', 'lg:hidden');
-    }
+    if (sidebar) sidebar.classList.remove('hidden', 'lg:hidden');
     if (topbar) topbar.classList.remove('hidden');
     
     if (mainContent) {
       mainContent.classList.remove('ml-0', 'pt-0');
       mainContent.classList.add('pt-20');
-      // En desktop, devolvemos el margen
-      if (window.innerWidth >= 1024) {
-        mainContent.classList.add('lg:ml-64');
-      }
+      if (window.innerWidth >= 1024) mainContent.classList.add('lg:ml-64');
     }
 
-    // Actualizar nombre en la UI
     const userNameEl = document.getElementById('userNameDisplay');
-    if (userNameEl) {
-      const u = JSON.parse(localStorage.getItem('sportplex_user'));
-      userNameEl.textContent = u.nombre;
-    }
+    if (userNameEl) userNameEl.textContent = (userData.nombre || 'A').charAt(0).toUpperCase();
 
-    // Control de permisos visuales (ocultar tabs si es empleado, etc)
     LoginView.applyRoleRestrictions(rol);
-
-    // Redirección basada en roles y caja abierta (ahora centralizada en App)
-    App.redirectUserBasedOnRole({ rol: rol });
+    App.redirectUserBasedOnRole({ rol });
   },
 
   applyRoleRestrictions(rol) {
@@ -135,9 +186,10 @@ const LoginView = {
     });
   },
 
-  logout() {
-    localStorage.removeItem('sportplex_user');
-    localStorage.removeItem('sportplex_caja_abierta');
+  async logout() {
+    await db.auth.signOut().catch(() => {});
+    localStorage.removeItem('canchaos_user');
+    localStorage.removeItem('canchaos_caja_abierta');
     App.navigate('login');
   }
 };

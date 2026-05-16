@@ -27,13 +27,27 @@ const App = {
       const loader = document.getElementById('loader');
       if (loader) loader.classList.add('hidden');
     };
-    // Unconditional 3s failsafe
     setTimeout(hideLoader, 3000);
     try {
       this.bindEvents();
       this.startClock();
+      this.setupRealtimeListeners();
+      this.setupAuthListener();
       
-      const user = localStorage.getItem('sportplex_user');
+      const { data: { session } } = await db.auth.getSession().catch(() => ({ data: { session: null } }));
+      if (session?.user) {
+        const { data: userData } = await db.from('perfiles').select('*').eq('id', session.user.id).maybeSingle();
+        if (userData) {
+          const rol = userData.rol || 'empleado';
+          LoginView.applyRoleRestrictions(rol);
+          const userNameEl = document.getElementById('userNameDisplay');
+          if (userNameEl) userNameEl.textContent = (userData.nombre || 'A').charAt(0).toUpperCase();
+          await this.redirectUserBasedOnRole({ rol });
+          return;
+        }
+      }
+      
+      const user = localStorage.getItem('canchaos_user');
       if (!user) {
         await this.navigate('login');
       } else {
@@ -41,10 +55,8 @@ const App = {
         if (typeof LoginView !== 'undefined' && LoginView.applyRoleRestrictions) {
           LoginView.applyRoleRestrictions(u.rol);
           const userNameEl = document.getElementById('userNameDisplay');
-          if (userNameEl) userNameEl.textContent = u.nombre.charAt(0).toUpperCase();
+          if (userNameEl) userNameEl.textContent = (u.nombre || 'A').charAt(0).toUpperCase();
         }
-        
-        // Redirección basada en roles si ya estaba logueado
         await this.redirectUserBasedOnRole(u);
       }
     } catch(e) {
@@ -52,6 +64,15 @@ const App = {
     } finally {
       setTimeout(hideLoader, 800);
     }
+  },
+
+  setupAuthListener() {
+    db.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        localStorage.removeItem('canchaos_user');
+        this.navigate('login');
+      }
+    });
   },
 
   async redirectUserBasedOnRole(u) {
@@ -76,6 +97,54 @@ const App = {
       }
     } else {
       await this.navigate('dashboard');
+    }
+  },
+
+  // --- REALTIME LISTENERS ---
+  setupRealtimeListeners() {
+    console.log("🏟️ CanchaOS: Escuchando reservas en tiempo real...");
+    
+    db.channel('custom-insert-channel')
+      .on(
+        'postgres_changes', 
+        { event: 'INSERT', schema: 'public', table: 'reservas_web' },
+        (payload) => {
+          const nueva = payload.new;
+          console.log('🔔 Nueva reserva web detectada:', nueva);
+          
+          this.toast(`🔥 ¡NUEVA RESERVA WEB! ${nueva.cliente_nombre} reservó en ${nueva.sucursal_id.toUpperCase()}`, 'success');
+          this.playNotificationSound();
+
+          if (this.state.currentView === 'agenda' || this.state.currentView === 'reservas') {
+            this.navigate(this.state.currentView);
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log("🏟️ Estado de suscripción Realtime:", status);
+        if (status === 'CHANNEL_ERROR') {
+          console.error("❌ Error de Realtime: Probablemente falta habilitar la tabla en el Dashboard de Supabase.");
+        }
+      });
+  },
+
+  playNotificationSound() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // La
+      gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.2);
+    } catch (e) {
+      console.warn("No se pudo reproducir el sonido de notificación:", e);
     }
   },
 
@@ -220,13 +289,19 @@ const App = {
           <p style="font-size:20px;font-weight:800;color:#c3f400;margin-top:10px">Total: ${fmt.money(total)}</p>
           ${d.comboItems?.length ? `<p style="font-size:12px;color:#8e9379">Incluye combo buffet 🎉</p>` : ''}
         </div>
-        <div style="background:rgba(195,244,0,.06);border:1.5px dashed rgba(195,244,0,.3);border-radius:12px;padding:14px;text-align:center">
+        <div style="background:rgba(195,244,0,.06);border:1.5px dashed rgba(195,244,0,.3);border-radius:12px;padding:14px;text-align:center;margin-bottom:12px">
           <div style="font-weight:700;font-size:14px;margin-bottom:6px;color:#e2e2eb">💥 Oferta exclusiva</div>
           <div style="font-size:13px;color:#c4c9ac;margin-bottom:10px">
             Mirá crack, si pagás ahora te hago un <strong style="color:#c3f400">10% de descuento</strong>.<br>
             Total con descuento: <strong style="color:#c3f400">${fmt.money(Math.round(total * 0.9))}</strong>
           </div>
-          <button style="padding:8px 18px;border-radius:8px;background:#c3f400;color:#161e00;font-size:13px;font-weight:700;cursor:pointer" onclick="App.aplicarDescuento()">🔥 Aplicar 10% descuento</button>
+          <button style="padding:8px 18px;border-radius:8px;background:#c3f400;color:#161e00;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px" onclick="App.aplicarDescuento()">🔥 Aplicar 10% descuento</button>
+          
+          <div style="border-top:1px solid rgba(195,244,0,0.2);margin-top:10px;padding-top:10px">
+            <button id="modalMpBtn" style="padding:10px 20px;border-radius:10px;background:#009EE3;color:#white;font-size:13px;font-weight:800;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px" onclick="App.generarLinkModal(${total})">
+              <span class="material-symbols-outlined">payments</span> GENERAR LINK DE PAGO
+            </button>
+          </div>
         </div>
         <div style="display:flex;justify-content:flex-end;gap:10px;padding-top:4px">
           <button style="padding:10px 20px;border-radius:10px;border:1.5px solid #444933;background:transparent;color:#c4c9ac;font-size:14px;font-weight:600;cursor:pointer" onclick="App.closeModal()">Cerrar</button>
@@ -257,15 +332,12 @@ const App = {
     this._reservaData.clienteNombre = nombre;
     this._reservaData.clienteCumple = document.getElementById('clienteCumple')?.value || null;
     try {
-      await DB.reservarTurno(this._reservaData.turnoId, nombre);
-
-      // Descontar combo del stock si hay
-      for (const item of (this._reservaData.comboItems || [])) {
-        const stockItem = (DB._stockCache || []).find(s => s.id === item.id);
-        if (stockItem && stockItem.cantidad > 0) {
-          await DB.updateStock(item.id, stockItem.cantidad - 1);
-        }
-      }
+      await API.reservar(
+        this._reservaData.turnoId,
+        nombre,
+        this._reservaData.clienteCumple,
+        this._reservaData.comboItems
+      );
 
       this.renderModalStep(3);
       this.toast('¡Reserva confirmada! ⚽🔥', 'success');
@@ -278,8 +350,50 @@ const App = {
   },
 
   aplicarDescuento() {
+    this._reservaData.precioConDescuento = Math.round((this._reservaData.precio + (this._reservaData.comboItems || []).reduce((s,i)=>s+i.precio, 0)) * 0.9);
     this.toast('💥 ¡Descuento del 10% aplicado! ¡Volá a pagarlo que los turnos se agotan! 🔥⚽', 'success');
-    // Aquí se podría registrar el descuento en la BD
+    this.renderModalStep(3);
+  },
+
+  async generarLinkModal(total) {
+    const d = this._reservaData;
+    const finalTotal = d.precioConDescuento || total;
+    const btn = document.getElementById('modalMpBtn');
+    
+    try {
+      btn.innerHTML = `<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Generando...`;
+      btn.disabled = true;
+
+      const response = await fetch('/create-preference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `Reserva Cancha: ${d.canchaName} (${d.hora})`,
+          price: finalTotal,
+          quantity: 1
+        })
+      });
+      const data = await response.json();
+      
+      if (data.init_point) {
+        const link = data.init_point;
+        navigator.clipboard.writeText(link).then(() => {
+          this.toast('¡Link copiado! 📋 Pasaselo al cliente.', 'success');
+        });
+        
+        btn.innerHTML = `<span class="material-symbols-outlined">check</span> LINK GENERADO Y COPIADO`;
+        btn.style.background = '#2ed573';
+        
+        // Abrir en nueva pestaña
+        window.open(link, '_blank');
+      } else {
+        throw new Error('Error de Mercado Pago');
+      }
+    } catch (err) {
+      this.toast('Error: ' + err.message, 'error');
+      btn.disabled = false;
+      btn.innerHTML = `<span class="material-symbols-outlined">payments</span> REINTENTAR GENERAR`;
+    }
   },
 
   closeModal() {

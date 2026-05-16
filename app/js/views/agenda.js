@@ -11,14 +11,46 @@ const AgendaView = {
       style.id = 'agenda-styles';
       style.textContent = `
         .glass-panel {
-            background: rgba(25, 27, 34, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(20, 22, 28, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        }
+        .grass-texture {
+            background-color: #1a4731;
+            background-image: 
+                linear-gradient(90deg, transparent 50%, rgba(255,255,255,.03) 50%),
+                linear-gradient(rgba(255,255,255,.01) 50%, transparent 50%);
+            background-size: 40px 40px;
+            position: relative;
+        }
+        .grass-texture::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(46, 213, 115, 0.15) 0%, transparent 100%);
+            pointer-events: none;
         }
         .time-grid {
             display: grid;
             gap: 12px;
+        }
+        .reserved-badge {
+            background: #2ed573;
+            color: #000;
+            font-weight: 900;
+            font-size: 9px;
+            padding: 1px 6px;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        .animate-slide-in {
+          animation: slideIn 0.3s ease-out forwards;
         }
       `;
       document.head.appendChild(style);
@@ -58,7 +90,7 @@ const AgendaView = {
         </div>
 
         <!-- Right Canvas: Booking Details Sidebar (Bento Style) -->
-        <aside class="w-full lg:w-[340px] flex-shrink-0 flex flex-col gap-md hidden" id="agendaSidebar">
+        <aside class="w-full lg:w-[360px] flex-shrink-0 flex flex-col gap-md hidden overflow-y-auto pr-1" id="agendaSidebar">
           <!-- Populated dynamically when selecting a slot -->
         </aside>
       </div>
@@ -145,14 +177,15 @@ const AgendaView = {
                   
                   if (turno.reservado) {
                     return `
-                      <div class="h-24 rounded-lg bg-surface-container-high border-l-4 border-error p-sm flex flex-col cursor-pointer hover:bg-surface-container-highest transition-colors relative overflow-hidden group" onclick="AgendaView.showBookingDetails(${turno.id}, '${c.nombre}', '${hora}', '${turno.cliente_nombre || 'Sin Nombre'}', ${c.precio})">
-                        <div class="absolute inset-0 bg-gradient-to-br from-error/5 to-transparent pointer-events-none"></div>
+                      <div class="h-24 rounded-lg grass-texture border-l-4 border-primary p-sm flex flex-col cursor-pointer hover:brightness-110 transition-all relative overflow-hidden group shadow-lg" onclick="AgendaView.showBookingDetails(${turno.id}, '${c.nombre}', '${hora}', '${turno.cliente_nombre || 'Sin Nombre'}', ${c.precio})">
                         <div class="flex justify-between items-start mb-xs relative z-10">
-                          <span class="font-label-caps text-label-caps text-error bg-error/10 px-2 py-1 rounded">RESERVADO</span>
-                          <span class="font-label-caps text-label-caps text-on-surface-variant">${hora}</span>
+                          <span class="reserved-badge">RESERVADO</span>
+                          <span class="text-[10px] font-black text-white/50">${hora}</span>
                         </div>
-                        <h4 class="font-body-md font-medium text-on-surface relative z-10 truncate">${turno.cliente_nombre || 'Sin Nombre'}</h4>
-                        <button class="absolute bottom-2 right-2 text-xs bg-error/20 text-error px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-20" onclick="event.stopPropagation(); AgendaView.cancelar(${turno.id})">Cancelar</button>
+                        <h4 class="font-body-sm font-black text-white relative z-10 truncate drop-shadow-md uppercase tracking-tight">${turno.cliente_nombre || 'Sin Nombre'}</h4>
+                        <div class="absolute bottom-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span class="material-symbols-outlined text-white/30 text-sm">info</span>
+                        </div>
                       </div>
                     `;
                   } else {
@@ -181,46 +214,55 @@ const AgendaView = {
     
     sidebar.innerHTML = `
       <!-- Selected Slot Summary Card -->
-      <div class="glass-panel rounded-xl p-md shadow-2xl relative overflow-hidden group mt-4 lg:mt-0">
-        <div class="absolute -right-10 -top-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none group-hover:bg-primary/20 transition-colors duration-500"></div>
-        <div class="flex justify-between items-start mb-md relative z-10">
-          <div>
-            <h3 class="font-h3 text-h3 text-on-surface tracking-tight mb-xs">${canchaNombre}</h3>
-            <p class="font-label-caps text-label-caps text-error bg-error/10 px-2 py-1 rounded inline-block border border-error/20">RESERVADO</p>
-          </div>
-          <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-full">sports_soccer</span>
-        </div>
+      <div class="glass-panel rounded-2xl p-5 shadow-2xl relative overflow-hidden group mt-4 lg:mt-0 animate-slide-in h-fit">
+        <div class="absolute -right-10 -top-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
         
-        <div class="grid grid-cols-2 gap-sm mb-md relative z-10">
-          <div class="bg-surface-container-low p-sm rounded-lg border border-surface-container-high">
-            <span class="block font-label-caps text-label-caps text-on-surface-variant mb-1">DATE</span>
-            <span class="font-body-md font-medium text-on-surface">${this.currentDate.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}</span>
+        <div class="flex justify-between items-start mb-5 relative z-10">
+          <div class="max-w-[70%]">
+            <h3 class="text-xl font-black text-white tracking-tighter mb-1 italic uppercase leading-none">${canchaNombre}</h3>
+            <span class="reserved-badge">TURNO OCUPADO 🏟️</span>
           </div>
-          <div class="bg-surface-container-low p-sm rounded-lg border border-surface-container-high">
-            <span class="block font-label-caps text-label-caps text-on-surface-variant mb-1">TIME</span>
-            <span class="font-body-md font-medium text-on-surface">${hora}</span>
+          <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-2xl">stadium</span>
           </div>
         </div>
         
-        <div class="bg-surface-container-lowest rounded-xl p-md border border-surface-container-high mt-4 relative z-10">
-          <h4 class="font-body-lg text-body-lg font-semibold text-on-surface mb-2 flex items-center gap-xs">
-            <span class="material-symbols-outlined text-[20px] text-primary">person</span>
-            Customer Details
+        <div class="grid grid-cols-2 gap-3 mb-5 relative z-10">
+          <div class="bg-white/5 p-3 rounded-xl border border-white/10">
+            <span class="block text-[9px] font-black text-slate-500 uppercase mb-1">Fecha</span>
+            <span class="text-md font-bold text-white">${this.currentDate.toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}</span>
+          </div>
+          <div class="bg-white/5 p-3 rounded-xl border border-white/10">
+            <span class="block text-[9px] font-black text-slate-500 uppercase mb-1">Horario</span>
+            <span class="text-md font-bold text-white">${hora} HS</span>
+          </div>
+        </div>
+        
+        <div class="bg-primary/5 rounded-xl p-4 border border-primary/20 mb-5 relative z-10">
+          <h4 class="text-[9px] font-black text-primary uppercase mb-1 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[14px]">person</span>
+            DETALLES DEL CLIENTE
           </h4>
-          <p class="font-body-md text-on-surface-variant font-bold text-lg">${clienteNombre}</p>
+          <p class="text-xl font-black text-white truncate">${clienteNombre}</p>
         </div>
         
-        <div class="border-t border-outline-variant/30 pt-md mt-4 relative z-10 flex justify-between items-end">
+        <div class="flex justify-between items-center mb-6 px-1">
           <div>
-            <span class="block font-label-caps text-label-caps text-on-surface-variant mb-xs">COURT PRICE</span>
-            <span class="font-stat-number text-stat-number text-primary">${fmt.money(precio)}</span>
+            <span class="block text-[9px] font-black text-slate-500 uppercase">VALOR DEL TURNO</span>
+            <span class="text-2xl font-black text-primary">${fmt.money(precio)}</span>
           </div>
         </div>
 
-        <button onclick="AgendaView.cancelar(${turnoId})" class="w-full mt-6 bg-transparent border border-error text-error font-body-md font-semibold py-3 rounded-lg hover:bg-error/10 transition-colors flex justify-center items-center gap-xs">
-          <span class="material-symbols-outlined text-[20px]">cancel</span>
-          Cancelar Reserva
-        </button>
+        <div class="flex flex-col gap-2">
+            <button onclick="AgendaView.generarLink('${canchaNombre}', '${hora}', ${precio})" class="w-full bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 font-bold py-3 rounded-xl hover:bg-cyan-500 hover:text-dark transition-all flex justify-center items-center gap-2 text-sm">
+              <span class="material-symbols-outlined text-md">link</span>
+              GENERAR LINK MP
+            </button>
+            <button onclick="AgendaView.cancelar(${turnoId})" class="w-full bg-red-500/10 border border-red-500/40 text-red-500 font-bold py-3 rounded-xl hover:bg-red-500 hover:text-white transition-all flex justify-center items-center gap-2 text-sm">
+              <span class="material-symbols-outlined text-md">cancel</span>
+              CANCELAR TURNO
+            </button>
+        </div>
       </div>
     `;
   },
@@ -234,6 +276,35 @@ const AgendaView = {
       await this.loadAgenda(App.state.sucursal);
     } catch(e) {
       App.toast('Error: ' + e.message, 'error');
+    }
+  },
+
+  async generarLink(cancha, hora, precio) {
+    try {
+      App.toast('Generando link de pago...', 'info');
+      const response = await fetch('/create-preference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `Turno: ${cancha} (${hora})`,
+          price: precio || 5000,
+          quantity: 1
+        })
+      });
+      const data = await response.json();
+      
+      if (data.init_point) {
+        const link = data.init_point;
+        navigator.clipboard.writeText(link).then(() => {
+          App.toast('¡Link copiado! 📋', 'success');
+        });
+        const win = window.open(link, '_blank');
+        if (!win) prompt('Copiá el link, crack:', link);
+      } else {
+        throw new Error('Error en API de Mercado Pago');
+      }
+    } catch (err) {
+      App.toast('Error: ' + err.message, 'error');
     }
   }
 };

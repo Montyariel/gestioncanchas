@@ -295,16 +295,12 @@ const BuffetView = {
     if (btn) btn.innerHTML = `<span class="material-symbols-outlined animate-spin">refresh</span> Procesando...`;
 
     try {
-      // Create stock updates
-      for (const item of this.cart) {
-        const stockItem = this.stockItems.find(s => s.id === item.id);
-        if (stockItem) {
-          const newStock = stockItem.cantidad - item.qty;
-          await DB.updateStock(item.id, newStock);
-        }
-      }
-      
       const total = this.cart.reduce((sum, item) => sum + item.precio_venta * item.qty, 0);
+
+      // Usar API segura para cada producto
+      for (const item of this.cart) {
+        await API.ventaBuffet(this.sucursal, item.item, item.qty);
+      }
       
       // Intentar registrar el ingreso en la Caja Diaria (si hay una abierta)
       try {
@@ -337,7 +333,6 @@ const BuffetView = {
 
       App.toast(`✅ Venta registrada: ${fmt.money(total)}`, 'success');
       
-      // Reload stock from DB and clear cart
       this.cart = [];
       this.stockItems = await DB.getStock(this.sucursal);
       

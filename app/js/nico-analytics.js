@@ -145,22 +145,21 @@ const NicoAnalytics = {
     const desde = this._fechaHace(dias);
     const hasta = fmt.dateISO();
 
-    const { data: gastos } = await db
-      .from('gastos')
+    const { data: movs } = await db
+      .from('movimientos')
       .select('*')
       .ilike('sucursal', `%${sucursal}%`)
       .gte('created_at', `${desde}T00:00:00`)
       .order('created_at');
 
-    // Agrupar por día
     const porDia = {};
-    (gastos || []).forEach(g => {
-      const dia = g.created_at?.split('T')[0] || g.fecha || 'sin fecha';
+    (movs || []).forEach(m => {
+      const dia = m.created_at?.split('T')[0] || 'sin fecha';
       if (!porDia[dia]) porDia[dia] = { ingresos: 0, egresos: 0 };
-      if (g.monto < 0) {
-        porDia[dia].ingresos += Math.abs(g.monto);
+      if (m.tipo === 'ingreso') {
+        porDia[dia].ingresos += m.monto;
       } else {
-        porDia[dia].egresos += g.monto;
+        porDia[dia].egresos += m.monto;
       }
     });
 
@@ -324,17 +323,16 @@ const NicoAnalytics = {
     );
     const ingTurnos = turnosFilt.reduce((s, t) => s + (t.canchas?.precio || 0), 0);
 
-    // Ingresos del buffet (gastos negativos = ventas)
-    const { data: gastos } = await db
-      .from('gastos')
-      .select('monto, concepto')
+    const { data: movs } = await db
+      .from('movimientos')
+      .select('categoria, monto, concepto')
       .ilike('sucursal', `%${sucursal}%`)
-      .lt('monto', 0)
+      .eq('tipo', 'ingreso')
       .gte('created_at', `${desde}T00:00:00`);
 
-    const ingBuffet = (gastos || [])
-      .filter(g => (g.concepto || '').toLowerCase().includes('buffet'))
-      .reduce((s, g) => s + Math.abs(g.monto), 0);
+    const ingBuffet = (movs || [])
+      .filter(m => m.categoria === 'Venta Buffet')
+      .reduce((s, m) => s + m.monto, 0);
 
     const totalClientes = turnosFilt.length || 1;
 
@@ -366,13 +364,12 @@ const NicoAnalytics = {
 
     if (!stock?.length) return { estrellas: [], perros: [], normales: [] };
 
-    // Buscar historial de ventas en gastos
     const { data: ventas } = await db
-      .from('gastos')
+      .from('movimientos')
       .select('concepto, monto')
       .ilike('sucursal', `%${sucursal}%`)
-      .lt('monto', 0)
-      .ilike('concepto', '%Buffet%');
+      .eq('tipo', 'ingreso')
+      .eq('categoria', 'Venta Buffet');
 
     // Contar ventas por producto
     const ventasPorProd = {};

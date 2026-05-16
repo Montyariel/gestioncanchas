@@ -112,7 +112,12 @@ const ReservasView = {
                 <td class="py-4 px-6">${this.estadoBadge(r.estado_pago)}</td>
                 <td class="py-4 px-6 text-right">
                   <div class="flex gap-2 justify-end">
-                    ${r.estado_pago !== 'pagado' ? `<button onclick="ReservasView.marcarPagado(${r.id})" class="px-3 py-1.5 rounded-lg text-xs font-bold border border-[#c3f400] text-[#c3f400] hover:bg-[#c3f400] hover:text-[#161e00] transition-colors shadow-sm">✅ Pago</button>` : ''}
+                    ${r.estado_pago !== 'pagado' ? `
+                      <button onclick="ReservasView.marcarPagado(${r.id})" class="px-3 py-1.5 rounded-lg text-xs font-bold border border-[#c3f400] text-[#c3f400] hover:bg-[#c3f400] hover:text-[#161e00] transition-colors shadow-sm">✅ Pago</button>
+                      <button onclick="ReservasView.generarLink(${r.id})" class="px-3 py-1.5 rounded-lg text-xs font-bold border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-dark transition-colors shadow-sm flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">link</span> Link
+                      </button>
+                    ` : ''}
                     ${r.turno_id ? `<button onclick="ReservasView.cancelarReserva(${r.id}, ${r.turno_id})" class="p-1.5 rounded-lg text-slate-400 hover:text-[#ffb4ab] hover:bg-[#ffb4ab]/10 transition-colors" title="Cancelar Reserva"><span class="material-symbols-outlined" style="font-size:18px">close</span></button>` : ''}
                   </div>
                 </td>
@@ -186,6 +191,46 @@ const ReservasView = {
       App.toast('Reserva cancelada ✅', 'success');
       await this.load(this._sucursal);
     } catch(e) { App.toast('Error: ' + e.message, 'error'); }
+  },
+
+  async generarLink(reservaId) {
+    const reserva = this._allReservas.find(r => r.id === reservaId);
+    if (!reserva) return;
+    
+    try {
+      App.toast('Generando link de pago...', 'info');
+      const response = await fetch('/create-preference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `Turno: ${reserva.turno_cancha || 'Cancha'} (${reserva.turno_hora || ''})`,
+          price: reserva.precio || 5000,
+          quantity: 1
+        })
+      });
+      const data = await response.json();
+      
+      if (data.init_point) {
+        // Mostrar modal o alert con el link
+        const link = data.init_point;
+        
+        // Copiar al portapapeles
+        navigator.clipboard.writeText(link).then(() => {
+          App.toast('¡Link copiado al portapapeles! 📋', 'success');
+        });
+
+        // Opcional: mostrarlo en un prompt para asegurar
+        const win = window.open(link, '_blank');
+        if (!win) {
+           prompt('Copiá el link para enviárselo al cliente, crack:', link);
+        }
+      } else {
+        throw new Error('No se pudo generar el init_point');
+      }
+    } catch (err) {
+      console.error(err);
+      App.toast('Error con Mercado Pago: ' + err.message, 'error');
+    }
   },
 
   // ===== ABONO MENSUAL =====

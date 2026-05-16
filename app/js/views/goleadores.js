@@ -39,6 +39,7 @@ const GoleadoresView = {
     
     try {
       const goleadores = await DB.getGoleadores(sucursal);
+      const jugadores = await DB.getJugadores(sucursal);
       const el = document.getElementById('goleadoresContent');
 
       const vips = goleadores.filter(g => g.partidos >= 10);
@@ -46,7 +47,7 @@ const GoleadoresView = {
 
       el.innerHTML = `
         <!-- Stats Overview -->
-        <div class="col-span-1 lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4 shrink-0">
+        <div class="col-span-1 lg:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-4 shrink-0">
           <div class="glass-panel rounded-2xl p-6 relative overflow-hidden border border-outline-variant/30">
             <div class="absolute -right-6 -top-6 text-primary/10"><span class="material-symbols-outlined text-[100px]">groups</span></div>
             <p class="text-on-surface-variant text-sm font-bold tracking-wider mb-2 uppercase">Total Jugadores</p>
@@ -62,11 +63,16 @@ const GoleadoresView = {
             <p class="text-on-surface-variant text-sm font-bold tracking-wider mb-2 uppercase">Clientes VIP</p>
             <p class="text-4xl font-black text-secondary-fixed">${vips.length}</p>
           </div>
+          <div class="glass-panel rounded-2xl p-6 relative overflow-hidden border border-outline-variant/30 bg-primary/5">
+            <div class="absolute -right-6 -top-6 text-primary/10"><span class="material-symbols-outlined text-[100px]">database</span></div>
+            <p class="text-primary text-sm font-bold tracking-wider mb-2 uppercase">CRM Registrados</p>
+            <p class="text-4xl font-black text-on-surface">${jugadores.length}</p>
+          </div>
         </div>
 
         <!-- Leaderboard -->
         <div class="lg:col-span-2 glass-panel rounded-2xl border border-outline-variant/30 flex flex-col h-full overflow-hidden">
-          <div class="p-6 border-b border-outline-variant/30 bg-surface-container-low/50">
+          <div class="p-6 border-b border-outline-variant/30 bg-surface-container-low/50 flex justify-between items-center">
             <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
               <span class="material-symbols-outlined text-primary">leaderboard</span>
               Ranking General
@@ -88,7 +94,7 @@ const GoleadoresView = {
                   </div>
                   <div>
                     <h3 class="font-bold text-on-surface group-hover:text-primary transition-colors">${g.nombre}</h3>
-                    <p class="text-xs text-on-surface-variant mt-0.5">Última reserva: ${g.partidos > 0 ? 'Reciente' : 'Desconocida'}</p>
+                    <p class="text-xs text-on-surface-variant mt-0.5">Fidelidad: <span class="text-primary font-bold">${Math.min(g.partidos * 10, 100)}%</span></p>
                   </div>
                 </div>
                 <div class="text-right">
@@ -101,35 +107,39 @@ const GoleadoresView = {
           </div>
         </div>
 
-        <!-- VIP Club -->
+        <!-- CRM / Base de Jugadores -->
         <div class="lg:col-span-1 glass-panel rounded-2xl border border-outline-variant/30 flex flex-col h-full overflow-hidden">
           <div class="p-6 border-b border-outline-variant/30 bg-surface-container-low/50">
             <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
-              <span class="material-symbols-outlined text-secondary-fixed">star</span>
-              Club VIP
+              <span class="material-symbols-outlined text-primary">contacts</span>
+              Base CRM (Convocatoria)
             </h2>
           </div>
           <div class="flex-1 overflow-y-auto p-4 space-y-3">
-            ${vips.length ? vips.map(g => `
-              <div class="bg-gradient-to-r from-surface-container to-surface-container-high p-4 rounded-xl border border-outline-variant/30 relative overflow-hidden">
-                <div class="absolute -right-2 -bottom-2 text-secondary-fixed/5"><span class="material-symbols-outlined text-[80px]">star</span></div>
-                <div class="relative z-10">
-                  <div class="flex justify-between items-start mb-2">
-                    <h3 class="font-bold text-secondary-fixed text-lg">${g.nombre}</h3>
-                    <span class="bg-secondary-fixed/20 text-secondary-fixed text-[10px] px-2 py-1 rounded font-bold uppercase tracking-wider">Premium</span>
-                  </div>
-                  <p class="text-sm text-on-surface-variant mb-4"><strong class="text-on-surface">${g.partidos}</strong> reservas completadas.</p>
-                  <button onclick="App.toast('Beneficio enviado a ${g.nombre}', 'success')" class="w-full py-2 bg-transparent border border-secondary-fixed text-secondary-fixed hover:bg-secondary-fixed/10 transition-colors rounded-lg text-sm font-bold flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-[18px]">card_giftcard</span>
-                    Dar Premio
+            ${jugadores.length ? jugadores.map(j => `
+              <div class="bg-surface-container-high/50 p-4 rounded-xl border border-outline-variant/30 group hover:border-primary/50 transition-all">
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="font-bold text-on-surface group-hover:text-primary">${j.nombre} ${j.apellido || ''}</h3>
+                  <span class="text-[10px] text-slate-500 font-bold">${j.fecha_nacimiento ? '🎂 ' + j.fecha_nacimiento.split('-').reverse().slice(0,2).join('/') : ''}</span>
+                </div>
+                <div class="flex items-center gap-2 mb-3">
+                   <span class="material-symbols-outlined text-[16px] text-primary">call</span>
+                   <span class="text-sm font-mono text-slate-300">${j.telefono || 'Sin WhatsApp'}</span>
+                </div>
+                <div class="flex gap-2">
+                  <a href="https://wa.me/${j.telefono}?text=Hola%20${j.nombre}!%20Te%20hablamos%20de%20CanchaOS..." target="_blank" 
+                     class="flex-1 py-1.5 bg-primary/20 text-primary border border-primary/30 rounded-lg text-[11px] font-bold text-center hover:bg-primary hover:text-dark transition-all">
+                    CONVOCAR ⚽
+                  </a>
+                  <button onclick="App.toast('Perfil de ${j.nombre} actualizado', 'info')" class="px-2 border border-outline-variant rounded-lg">
+                    <span class="material-symbols-outlined text-[16px]">edit</span>
                   </button>
                 </div>
               </div>
             `).join('') : `
-              <div class="p-8 text-center">
-                <span class="material-symbols-outlined text-4xl text-on-surface-variant mb-3">military_tech</span>
-                <p class="text-on-surface text-sm font-medium mb-1">Aún no hay VIPs</p>
-                <p class="text-xs text-on-surface-variant">Llegan a VIP con 10 partidos.</p>
+              <div class="p-8 text-center text-on-surface-variant">
+                <p>Nadie se unió al Club aún.</p>
+                <p class="text-[10px] mt-2">Los jugadores aparecerán aquí cuando completen su ficha en el celu.</p>
               </div>
             `}
           </div>

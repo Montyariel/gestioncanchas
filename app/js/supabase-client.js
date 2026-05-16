@@ -24,6 +24,17 @@ const DB = {
     return (data || []).filter(t => t.canchas);
   },
 
+  async getDisponibilidadWeb(sucursal, fecha) {
+    const { data, error } = await db
+      .from('turnos').select('*, canchas(nombre, precio, sucursal_id, tipo)')
+      .ilike('canchas.sucursal_id', `%${sucursal}%`)
+      .eq('fecha', fecha)
+      .eq('reservado', false)
+      .order('hora');
+    if (error) throw error;
+    return (data || []).filter(t => t.canchas);
+  },
+
   async getTurnosByCancha(canchaId, fecha) {
     const { data, error } = await db.from('turnos').select('*')
       .eq('cancha_id', canchaId).eq('fecha', fecha).order('hora');
@@ -36,6 +47,24 @@ const DB = {
       .update({ reservado: true, cliente_nombre: clienteNombre })
       .eq('id', turnoId);
     if (error) throw error;
+  },
+
+  async reservarDesdeWeb({ turnoId, clienteNombre, sucursalId, montoSena = 0 }) {
+    // 1. Marcar el turno como reservado
+    await this.reservarTurno(turnoId, clienteNombre);
+    
+    // 2. Insertar en reservas_web para tracking
+    const { error } = await db.from('reservas_web').insert([{
+      turno_id: turnoId,
+      cliente_nombre: clienteNombre,
+      sucursal_id: sucursalId,
+      monto_seña: montoSena,
+      estado_pago: montoSena > 0 ? 'señado' : 'pendiente'
+    }]);
+    
+    if (error) {
+      console.warn("No se pudo registrar en reservas_web, pero el turno quedó reservado:", error);
+    }
   },
 
   async cancelarTurno(turnoId) {
@@ -159,19 +188,30 @@ const DB = {
     if (error) throw error;
   },
 
-  // --- GASTOS ---
-  async getGastos(sucursal) {
-    const { data, error } = await db.from('gastos').select('*')
+  // --- MOVIMIENTOS (reemplaza a gastos) ---
+  async getMovimientos(sucursal) {
+    const { data, error } = await db.from('movimientos').select('*')
       .ilike('sucursal', `%${sucursal}%`)
       .order('created_at', { ascending: false }).limit(50);
     if (error) throw error;
     return data || [];
   },
 
-  async addGasto(sucursal, concepto, monto) {
-    const { error } = await db.from('gastos')
-      .insert([{ sucursal, concepto, monto }]);
+  async addMovimiento(sucursal, tipo, categoria, concepto, monto, ref) {
+    const payload = { sucursal, tipo, categoria, concepto, monto };
+    if (ref) { payload.referencia_tipo = ref.tipo; payload.referencia_id = ref.id; }
+    const { error } = await db.from('movimientos').insert([payload]);
     if (error) throw error;
+  },
+
+  // Mantener compatibilidad con código legacy
+  async getGastos(sucursal) {
+    return this.getMovimientos(sucursal);
+  },
+
+  async addGasto(sucursal, concepto, monto) {
+    const tipo = monto < 0 ? 'ingreso' : 'egreso';
+    return this.addMovimiento(sucursal, tipo, 'General', concepto, Math.abs(monto));
   },
 
   // --- CLIENTES / GOLEADORES ---
@@ -189,6 +229,13 @@ const DB = {
       .map(([nombre, partidos]) => ({ nombre, partidos }))
       .sort((a, b) => b.partidos - a.partidos)
       .slice(0, 20);
+  },
+
+  async getJugadores(sucursal) {
+    const { data, error } = await db.from('jugadores').select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
   },
 
   // --- MÉTRICAS DASHBOARD ---
@@ -215,6 +262,57 @@ const DB = {
     const stockAlertas = stock.filter(s => s.cantidad < 5).length;
 
     return { canchas: canchas.length, libres, ocupados, ocupacion, ingresos, egresos, stockAlertas, stock };
+  },
+
+  // --- CRM JUGADORES ---
+  async registrarJugador(datos) {
+    const { error } = await db.from('jugadores').upsert([datos], { onConflict: 'telefono' });
+    if (error) throw error;
+    return true;
+  }
+};
+
+// ===== API CLIENT (llamadas seguras al backend) =====
+const API = {
+  async _headers() {
+    const { data: { session } } = await db.auth.getSession();
+    return {
+      'Content-Type': 'application/json',
+      ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {})
+    };
+  },
+
+  async reservar(turnoId, clienteNombre, cumpleanios, comboItems) {
+    const r = await fetch('/api/reservar', {
+      method: 'POST',
+      headers: await this._headers(),
+      body: JSON.stringify({ turno_id: turnoId, cliente_nombre: clienteNombre, cumpleanios, combo_items: comboItems || [] })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Error al reservar');
+    return data;
+  },
+
+  async ventaBuffet(sucursalId, item, cantidad) {
+    const r = await fetch('/api/venta-buffet', {
+      method: 'POST',
+      headers: await this._headers(),
+      body: JSON.stringify({ sucursal_id: sucursalId, item, cantidad })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Error en venta');
+    return data;
+  },
+
+  async registrarGasto(sucursal, concepto, monto) {
+    const r = await fetch('/api/gasto', {
+      method: 'POST',
+      headers: await this._headers(),
+      body: JSON.stringify({ sucursal, concepto, monto })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Error al registrar gasto');
+    return data;
   }
 };
 
