@@ -1,11 +1,10 @@
 // ===== SUPABASE CLIENT =====
-import { createClient } from '@supabase/supabase-js';
 const SUPABASE_URL = 'https://vcwqhxuyngqcnpptirtb.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_KC_PbsOU5-S20oOOMZW-SQ_OsAZeeNl';
-export const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ===== DATA LAYER =====
-export const DB = {
+const DB = {
 
   // --- CANCHAS ---
   async getCanchas(sucursal) {
@@ -274,7 +273,7 @@ export const DB = {
 };
 
 // ===== API CLIENT (llamadas seguras al backend) =====
-export const API = {
+const API = {
   async _headers() {
     const { data: { session } } = await db.auth.getSession();
     return {
@@ -318,7 +317,7 @@ export const API = {
 };
 
 // Utils globales
-export const fmt = {
+const fmt = {
   money: (n) => '$' + (n || 0).toLocaleString('es-AR'),
   date: (d) => new Date(d).toLocaleDateString('es-AR'),
   dateISO: (d) => (d || new Date()).toISOString().split('T')[0]
