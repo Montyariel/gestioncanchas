@@ -40,7 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ? 'bg-lime-400 text-[#161e00] rounded-tr-sm font-medium'
         : 'bg-slate-800 text-slate-200 rounded-tl-sm'
     }`;
-    bubble.innerHTML = html;
+    if (isUser) {
+      bubble.textContent = html;
+    } else {
+      bubble.innerHTML = html;
+    }
     wrap.appendChild(bubble);
     messages.appendChild(wrap);
     messages.scrollTop = messages.scrollHeight;

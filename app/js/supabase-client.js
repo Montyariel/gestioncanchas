@@ -1,10 +1,11 @@
 // ===== SUPABASE CLIENT =====
+import { createClient } from '@supabase/supabase-js';
 const SUPABASE_URL = 'https://vcwqhxuyngqcnpptirtb.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_KC_PbsOU5-S20oOOMZW-SQ_OsAZeeNl';
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+export const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ===== DATA LAYER =====
-const DB = {
+export const DB = {
 
   // --- CANCHAS ---
   async getCanchas(sucursal) {
@@ -169,7 +170,7 @@ const DB = {
   },
 
   // Cache de stock para el modal de combo
-  _stockCache: [],
+  _stockCache: _stockCache,
 
   // --- STOCK ---
   async getStock(sucursal) {
@@ -273,7 +274,7 @@ const DB = {
 };
 
 // ===== API CLIENT (llamadas seguras al backend) =====
-const API = {
+export const API = {
   async _headers() {
     const { data: { session } } = await db.auth.getSession();
     return {
@@ -317,8 +318,14 @@ const API = {
 };
 
 // Utils globales
-const fmt = {
+export const fmt = {
   money: (n) => '$' + (n || 0).toLocaleString('es-AR'),
   date: (d) => new Date(d).toLocaleDateString('es-AR'),
   dateISO: (d) => (d || new Date()).toISOString().split('T')[0]
 };
+
+// Exponer en window para compatibilidad con inline onclick
+window.db = db;
+window.DB = DB;
+window.fmt = fmt;
+window.API = API;

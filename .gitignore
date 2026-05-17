@@ -4,3 +4,4 @@ ngrok.exe
 scratch/
 .vscode/
 *.sql
+dist/

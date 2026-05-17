@@ -263,10 +263,7 @@ const CajaView = {
       return;
     }
 
-    const sucursal = document.querySelector('.bg-lime-400\\/20') ? 'lanus' : 'belgrano'; 
-    // Hack para la sucursal activa, o se la pasamos en la navegación
-    const btnActivo = document.querySelector('#sidebar [data-sucursal].border-lime-400');
-    const sucDefinitiva = btnActivo ? btnActivo.dataset.sucursal : 'lanus';
+    const sucDefinitiva = App?.state?.sucursal || 'lanus';
 
     try {
       const { data, error } = await db

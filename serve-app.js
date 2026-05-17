@@ -10,7 +10,17 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 
 app.use(helmet({
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://cdn.tailwindcss.com", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
+      imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://*.supabase.co"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
+      connectSrc: ["'self'", "https://*.supabase.co", "https://api.mercadopago.com"],
+      frameSrc: ["'self'", "https://www.mercadopago.com.ar"]
+    }
+  },
   crossOriginEmbedderPolicy: false
 }));
 
@@ -20,9 +30,16 @@ const apiLimiter = rateLimit({
   message: { error: 'Demasiadas solicitudes. Esperá un minuto.' }
 });
 
+const preferenceLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: { error: 'Demasiados intentos de pago. Esperá un minuto.' }
+});
+
 app.use('/api/', apiLimiter);
+app.use('/create-preference', preferenceLimiter);
 app.use(express.static(path.join(__dirname, 'app')));
-app.use(express.json());
+app.use(express.json({ limit: '100kb' }));
 
 const mpClient = new MercadoPagoConfig({ 
     accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN_SERVE
@@ -42,11 +59,11 @@ const preferenceSchema = z.object({
   quantity: z.number().int().positive().max(100)
 });
 
-app.post('/create-preference', async (req, res) => {
+app.post('/create-preference', authMiddleware, requireRole('dueño', 'encargado', 'empleado'), async (req, res) => {
   try {
     const parsed = preferenceSchema.parse(req.body);
     
-    const preference = new Preference(client);
+    const preference = new Preference(mpClient);
     const result = await preference.create({
       body: {
         items: [{
@@ -67,7 +84,7 @@ app.post('/create-preference', async (req, res) => {
     res.json({ init_point: result.init_point });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Datos inválidos', detalles: error.errors });
+      return res.status(400).json({ error: 'Datos inválidos. Revisá los campos e intentá de nuevo.' });
     }
     console.error('❌ Error MP:', error);
     res.status(500).json({ error: 'Error al crear la preferencia de pago' });
@@ -87,6 +104,11 @@ const reservarSchema = z.object({
   })).optional().default([])
 });
 
+const comboItemSchema = z.object({
+  id: z.number().int().positive(),
+  cantidad: z.number().int().positive().max(50)
+});
+
 const ventaBuffetSchema = z.object({
   sucursal_id: z.string().min(2).max(50).trim(),
   item: z.string().min(1).max(100).trim(),
@@ -100,7 +122,7 @@ const gastoSchema = z.object({
 });
 
 // ============================================================
-// MIDDLEWARE: extrae token de autorización
+// MIDDLEWARE: extrae token y verifica rol
 // ============================================================
 function authMiddleware(req, res, next) {
   const auth = req.headers.authorization;
@@ -111,70 +133,60 @@ function authMiddleware(req, res, next) {
   next();
 }
 
+async function requireRole(...rolesPermitidos) {
+  return async (req, res, next) => {
+    try {
+      const db = getSupabase(req.authToken);
+      const { data: { user }, error: userError } = await db.auth.getUser(req.authToken);
+      if (userError || !user) {
+        return res.status(401).json({ error: 'Token inválido o expirado' });
+      }
+      const { data: perfil } = await db.from('perfiles').select('rol').eq('id', user.id).maybeSingle();
+      if (!perfil || !rolesPermitidos.includes(perfil.rol)) {
+        return res.status(403).json({ error: 'No tenés permisos para esta acción' });
+      }
+      req.user = user;
+      req.userRol = perfil.rol;
+      next();
+    } catch (e) {
+      console.error('[Auth] Error verificando rol:', e.message);
+      return res.status(500).json({ error: 'Error de autenticación' });
+    }
+  };
+}
+
 // ============================================================
 // POST /api/reservar — Reserva atómica (turno + stock + pago)
 // ============================================================
-app.post('/api/reservar', authMiddleware, async (req, res) => {
+app.post('/api/reservar', authMiddleware, requireRole('dueño', 'encargado', 'empleado'), async (req, res) => {
   try {
     const parsed = reservarSchema.parse(req.body);
     const db = getSupabase(req.authToken);
 
-    // 1. Obtener turno con datos de la cancha
-    const { data: turno, error: errTurno } = await db
-      .from('turnos').select('*, canchas(*)').eq('id', parsed.turno_id).single();
-    if (errTurno || !turno) return res.status(404).json({ error: 'Turno no encontrado' });
-    if (turno.reservado) return res.status(409).json({ error: 'El turno ya está reservado' });
+    // Convertir combo_items al formato JSONB que espera la RPC
+    const comboItems = parsed.combo_items.map(i => ({ id: i.id, cantidad: i.cantidad }));
 
-    const cancha = turno.canchas;
-    const sucursal = cancha.sucursal_id;
+    // Llamar a la RPC atómica en Supabase
+    const { data, error } = await db.rpc('reservar_atomico', {
+      p_turno_id: parsed.turno_id,
+      p_cliente_nombre: parsed.cliente_nombre,
+      p_cumpleanios: parsed.cumpleanios || null,
+      p_combo_items: JSON.stringify(comboItems)
+    });
 
-    // 2. Validar stock del combo antes de tocar algo
-    for (const item of parsed.combo_items) {
-      const { data: stock } = await db.from('stock').select('*').eq('id', item.id).single();
-      if (!stock || stock.cantidad < item.cantidad) {
-        return res.status(409).json({ error: `Stock insuficiente de ${stock?.item || 'producto'}` });
-      }
+    if (error) {
+      console.error('❌ Error en RPC reservar_atomico:', error);
+      return res.status(500).json({ error: 'Error al procesar la reserva' });
     }
 
-    // 3. Marcar turno como reservado
-    const { error: errReservar } = await db
-      .from('turnos').update({ reservado: true, cliente_nombre: parsed.cliente_nombre }).eq('id', parsed.turno_id);
-    if (errReservar) throw errReservar;
-
-    // 4. Descontar stock del combo
-    for (const item of parsed.combo_items) {
-      const { data: stock } = await db.from('stock').select('cantidad').eq('id', item.id).single();
-      await db.from('stock').update({ cantidad: stock.cantidad - item.cantidad }).eq('id', item.id);
+    if (!data.success) {
+      return res.status(409).json({ error: data.error });
     }
 
-    // 5. Calcular total
-    let total = cancha.precio || 0;
-    for (const item of parsed.combo_items) {
-      const { data: stock } = await db.from('stock').select('precio_venta').eq('id', item.id).single();
-      total += (stock?.precio_venta || 0) * item.cantidad;
-    }
-
-    await db.from('movimientos').insert([{
-      sucursal,
-      tipo: 'ingreso',
-      categoria: 'Alquiler Cancha',
-      concepto: `Reserva: ${parsed.cliente_nombre} — ${cancha.nombre} ${turno.hora} ${turno.fecha}`,
-      monto: total
-    }]);
-
-    // 7. Registrar en reservas
-    await db.from('reservas').insert([{
-      cancha_id: cancha.id,
-      cliente_nombre: parsed.cliente_nombre,
-      cumpleanios: parsed.cumpleanios || null,
-      estado_pago: 'pendiente',
-      notas: parsed.combo_items.length > 0 ? `Combo buffet: ${parsed.combo_items.length} items` : ''
-    }]);
-
-    res.json({ success: true, total, turno_id: parsed.turno_id });
+    res.json({ success: true, total: data.total, turno_id: data.turno_id });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Datos inválidos', detalles: error.errors });
+      return res.status(400).json({ error: 'Datos inválidos. Revisá los campos e intentá de nuevo.' });
     }
     console.error('❌ Error en /api/reservar:', error);
     res.status(500).json({ error: 'Error al procesar la reserva' });
@@ -184,7 +196,7 @@ app.post('/api/reservar', authMiddleware, async (req, res) => {
 // ============================================================
 // POST /api/venta-buffet — Venta de buffet (server-side)
 // ============================================================
-app.post('/api/venta-buffet', authMiddleware, async (req, res) => {
+app.post('/api/venta-buffet', authMiddleware, requireRole('dueño', 'encargado', 'empleado'), async (req, res) => {
   try {
     const parsed = ventaBuffetSchema.parse(req.body);
     const db = getSupabase(req.authToken);
@@ -222,7 +234,7 @@ app.post('/api/venta-buffet', authMiddleware, async (req, res) => {
     res.json({ success: true, producto: prod.item, cantidad: parsed.cantidad, total });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Datos inválidos', detalles: error.errors });
+      return res.status(400).json({ error: 'Datos inválidos. Revisá los campos e intentá de nuevo.' });
     }
     console.error('❌ Error en /api/venta-buffet:', error);
     res.status(500).json({ error: 'Error al procesar la venta' });
@@ -232,7 +244,7 @@ app.post('/api/venta-buffet', authMiddleware, async (req, res) => {
 // ============================================================
 // POST /api/gasto — Registrar gasto con detección de anomalías
 // ============================================================
-app.post('/api/gasto', authMiddleware, async (req, res) => {
+app.post('/api/gasto', authMiddleware, requireRole('dueño', 'encargado'), async (req, res) => {
   try {
     const parsed = gastoSchema.parse(req.body);
     const db = getSupabase(req.authToken);
@@ -253,14 +265,14 @@ app.post('/api/gasto', authMiddleware, async (req, res) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Datos inválidos', detalles: error.errors });
+      return res.status(400).json({ error: 'Datos inválidos. Revisá los campos e intentá de nuevo.' });
     }
     console.error('❌ Error en /api/gasto:', error);
     res.status(500).json({ error: 'Error al registrar gasto' });
   }
 });
 
-app.get('*', (req, res) => {
+app.get('*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'app', 'index.html'));
 });
 

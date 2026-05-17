@@ -23,6 +23,8 @@ const LoginView = {
       mainContent.classList.add('pt-0');
     }
     
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
     const container = document.getElementById('viewContainer');
     container.innerHTML = `
       <div class="min-h-screen w-full flex items-center justify-center p-4" style="background-color: var(--surface);">
@@ -57,28 +59,28 @@ const LoginView = {
               </div>
             </div>
 
+            ${isLocalhost ? `
             <div class="pt-2 border-t border-surface-container-highest mt-6">
               <label class="block text-xs font-bold text-[#c3f400] uppercase tracking-wider mb-2 flex items-center gap-1">
                 <span class="material-symbols-outlined" style="font-size: 14px;">developer_mode</span>
-                Modo desarrollo (sin auth real)
+                Modo desarrollo (sin auth real) — SOLO LOCAL
               </label>
               <select id="loginRoleMock" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors cursor-pointer outline-none">
                 <option value="dueño">👑 Dueño (Acceso Total)</option>
                 <option value="encargado">💼 Encargado</option>
                 <option value="empleado">👨‍💻 Empleado</option>
               </select>
+              <button onclick="LoginView.loginMock()" class="w-full mt-3 py-3 rounded-lg font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 hover:bg-yellow-500/30 transition-all flex items-center justify-center gap-2 text-sm">
+                <span class="material-symbols-outlined" style="font-size: 18px;">developer_mode</span>
+                Acceso rápido (desarrollo)
+              </button>
             </div>
+            ` : ''}
 
-            <button onclick="LoginView.login()" class="w-full mt-4 py-3 rounded-lg font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] transition-all shadow-lg shadow-[#c3f400]/20 flex items-center justify-center gap-2">
+            <button onclick="LoginView.loginReal()" class="w-full mt-4 py-3 rounded-lg font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] transition-all shadow-lg shadow-[#c3f400]/20 flex items-center justify-center gap-2">
               Ingresar al Sistema
               <span class="material-symbols-outlined" style="font-size: 20px;">login</span>
             </button>
-
-            <div class="text-center pt-2">
-              <button onclick="LoginView.loginReal()" class="text-xs text-slate-500 hover:text-[#c3f400] transition-colors underline underline-offset-2">
-                ¿Ya tenés cuenta? Usar autenticación real →
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -130,7 +132,7 @@ const LoginView = {
     if (el) { el.textContent = msg; el.classList.remove('hidden'); }
   },
 
-  login() {
+  loginMock() {
     const email = document.getElementById('loginEmail').value;
     const rol = document.getElementById('loginRoleMock').value;
     
