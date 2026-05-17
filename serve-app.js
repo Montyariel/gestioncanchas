@@ -306,8 +306,9 @@ app.get('/api/agent/check-stock', agentAuth, async (req, res) => {
 app.get('/api/agent/check-pagos', agentAuth, async (req, res) => {
   try {
     const db = getAdminSupabase();
-    const { data: pendientes } = await db.from('reservas').select('*, canchas(nombre, sucursal_id)').or('estado_pago.eq.pendiente,estado_pago.is.null').order('created_at', { ascending: false }).limit(20);
-    res.json({ ok: true, timestamp: new Date().toISOString(), pendientes: (pendientes || []).filter(r => r.cliente_nombre).length });
+    const { data: pendientes } = await db.from('reservas').select('*, canchas(nombre, sucursal_id)').order('created_at', { ascending: false }).limit(100);
+    const conNombre = (pendientes || []).filter(r => r.cliente_nombre && (r.estado_pago === 'pendiente' || !r.estado_pago));
+    res.json({ ok: true, timestamp: new Date().toISOString(), pendientes: conNombre.length });
   } catch (e) {
     res.status(500).json({ ok: false, error: e.message });
   }
@@ -396,8 +397,9 @@ app.get('/api/agent/run-all', agentAuth, async (req, res) => {
     resultados.stock = (stock || []).filter(s => s.cantidad >= 0).length;
   } catch (e) { resultados.stock_error = e.message; }
   try {
-    const { data: pendientes } = await db.from('reservas').select('id').or('estado_pago.eq.pendiente,estado_pago.is.null');
-    resultados.pagos_pendientes = (pendientes || []).length;
+    const { data: pendientes } = await db.from('reservas').select('id, estado_pago');
+    const filtrados = (pendientes || []).filter(r => r.estado_pago === 'pendiente' || !r.estado_pago);
+    resultados.pagos_pendientes = filtrados.length;
   } catch (e) { resultados.pagos_error = e.message; }
   try {
     const { data: abiertas } = await db.from('sesiones_caja').select('id').eq('estado', 'abierta');
