@@ -53,6 +53,11 @@ function getSupabase(authToken) {
   );
 }
 
+function getAdminSupabase() {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+  return createClient(process.env.SUPABASE_URL, key);
+}
+
 const preferenceSchema = z.object({
   title: z.string().min(3).max(200).trim(),
   price: z.number().positive().max(9999999),
@@ -270,6 +275,135 @@ app.post('/api/gasto', authMiddleware, requireRole('dueño', 'encargado'), async
     console.error('❌ Error en /api/gasto:', error);
     res.status(500).json({ error: 'Error al registrar gasto' });
   }
+});
+
+// ============================================================
+// NICO AGENT — Endpoints server-side (cron-job.org friendly)
+// ============================================================
+
+// Middleware: valida API key del agente
+function agentAuth(req, res, next) {
+  const key = req.query.key || req.headers['x-agent-key'];
+  if (!key || key !== process.env.AGENT_API_KEY) {
+    return res.status(401).json({ error: 'API key inválida' });
+  }
+  next();
+}
+
+// GET /api/agent/check-stock — Stock crítico en ambas sucursales
+app.get('/api/agent/check-stock', agentAuth, async (req, res) => {
+  try {
+    const db = getAdminSupabase();
+    const { data: stock } = await db.from('stock').select('*').lt('cantidad', 10);
+    const criticos = (stock || []).filter(s => s.cantidad >= 0);
+    res.json({ ok: true, timestamp: new Date().toISOString(), alertas: criticos.length, items: criticos.map(s => ({ item: s.item, cantidad: s.cantidad, sucursal: s.sucursal || s.sucursales })) });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// GET /api/agent/check-pagos — Pagos pendientes
+app.get('/api/agent/check-pagos', agentAuth, async (req, res) => {
+  try {
+    const db = getAdminSupabase();
+    const { data: pendientes } = await db.from('reservas').select('*, canchas(nombre, sucursal_id)').or('estado_pago.eq.pendiente,estado_pago.is.null').order('created_at', { ascending: false }).limit(20);
+    res.json({ ok: true, timestamp: new Date().toISOString(), pendientes: (pendientes || []).filter(r => r.cliente_nombre).length });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// GET /api/agent/check-cumples — Cumpleaños de hoy
+app.get('/api/agent/check-cumples', agentAuth, async (req, res) => {
+  try {
+    const db = getAdminSupabase();
+    const hoy = new Date();
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    const { data: clientes } = await db.from('reservas').select('cliente_nombre, cumpleanios').not('cumpleanios', 'is', null).limit(500);
+    const unicos = new Set();
+    (clientes || []).forEach(c => {
+      if (c.cumpleanios && String(c.cumpleanios).includes(`-${mes}-${dia}`)) unicos.add(c.cliente_nombre);
+    });
+    res.json({ ok: true, timestamp: new Date().toISOString(), cumpleanieros: [...unicos] });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// GET /api/agent/cierre — Cierre de caja diario (cierra sesiones abiertas)
+app.get('/api/agent/cierre', agentAuth, async (req, res) => {
+  try {
+    const db = getAdminSupabase();
+    const { data: abiertas } = await db.from('sesiones_caja').select('*').eq('estado', 'abierta');
+    let cerradas = 0;
+    for (const sesion of abiertas || []) {
+      const { data: movs } = await db.from('movimientos_caja').select('monto').eq('sesion_id', sesion.id);
+      const totalIngresos = (movs || []).filter(m => m.monto > 0).reduce((s, m) => s + m.monto, 0);
+      const totalEgresos = (movs || []).filter(m => m.monto < 0).reduce((s, m) => s + Math.abs(m.monto), 0);
+      await db.from('sesiones_caja').update({
+        estado: 'cerrada',
+        fecha_cierre: new Date().toISOString(),
+        monto_final_esperado: (sesion.monto_inicial || 0) + totalIngresos - totalEgresos,
+        monto_final_real: (sesion.monto_inicial || 0) + totalIngresos - totalEgresos,
+        diferencia: 0
+      }).eq('id', sesion.id);
+      cerradas++;
+    }
+    res.json({ ok: true, timestamp: new Date().toISOString(), sesiones_cerradas: cerradas });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// GET /api/agent/apertura-agenda — Genera turnos para la semana siguiente
+app.get('/api/agent/apertura-agenda', agentAuth, async (req, res) => {
+  try {
+    const db = getAdminSupabase();
+    const sucursales = ['lanus', 'belgrano'];
+    let totalTurnos = 0;
+    for (const suc of sucursales) {
+      const { data: canchas } = await db.from('canchas').select('*').ilike('sucursal_id', `%${suc}%`);
+      if (!canchas?.length) continue;
+      const turnos = [];
+      const fechaBase = new Date();
+      for (let dia = 1; dia <= 7; dia++) {
+        const fecha = new Date(fechaBase);
+        fecha.setDate(fechaBase.getDate() + dia);
+        const fechaStr = fecha.toISOString().split('T')[0];
+        for (let h = 17; h <= 23; h++) {
+          const hora = `${h.toString().padStart(2, '0')}:00`;
+          for (const cancha of canchas) {
+            turnos.push({ cancha_id: cancha.id, fecha: fechaStr, hora, reservado: false, cliente_nombre: null });
+          }
+        }
+      }
+      const { error } = await db.from('turnos').upsert(turnos, { onConflict: 'cancha_id,fecha,hora', ignoreDuplicates: true });
+      if (!error) totalTurnos += turnos.length;
+    }
+    res.json({ ok: true, timestamp: new Date().toISOString(), turnos_generados: totalTurnos });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// GET /api/agent/run-all — Ejecuta todos los checks en secuencia
+app.get('/api/agent/run-all', agentAuth, async (req, res) => {
+  const resultados = {};
+  const db = getAdminSupabase();
+  try {
+    const { data: stock } = await db.from('stock').select('*').lt('cantidad', 10);
+    resultados.stock = (stock || []).filter(s => s.cantidad >= 0).length;
+  } catch (e) { resultados.stock_error = e.message; }
+  try {
+    const { data: pendientes } = await db.from('reservas').select('id').or('estado_pago.eq.pendiente,estado_pago.is.null');
+    resultados.pagos_pendientes = (pendientes || []).length;
+  } catch (e) { resultados.pagos_error = e.message; }
+  try {
+    const { data: abiertas } = await db.from('sesiones_caja').select('id').eq('estado', 'abierta');
+    resultados.sesiones_abiertas = (abiertas || []).length;
+  } catch (e) { resultados.sesiones_error = e.message; }
+  res.json({ ok: true, timestamp: new Date().toISOString(), resultados });
 });
 
 app.get('*splat', (req, res) => {
