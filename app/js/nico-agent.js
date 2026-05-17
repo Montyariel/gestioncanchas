@@ -141,13 +141,12 @@ const NicoAgent = {
       const { data: pendientes, error } = await db
         .from('reservas')
         .select('*, canchas(nombre, sucursal_id)')
-        .or('estado_pago.eq.pendiente,estado_pago.is.null')
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(100);
 
       if (error || !pendientes) return;
 
-      const conNombre = pendientes.filter(r => r.cliente_nombre);
+      const conNombre = pendientes.filter(r => r.cliente_nombre && (r.estado_pago === 'pendiente' || !r.estado_pago));
       if (!conNombre.length) return;
 
       this._pushAlert({
