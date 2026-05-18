@@ -106,10 +106,9 @@ const LoginView = {
         await db.from('perfiles').insert([{
           id: data.user.id,
           nombre: email.split('@')[0],
-          rol: 'empleado',
-          sucursal: 'ambas'
+          rol: 'staff'
         }]);
-        const { data: nuevo } = await db.from('perfiles').select('*').eq('id', data.user.id).single();
+        const nuevo = await LoginView._cargarUsuario(data.user.id);
         if (nuevo) LoginView._iniciarSesion(nuevo);
         return;
       }
@@ -123,6 +122,10 @@ const LoginView = {
   async _cargarUsuario(userId) {
     try {
       const { data } = await db.from('perfiles').select('*').eq('id', userId).maybeSingle();
+      if (data) {
+        if (data.rol === 'owner') data.rol = 'dueño';
+        if (data.rol === 'staff') data.rol = 'empleado';
+      }
       return data;
     } catch { return null; }
   },

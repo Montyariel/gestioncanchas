@@ -38,6 +38,8 @@ const App = {
       if (session?.user) {
         const { data: userData } = await db.from('perfiles').select('*').eq('id', session.user.id).maybeSingle();
         if (userData) {
+          if (userData.rol === 'owner') userData.rol = 'dueño';
+          if (userData.rol === 'staff') userData.rol = 'empleado';
           const rol = userData.rol || 'empleado';
           LoginView.applyRoleRestrictions(rol);
           const userNameEl = document.getElementById('userNameDisplay');
