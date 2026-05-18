@@ -138,7 +138,7 @@ function authMiddleware(req, res, next) {
   next();
 }
 
-async function requireRole(...rolesPermitidos) {
+function requireRole(...rolesPermitidos) {
   return async (req, res, next) => {
     try {
       const db = getSupabase(req.authToken);
