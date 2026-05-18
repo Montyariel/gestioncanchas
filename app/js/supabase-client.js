@@ -206,7 +206,11 @@ const DB = {
 
   // Mantener compatibilidad con código legacy
   async getGastos(sucursal) {
-    return this.getMovimientos(sucursal);
+    const { data, error } = await db.from('gastos').select('*')
+      .ilike('sucursal', `%${sucursal}%`)
+      .order('created_at', { ascending: false }).limit(50);
+    if (error) throw error;
+    return data || [];
   },
 
   async addGasto(sucursal, concepto, monto) {

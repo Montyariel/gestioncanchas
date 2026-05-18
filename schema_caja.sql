@@ -5,7 +5,7 @@ CREATE TABLE perfiles (
   id UUID REFERENCES auth.users NOT NULL PRIMARY KEY,
   nombre TEXT NOT NULL,
   rol user_role DEFAULT 'empleado',
-  sucursal TEXT -- 'lanus' o 'belgrano', puede ser nulo para el dueño general
+  sucursal_id TEXT -- 'lanus' o 'belgrano', puede ser nulo para el dueño general
 );
 
 -- 2. LÓGICA DE APERTURA Y CIERRE DE CAJA

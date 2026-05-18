@@ -13,11 +13,11 @@
   "rewrites": [
     {
       "source": "/api/:match*",
-      "destination": "/api/serve-app.js"
+      "destination": "/api/serve-app"
     },
     {
       "source": "/create-preference",
-      "destination": "/api/serve-app.js"
+      "destination": "/api/serve-app"
     },
     {
       "source": "/((?!api/|create-preference).*\\..*)",
