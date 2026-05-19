@@ -100,21 +100,21 @@ const BuffetView = {
 
   getImg(name) {
     const n = name.toLowerCase();
-    if (n.includes('hamburguesa')) return 'assets/images/champion_burger.png';
-    if (n.includes('pancho')) return 'assets/images/executive_hotdog.png';
-    if (n.includes('picada')) return 'assets/images/premium_picada.png';
+    if (n.includes('hamburguesa')) return '/assets/images/champion_burger.png';
+    if (n.includes('pancho')) return '/assets/images/executive_hotdog.png';
+    if (n.includes('picada')) return '/assets/images/premium_picada.png';
     
-    if (n.includes('coca') || n.includes('cola')) return 'assets/images/coca_cola.png';
-    if (n.includes('sprite') || n.includes('fanta')) return 'assets/images/sprite.png';
-    if (n.includes('gatorade') || n.includes('powerade')) return 'assets/images/gatorade.png';
-    if (n.includes('red bull') || n.includes('speed')) return 'assets/images/red_bull.png';
-    if (n.includes('agua')) return 'assets/images/agua_mineral.png';
-    if (n.includes('jugo') || n.includes('licuado')) return 'assets/images/sports_drinks.png';
+    if (n.includes('coca') || n.includes('cola')) return '/assets/images/coca_cola.png';
+    if (n.includes('sprite') || n.includes('fanta')) return '/assets/images/sprite.png';
+    if (n.includes('gatorade') || n.includes('powerade')) return '/assets/images/gatorade.png';
+    if (n.includes('red bull') || n.includes('speed')) return '/assets/images/red_bull.png';
+    if (n.includes('agua')) return '/assets/images/agua_mineral.png';
+    if (n.includes('jugo') || n.includes('licuado')) return '/assets/images/sports_drinks.png';
 
-    if (n.includes('jorgito') || n.includes('alfajor')) return 'img/alfajor_jorgito.png';
-    if (n.includes('quilmes')) return 'img/cerveza_quilmes.png';
-    if (n.includes('heineken')) return 'img/cerveza_heineken.png';
-    if (n.includes('brahma')) return 'img/cerveza_brahma.png';
+    if (n.includes('jorgito') || n.includes('alfajor')) return '/img/alfajor_jorgito.png';
+    if (n.includes('quilmes')) return '/img/cerveza_quilmes.png';
+    if (n.includes('heineken')) return '/img/cerveza_heineken.png';
+    if (n.includes('brahma')) return '/img/cerveza_brahma.png';
     if (n.includes('cerveza') || n.includes('lager')) return 'https://lh3.googleusercontent.com/aida-public/AB6AXuCS5IFjU8KGfq6ywZTr3jfBJ3RwTFUsIdv4lkyyy40br1NyZc5CkZmv5zmvJ2dWqm_KqspBJt1TOymW4J3P59Hfe-3BdqdmNM-D-F1cyCtN75uizsiqbaH2nrh-iGYp--O7qOP2SB_18ajI98n1Rbwwyg07pCNfY83OSRaD6Af46YvAffcXqSZFZr8wBRGFvnrPXSrANZ7SvPmqUN3dgbd8Uz_OqY3BRtortovMwyiMMKtbvFgEhOhYc9MhjyJtGwvqaEzDzRv200Oa';
     if (n.includes('pizza') || n.includes('pechera')) return 'https://lh3.googleusercontent.com/aida-public/AB6AXuDCU6ZHOgUQSYPAKJLg00qn7dNPMxTtY95hxnfNkuhZaZFr1XWTyBtiUMrG6ykkuaJbiEwNhY8KQNVsqhHIO5D_fLVjSfJuztEuCdR1-7k_cQXVWlZAxkLhlP9CT_PPZ80BZrioEXl_KSUv-wna6nVcRxNKk8r-qEvpqpBKDPpH_felVRKBwhukOAapcW1a0jrHHfmMj8wnGG1pLrlwjh9ILBF85hx2U21Qi3kag8QmuqZgkxLYbLbtq_uIIw1QqkhUhyRXCQSCHUM6';
     if (n.includes('pelota')) return 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=600&auto=format&fit=crop';

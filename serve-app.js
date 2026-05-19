@@ -15,7 +15,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "https://cdn.tailwindcss.com", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
-      imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://*.supabase.co"],
+      imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://*.supabase.co", "https://lh3.googleusercontent.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
       connectSrc: ["'self'", "https://*.supabase.co", "https://api.mercadopago.com"],
       frameSrc: ["'self'", "https://www.mercadopago.com.ar"]
