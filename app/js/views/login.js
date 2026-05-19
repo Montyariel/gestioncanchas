@@ -103,13 +103,23 @@ const LoginView = {
 
       const userData = await LoginView._cargarUsuario(data.user.id);
       if (!userData) {
-        await db.from('perfiles').insert([{
+        // Intentar crear perfil con 'staff' que es el enum válido
+        const { error: insertError } = await db.from('perfiles').insert([{
           id: data.user.id,
           nombre: email.split('@')[0],
           rol: 'staff'
         }]);
+
+        if (insertError) {
+          throw new Error('Tu cuenta de autenticación está activa, pero no se pudo auto-crear tu perfil en la base de datos (Error RLS/Permisos: ' + insertError.message + '). Por favor, ejecutá el SQL de creación de perfiles en Supabase.');
+        }
+
         const nuevo = await LoginView._cargarUsuario(data.user.id);
-        if (nuevo) LoginView._iniciarSesion(nuevo);
+        if (nuevo) {
+          LoginView._iniciarSesion(nuevo);
+        } else {
+          throw new Error('El perfil fue creado pero no pudo ser leído de la base de datos.');
+        }
         return;
       }
 
