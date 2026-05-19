@@ -169,7 +169,7 @@ const DB = {
   },
 
   // Cache de stock para el modal de combo
-  _stockCache: _stockCache,
+  _stockCache: null,
 
   // --- STOCK ---
   async getStock(sucursal) {

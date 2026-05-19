@@ -2,6 +2,25 @@
 <html class="dark" lang="es">
 <head>
   <meta charset="UTF-8"/>
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      const div = document.createElement('div');
+      div.style.position = 'fixed';
+      div.style.top = '0';
+      div.style.left = '0';
+      div.style.width = '100%';
+      div.style.background = '#ffb4ab';
+      div.style.color = '#161e00';
+      div.style.padding = '20px';
+      div.style.zIndex = '99999';
+      div.style.fontSize = '14px';
+      div.style.fontFamily = 'monospace';
+      div.style.whiteSpace = 'pre-wrap';
+      div.innerText = '🔴 ERROR: ' + message + '\nEn: ' + source + ':' + lineno + ':' + colno + '\n' + (error ? error.stack : '');
+      document.body.appendChild(div);
+      return false;
+    };
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CanchaOS — Sistema de Gestión Deportiva</title>
   <meta name="description" content="CanchaOS: gestión de canchas de fútbol y pádel. Reservas, stock y finanzas en tiempo real."/>
