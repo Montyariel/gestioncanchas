@@ -153,6 +153,18 @@ async function loadTurnos() {
             card.onclick = () => selectSlot(slot, card);
             UI.slotsGrid.appendChild(card);
         });
+
+        // Banner de lista de espera al final por si buscan otro horario
+        const waitlistBanner = document.createElement('div');
+        waitlistBanner.className = 'col-span-3 mt-4 p-4 text-center bg-surface/30 rounded-3xl border border-dashed border-slate-800';
+        waitlistBanner.innerHTML = `
+            <p class="text-[11px] text-slate-400">¿Buscás otro horario de <b>${state.deporte}</b>? ⏰ ¡Sumate a la lista!</p>
+            <button id="waitlistBtnSec" class="mt-2 w-full bg-accent/10 border border-accent/30 text-accent hover:bg-accent hover:text-white px-4 py-2.5 rounded-2xl text-[11px] font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-accent/5 slot-btn">
+                ANOTARME EN LISTA DE ESPERA <span class="material-symbols-outlined text-sm">notifications_active</span>
+            </button>
+        `;
+        UI.slotsGrid.appendChild(waitlistBanner);
+        document.getElementById('waitlistBtnSec').onclick = () => openWaitlistForm();
     } catch (err) {
         console.error("Error cargando turnos:", err);
         UI.slotsGrid.innerHTML = `<p class="col-span-3 text-red-400 text-center text-xs p-10 font-bold">Error de conexión con la base de datos.</p>`;
