@@ -468,7 +468,7 @@ app.post('/api/webhook/turno-cancelado', async (req, res) => {
       return res.status(200).json({ ok: false, msg: 'Payload incompleto, ignorado.' });
     }
 
-    const esCancelacion = (recordNuevo.reservado === false && recordViejo.reservado === true);
+    const esCancelacion = (recordNuevo.reservado === false && (recordViejo.reservado === true || recordViejo.reservado === undefined));
     if (!esCancelacion) {
       return res.status(200).json({ ok: false, msg: 'No es una cancelación, ignorado.' });
     }
