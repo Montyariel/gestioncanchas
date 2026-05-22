@@ -59,7 +59,7 @@ const AgendaView = {
     container.innerHTML = `
       <div class="flex-1 overflow-hidden flex flex-col lg:flex-row gap-gutter h-full">
         <!-- Left/Center Canvas: Calendar Grid -->
-        <div class="flex-1 flex flex-col bg-surface-container-lowest rounded-xl border border-surface-container-high overflow-hidden shadow-lg relative h-full">
+        <div class="flex-1 min-w-0 flex flex-col bg-surface-container-lowest rounded-xl border border-surface-container-high overflow-hidden shadow-lg relative h-full">
           <!-- Filters & Controls Header -->
           <div class="p-md border-b border-surface-container-high flex justify-between items-center bg-surface z-10 flex-wrap gap-4">
             <div class="flex gap-sm">
@@ -143,19 +143,21 @@ const AgendaView = {
       const gridCols = `80px repeat(${canchas.length}, minmax(180px, 1fr))`;
 
       let html = `
-        <!-- Grid Header (Courts) -->
-        <div class="time-grid px-md py-sm bg-surface-container-low border-b border-surface-container-high sticky top-0 z-20" style="grid-template-columns: ${gridCols}; min-width: max-content;">
-          <div class="font-label-caps text-label-caps text-on-surface-variant flex items-center justify-end pr-sm">HORA</div>
-          ${canchas.map(c => `
-            <div class="font-label-caps text-label-caps text-on-surface text-center py-2 bg-surface-container rounded-md border-t border-outline-variant flex flex-col">
-              <span>${c.nombre}</span>
-              <span class="text-[10px] text-on-surface-variant mt-1">${fmt.money(c.precio)}</span>
-            </div>
-          `).join('')}
+        <!-- Grid Header (Courts) Wrapper for scroll sync -->
+        <div class="grid-header-scroll-sync overflow-x-hidden bg-surface-container-low border-b border-surface-container-high sticky top-0 z-20">
+          <div class="time-grid px-md py-sm" style="grid-template-columns: ${gridCols}; min-width: max-content;">
+            <div class="font-label-caps text-label-caps text-on-surface-variant flex items-center justify-end pr-sm">HORA</div>
+            ${canchas.map(c => `
+              <div class="font-label-caps text-label-caps text-on-surface text-center py-2 bg-surface-container rounded-md border-t border-outline-variant flex flex-col">
+                <span>${c.nombre}</span>
+                <span class="text-[10px] text-on-surface-variant mt-1">${fmt.money(c.precio)}</span>
+              </div>
+            `).join('')}
+          </div>
         </div>
 
         <!-- Scrollable Grid Body -->
-        <div class="flex-1 overflow-auto p-md relative bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-surface-container-low via-background to-background">
+        <div class="grid-body-scroll-sync flex-1 overflow-auto p-md relative bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-surface-container-low via-background to-background">
           <!-- Actual Content Grid -->
           <div class="time-grid relative" style="grid-template-columns: ${gridCols}; min-width: max-content;">
             
@@ -202,6 +204,15 @@ const AgendaView = {
         </div>
       `;
       content.innerHTML = html;
+
+      // Sincronizar el scroll horizontal del header con el del body
+      const headerScroll = content.querySelector('.grid-header-scroll-sync');
+      const bodyScroll = content.querySelector('.grid-body-scroll-sync');
+      if (headerScroll && bodyScroll) {
+        bodyScroll.addEventListener('scroll', () => {
+          headerScroll.scrollLeft = bodyScroll.scrollLeft;
+        });
+      }
       document.getElementById('agendaSidebar').classList.add('hidden');
     } catch(e) {
       App.toast('Error cargando agenda: ' + e.message, 'error');
