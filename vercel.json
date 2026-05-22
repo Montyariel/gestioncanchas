@@ -2,8 +2,20 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/test-rewrite",
-      "destination": "https://www.google.com"
+      "source": "/api/(.*)",
+      "destination": "/api/serve-app.js"
+    },
+    {
+      "source": "/create-preference",
+      "destination": "/api/serve-app.js"
+    },
+    {
+      "source": "/((?!api/|create-preference).*\\..*)",
+      "destination": "/app/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/app/index.html"
     }
   ]
 }
