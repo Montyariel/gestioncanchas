@@ -1,0 +1,151 @@
+{
+  "name": "canchaOS - Flujo 3: Auditoría Diaria de Caja",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyDay",
+              "hour": 23,
+              "minute": 59
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cron-daily-trigger",
+      "name": "Cron 23:59",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://vcwqhxuyngqcnpptirtb.supabase.co/rest/v1/movimientos?created_at=gte.{{ new Date().toISOString().split('T')[0] }}T00:00:00.000Z",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "sb_publishable_KC_PbsOU5-S20oOOMZW-SQ_OsAZeeNl"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer sb_publishable_KC_PbsOU5-S20oOOMZW-SQ_OsAZeeNl"
+            }
+          ]
+        }
+      },
+      "id": "query-today-movements",
+      "name": "Obtener Movimientos de Hoy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const movimientos = $input.all();\nlet ingresosLanus = 0;\nlet egresosLanus = 0;\nlet ingresosBelgrano = 0;\nlet egresosBelgrano = 0;\n\nmovimientos.forEach(item => {\n  const m = item.json;\n  const monto = parseFloat(m.monto || 0);\n  const sucursal = (m.sucursal || '').toLowerCase();\n  const tipo = (m.tipo || '').toLowerCase();\n  \n  if (sucursal.includes('lanus')) {\n    if (tipo === 'ingreso') ingresosLanus += monto;\n    else if (tipo === 'egreso') egresosLanus += monto;\n  } else if (sucursal.includes('belgrano')) {\n    if (tipo === 'ingreso') ingresosBelgrano += monto;\n    else if (tipo === 'egreso') egresosBelgrano += monto;\n  }\n});\n\nconst gananciaLanus = ingresosLanus - egresosLanus;\nconst gananciaBelgrano = ingresosBelgrano - egresosBelgrano;\nconst totalIngresos = ingresosLanus + ingresosBelgrano;\nconst totalEgresos = egresosLanus + egresosBelgrano;\nconst gananciaNetaTotal = totalIngresos - totalEgresos;\n\nreturn [{\n  json: {\n    fecha: new Date().toLocaleDateString('es-AR'),\n    lanus: { ingresos: ingresosLanus, egresos: egresosLanus, neto: gananciaLanus },\n    belgrano: { ingresos: ingresosBelgrano, egresos: egresosBelgrano, neto: gananciaBelgrano },\n    global: { ingresos: totalIngresos, egresos: totalEgresos, neto: gananciaNetaTotal }\n  }\n}];"
+      },
+      "id": "calculate-balances",
+      "name": "Calcular Balances y Ganancia Neta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.twilio.com/2010-04-01/Accounts/YOUR_TWILIO_ACCOUNT_SID/Messages.json",
+        "authentication": "basicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "To",
+              "value": "whatsapp:+5491137908579"
+            },
+            {
+              "name": "From",
+              "value": "whatsapp:+14155238886"
+            },
+            {
+              "name": "Body",
+              "value": "=📊 *AUDITORÍA DIARIA DE CAJA - canchaOS* 📊\n📅 *Fecha:* {{ $json.fecha }}\n\n🏟️ *SEDE LANÚS:*\n📥 Ingresos: ${{ $json.lanus.ingresos.toLocaleString('es-AR') }}\n📤 Gastos: ${{ $json.lanus.egresos.toLocaleString('es-AR') }}\n💰 *Ganancia Neta:* ${{ $json.lanus.neto.toLocaleString('es-AR') }}\n\n🏟️ *SEDE BELGRANO:*\n📥 Ingresos: ${{ $json.belgrano.ingresos.toLocaleString('es-AR') }}\n📤 Gastos: ${{ $json.belgrano.egresos.toLocaleString('es-AR') }}\n💰 *Ganancia Neta:* ${{ $json.belgrano.neto.toLocaleString('es-AR') }}\n\n-------------------------------\n🌟 *BALANCE GLOBAL DEL DÍA:*\n📥 Total Ingresos: ${{ $json.global.ingresos.toLocaleString('es-AR') }}\n📤 Total Gastos: ${{ $json.global.egresos.toLocaleString('es-AR') }}\n🔥 *GANANCIA NETA TOTAL:* ${{ $json.global.neto.toLocaleString('es-AR') }}\n\n¡Un día espectacular para el negocio crack! El verdadero éxito está en la Ganancia Neta. ⚽🏆🔥"
+            }
+          ]
+        }
+      },
+      "id": "twilio-send-audit",
+      "name": "Notificar Admin (Twilio)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        720,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Cron 23:59": {
+      "main": [
+        [
+          {
+            "node": "Obtener Movimientos de Hoy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Movimientos de Hoy": {
+      "main": [
+        [
+          {
+            "node": "Calcular Balances y Ganancia Neta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Balances y Ganancia Neta": {
+      "main": [
+        [
+          {
+            "node": "Notificar Admin (Twilio)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": {},
+  "meta": {
+    "templateId": ""
+  },
+  "pinData": {}
+}

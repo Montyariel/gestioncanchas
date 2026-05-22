@@ -17,7 +17,7 @@ const UI = {
 
 let state = {
     sede: 'lanus',
-    deporte: 'futbol_5',
+    deporte: 'Fútbol 5',
     fecha: new Date().toISOString().split('T')[0],
     selectedSlot: null,
     turnos: []
@@ -124,10 +124,14 @@ async function loadTurnos() {
 
         if (filtered.length === 0) {
             UI.slotsGrid.innerHTML = `
-                <div class="col-span-3 py-12 text-center text-slate-500 bg-surface/30 rounded-3xl border border-dashed border-slate-800">
+                <div class="col-span-3 py-8 px-4 text-center bg-surface/30 rounded-3xl border border-dashed border-slate-800">
                     <p class="text-xs">¡Agotado! 😱 <br> No quedan turnos de <b class="text-primary">${state.deporte}</b> libres.</p>
+                    <button id="waitlistBtn" class="mt-4 w-full bg-accent/15 border border-accent/40 text-accent hover:bg-accent hover:text-white px-4 py-3.5 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-accent/5 slot-btn">
+                        ANOTARME EN LISTA DE ESPERA <span class="material-symbols-outlined text-sm">notifications_active</span>
+                    </button>
                 </div>
             `;
+            document.getElementById('waitlistBtn').onclick = () => openWaitlistForm();
             return;
         }
 
@@ -191,9 +195,9 @@ function attachListeners() {
             
             // Normalizamos para que coincida con el filtro de loadTurnos
             const sport = btn.dataset.sport.toLowerCase();
-            if (sport.includes('5')) state.deporte = 'FÚTBOL 5';
-            else if (sport.includes('7')) state.deporte = 'FÚTBOL 7';
-            else if (sport.includes('padel')) state.deporte = 'PÁDEL';
+            if (sport.includes('5')) state.deporte = 'Fútbol 5';
+            else if (sport.includes('7')) state.deporte = 'Fútbol 7';
+            else if (sport.includes('padel')) state.deporte = 'Pádel';
             
             loadTurnos();
         };
@@ -208,17 +212,17 @@ function attachListeners() {
                     <button onclick="location.reload()" class="text-slate-500"><span class="material-symbols-outlined">close</span></button>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                    <input id="regNombre" type="text" placeholder="Nombre" class="w-full bg-surface border border-slate-700 rounded-xl p-4 text-white outline-none focus:border-primary">
-                    <input id="regApellido" type="text" placeholder="Apellido" class="w-full bg-surface border border-slate-700 rounded-xl p-4 text-white outline-none focus:border-primary">
+                    <input id="regNombre" type="text" placeholder="Nombre" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
+                    <input id="regApellido" type="text" placeholder="Apellido" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
                 </div>
-                <input id="regTel" type="tel" placeholder="WhatsApp (Ej: 1122334455)" class="w-full bg-surface border border-slate-700 rounded-xl p-4 text-white outline-none focus:border-primary">
+                <input id="regTel" type="tel" placeholder="WhatsApp (Ej: 1122334455)" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
                 
                 <div class="flex flex-col gap-1">
                     <label class="text-[10px] text-slate-500 font-bold ml-1 uppercase">Fecha de Nacimiento 🎂</label>
                     <div class="grid grid-cols-3 gap-2">
-                        <input id="regDia" type="number" placeholder="Día" min="1" max="31" class="bg-surface border border-slate-700 rounded-xl p-4 text-white text-center outline-none focus:border-primary">
-                        <input id="regMes" type="number" placeholder="Mes" min="1" max="12" class="bg-surface border border-slate-700 rounded-xl p-4 text-white text-center outline-none focus:border-primary">
-                        <input id="regAnio" type="number" placeholder="Año" min="1940" max="2020" class="bg-surface border border-slate-700 rounded-xl p-4 text-white text-center outline-none focus:border-primary">
+                        <input id="regDia" type="number" placeholder="Día" min="1" max="31" class="bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 text-center outline-none focus:border-primary">
+                        <input id="regMes" type="number" placeholder="Mes" min="1" max="12" class="bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 text-center outline-none focus:border-primary">
+                        <input id="regAnio" type="number" placeholder="Año" min="1940" max="2020" class="bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 text-center outline-none focus:border-primary">
                     </div>
                 </div>
 
@@ -251,6 +255,7 @@ function attachListeners() {
                 await DB.reservarDesdeWeb({
                     turnoId: state.selectedSlot.id,
                     clienteNombre: `${nombre} ${apellido}`,
+                    clienteTelefono: telefono,
                     sucursalId: state.sede
                 });
 
@@ -306,6 +311,90 @@ async function showSuccess() {
             listoBtn.parentElement.insertBefore(payBtn, listoBtn);
         }
     } catch (err) { console.error("MP Error:", err); }
+}
+
+function openWaitlistForm() {
+    UI.ctaPanel.innerHTML = `
+        <div class="p-6 space-y-4 bg-dark border-t border-accent/50 rounded-t-[40px] animate-in fade-in slide-in-from-bottom-10 duration-500">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-accent font-black italic flex items-center gap-2">LISTA DE ESPERA 🔔</h3>
+                <button onclick="location.reload()" class="text-slate-500"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <p class="text-[11px] text-slate-400">Si se libera un turno de <b class="text-primary">${state.deporte}</b> el <b class="text-white">${state.fecha}</b> en <b class="text-white">${state.sede.toUpperCase()}</b>, te avisamos por WhatsApp al instante crack.</p>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <input id="waitNombre" type="text" placeholder="Nombre" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-accent">
+                <input id="waitApellido" type="text" placeholder="Apellido" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-accent">
+            </div>
+            <input id="waitTel" type="tel" placeholder="WhatsApp (Ej: 1122334455)" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-accent">
+            
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-slate-500 font-bold ml-1 uppercase">Horario de Preferencia ⏰</label>
+                <select id="waitHora" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white outline-none focus:border-accent">
+                    <option value="18:00">18:00 hs (Tarde)</option>
+                    <option value="19:00">19:00 hs (Tarde/Noche)</option>
+                    <option value="20:00">20:00 hs (Central)</option>
+                    <option value="21:00" selected>21:00 hs (Central Premium)</option>
+                    <option value="22:00">22:00 hs (Noche)</option>
+                    <option value="23:00">23:00 hs (Trasnochadores)</option>
+                </select>
+            </div>
+
+            <button id="finalWaitlistConfirmBtn" class="w-full bg-accent text-white py-5 rounded-2xl font-black shadow-lg shadow-accent/20 flex items-center justify-center gap-2 active:scale-95 transition-transform cursor-pointer">
+                ACTIVAR ALERTA DE CANCHA <span class="material-symbols-outlined text-sm">notifications_active</span>
+            </button>
+            <p class="text-[9px] text-center text-slate-500 italic">Te sumás al sistema automático de alertas de cancha de canchaOS.</p>
+        </div>
+    `;
+    
+    UI.ctaPanel.classList.remove('translate-y-full');
+    
+    document.getElementById('finalWaitlistConfirmBtn').onclick = async () => {
+        const nombre = document.getElementById('waitNombre').value.trim();
+        const apellido = document.getElementById('waitApellido').value.trim();
+        const telefono = document.getElementById('waitTel').value.trim();
+        const hora = document.getElementById('waitHora').value;
+        
+        if (!nombre || !telefono) { alert('Por favor, completá nombre y WhatsApp, crack.'); return; }
+        
+        const btn = document.getElementById('finalWaitlistConfirmBtn');
+        btn.disabled = true;
+        btn.innerHTML = `<div class="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>`;
+        
+        try {
+            await DB.anotarEnListaEspera({
+                clienteNombre: `${nombre} ${apellido}`,
+                clienteTelefono: telefono,
+                sucursalId: state.sede,
+                deporte: state.deporte,
+                fecha: state.fecha,
+                hora: hora
+            });
+            
+            showWaitlistSuccess(`${nombre} ${apellido}`);
+        } catch (err) {
+            alert('Error: ' + err.message);
+            btn.disabled = false;
+            btn.innerHTML = `REINTENTAR <span class="material-symbols-outlined">refresh</span>`;
+        }
+    };
+}
+
+function showWaitlistSuccess(nombreCompleto) {
+    UI.successModal.innerHTML = `
+        <div class="text-center animate-slide-up max-w-sm">
+            <div class="w-24 h-24 bg-accent rounded-full flex items-center justify-center text-white text-5xl mx-auto mb-6 shadow-2xl shadow-accent/40">🔔</div>
+            <h2 class="text-4xl font-black mb-2 text-white italic tracking-tighter uppercase text-accent">¡ANOTADO CRACK!</h2>
+            <p class="text-slate-400 mb-8 p-4 bg-surface/50 rounded-[32px] border border-slate-800">
+                Te registramos en la lista de espera para <br><b class="text-accent">${state.deporte}</b>.<br><br>
+                Sede: <b class="text-white">${state.sede.toUpperCase()}</b><br>
+                Fecha: <b class="text-white">${state.fecha}</b><br>
+                <span class="text-[11px] text-slate-500 mt-4 block italic">Nico está atento por vos. Si se libera una cancha, ¡n8n te mete el centro por WhatsApp al toque! ⚽🔥</span>
+            </p>
+            <button onclick="location.reload()" class="w-full bg-white text-dark py-4 rounded-2xl font-black mb-4 cursor-pointer">¡DE UNA, JOYITA! 🏟️</button>
+        </div>
+    `;
+    UI.successModal.classList.remove('hidden');
 }
 
 init();

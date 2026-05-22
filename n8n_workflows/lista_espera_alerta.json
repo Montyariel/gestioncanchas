@@ -1,0 +1,236 @@
+{
+  "name": "canchaOS - Flujo 2: Alerta de Lista de Espera",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "turno-cancelado",
+        "options": {}
+      },
+      "id": "webhook-supabase-update",
+      "name": "Webhook Turno Cancelado",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "all": [
+            {
+              "value1": "={{ $json.body.record.reservado }}",
+              "value2": false,
+              "operator": "equal"
+            },
+            {
+              "value1": "={{ $json.body.old_record.reservado }}",
+              "value2": true,
+              "operator": "equal"
+            }
+          ]
+        }
+      },
+      "id": "if-is-cancellation",
+      "name": "Es Cancelación?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        280,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://vcwqhxuyngqcnpptirtb.supabase.co/rest/v1/canchas?id=eq.{{ $json.body.record.cancha_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "sb_publishable_KC_PbsOU5-S20oOOMZW-SQ_OsAZeeNl"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer sb_publishable_KC_PbsOU5-S20oOOMZW-SQ_OsAZeeNl"
+            }
+          ]
+        }
+      },
+      "id": "get-cancha-details",
+      "name": "Obtener Sede y Deporte",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        480,
+        200
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-headers-auth",
+          "name": "Supabase API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://vcwqhxuyngqcnpptirtb.supabase.co/rest/v1/lista_espera?sucursal_id=eq.{{ $json[0].sucursal_id }}&deporte=eq.{{ $json[0].tipo === 'Polvo de ladrillo' ? 'Pádel' : $json[0].tipo }}&fecha=eq.{{ $('Es Cancelación?').item.json.body.record.fecha }}&hora=eq.{{ $('Es Cancelación?').item.json.body.record.hora.substring(0, 5) }}&order=created_at.asc&limit=1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "sb_publishable_KC_PbsOU5-S20oOOMZW-SQ_OsAZeeNl"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer sb_publishable_KC_PbsOU5-S20oOOMZW-SQ_OsAZeeNl"
+            }
+          ]
+        }
+      },
+      "id": "query-waiting-list",
+      "name": "Consultar Lista Espera",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        680,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "all": [
+            {
+              "value1": "={{ $json.length }}",
+              "value2": 0,
+              "operator": "greater"
+            }
+          ]
+        }
+      },
+      "id": "if-player-waiting",
+      "name": "Hay Alguien en Espera?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        880,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.twilio.com/2010-04-01/Accounts/YOUR_TWILIO_ACCOUNT_SID/Messages.json",
+        "authentication": "basicAuth",
+        "httpBasicAuth": "twilioApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "To",
+              "value": "=whatsapp:+{{ $json[0].cliente_telefono }}"
+            },
+            {
+              "name": "From",
+              "value": "whatsapp:+14155238886"
+            },
+            {
+              "name": "Body",
+              "value": "=¡Che crack! ⚽🔥 Se acaba de liberar un turno para *{{ $json[0].deporte }}* en la sede *{{ $json[0].sucursal_id.toUpperCase() }}*.\n\n📅 *Fecha:* {{ $json[0].fecha }}\n⏰ *Hora:* {{ $json[0].hora }}\n\nComo te anotaste en la lista de espera, tenés la prioridad absoluta. ¡Volá a responder este mensaje si lo querés antes de que se lo quede otro! 🏟️🏃‍♂️💨"
+            }
+          ]
+        }
+      },
+      "id": "twilio-send-waitlist-whatsapp",
+      "name": "Notificar Jugador (Twilio)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1080,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Turno Cancelado": {
+      "main": [
+        [
+          {
+            "node": "Es Cancelación?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es Cancelación?": {
+      "main": [
+        [
+          {
+            "node": "Obtener Sede y Deporte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Sede y Deporte": {
+      "main": [
+        [
+          {
+            "node": "Consultar Lista Espera",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar Lista Espera": {
+      "main": [
+        [
+          {
+            "node": "Hay Alguien en Espera?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hay Alguien en Espera?": {
+      "main": [
+        [
+          {
+            "node": "Notificar Jugador (Twilio)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": {},
+  "meta": {
+    "templateId": ""
+  },
+  "pinData": {}
+}

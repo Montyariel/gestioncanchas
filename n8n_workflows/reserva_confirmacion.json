@@ -1,0 +1,81 @@
+{
+  "name": "canchaOS - Flujo 1: Confirmación de Reserva",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nueva-reserva",
+        "options": {}
+      },
+      "id": "webhook-supabase-insert",
+      "name": "Webhook Reservas Web",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.twilio.com/2010-04-01/Accounts/YOUR_TWILIO_ACCOUNT_SID/Messages.json",
+        "authentication": "basicAuth",
+        "httpBasicAuth": "twilioApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "To",
+              "value": "=whatsapp:+{{ $json.body.record.cliente_telefono }}"
+            },
+            {
+              "name": "From",
+              "value": "whatsapp:+14155238886"
+            },
+            {
+              "name": "Body",
+              "value": "=¡Hola crack! ⚽🔥 Tu reserva a nombre de *{{ $json.body.record.cliente_nombre }}* en la sede *{{ $json.body.record.sucursal_id.toUpperCase() }}* fue registrada.\n\nPara asegurarte el turno, recordá pagarlo/señarlo desde el siguiente link:\n👉 https://gestioncanchas.vercel.app/pago?reserva={{ $json.body.record.id }}\n\n¡Volá a pagarlo que los turnos se agotan al toque! 🏟️🏃‍♂️💨"
+            }
+          ]
+        }
+      },
+      "id": "twilio-whatsapp-send",
+      "name": "Enviar WhatsApp (Twilio)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        380,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Reservas Web": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp (Twilio)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": {},
+  "meta": {
+    "templateId": ""
+  },
+  "pinData": {}
+}

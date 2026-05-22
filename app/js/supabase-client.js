@@ -49,7 +49,7 @@ const DB = {
     if (error) throw error;
   },
 
-  async reservarDesdeWeb({ turnoId, clienteNombre, sucursalId, montoSena = 0 }) {
+  async reservarDesdeWeb({ turnoId, clienteNombre, clienteTelefono, sucursalId, montoSena = 0 }) {
     // 1. Marcar el turno como reservado
     await this.reservarTurno(turnoId, clienteNombre);
     
@@ -57,6 +57,7 @@ const DB = {
     const { error } = await db.from('reservas_web').insert([{
       turno_id: turnoId,
       cliente_nombre: clienteNombre,
+      cliente_telefono: clienteTelefono ? fmt.phone(clienteTelefono) : null,
       sucursal_id: sucursalId,
       monto_seña: montoSena,
       estado_pago: montoSena > 0 ? 'señado' : 'pendiente'
@@ -65,6 +66,19 @@ const DB = {
     if (error) {
       console.warn("No se pudo registrar en reservas_web, pero el turno quedó reservado:", error);
     }
+  },
+
+  async anotarEnListaEspera({ clienteNombre, clienteTelefono, sucursalId, deporte, fecha, hora }) {
+    const { error } = await db.from('lista_espera').insert([{
+      cliente_nombre: clienteNombre,
+      cliente_telefono: fmt.phone(clienteTelefono),
+      sucursal_id: sucursalId,
+      deporte: deporte,
+      fecha: fecha,
+      hora: hora
+    }]);
+    if (error) throw error;
+    return true;
   },
 
   async cancelarTurno(turnoId) {
@@ -270,6 +284,9 @@ const DB = {
 
   // --- CRM JUGADORES ---
   async registrarJugador(datos) {
+    if (datos.telefono) {
+      datos.telefono = fmt.phone(datos.telefono);
+    }
     const { error } = await db.from('jugadores').upsert([datos], { onConflict: 'telefono' });
     if (error) throw error;
     return true;
@@ -324,7 +341,60 @@ const API = {
 const fmt = {
   money: (n) => '$' + (n || 0).toLocaleString('es-AR'),
   date: (d) => new Date(d).toLocaleDateString('es-AR'),
-  dateISO: (d) => (d || new Date()).toISOString().split('T')[0]
+  dateISO: (d) => (d || new Date()).toISOString().split('T')[0],
+  phone: (phone) => {
+    if (!phone) return '';
+    let cleaned = phone.replace(/\D/g, '');
+    
+    // Strip leading 0
+    if (cleaned.startsWith('0')) {
+      cleaned = cleaned.substring(1);
+    }
+    
+    // Strip leading 54
+    if (cleaned.startsWith('54')) {
+      cleaned = cleaned.substring(2);
+    }
+    
+    // Strip leading 9 (if it's before the area code, e.g. after stripping 54)
+    if (cleaned.startsWith('9')) {
+      cleaned = cleaned.substring(1);
+    }
+    
+    // Handle the '15' prefix or infix
+    if (cleaned.startsWith('15')) {
+      cleaned = cleaned.substring(2);
+      if (cleaned.length === 8) {
+        cleaned = '11' + cleaned; // Assume BA area code if only 8 digits left
+      }
+    } else {
+      // If it contains 15 in the middle (e.g. 111537908579 -> 1137908579)
+      for (let idx of [2, 3, 4]) {
+        if (cleaned.substring(idx, idx + 2) === '15') {
+          cleaned = cleaned.substring(0, idx) + cleaned.substring(idx + 2);
+          break;
+        }
+      }
+    }
+    
+    // If we only have 8 digits, assume Buenos Aires (area code 11)
+    if (cleaned.length === 8) {
+      cleaned = '11' + cleaned;
+    }
+    
+    // Now prepend 549 to the clean 10-digit number
+    if (cleaned.length === 10) {
+      return '549' + cleaned;
+    }
+    
+    // Fallback: if it's already 13 digits and starts with 549, return it
+    if (cleaned.length === 13 && cleaned.startsWith('549')) {
+      return cleaned;
+    }
+    
+    // Absolute fallback
+    return '549' + cleaned;
+  }
 };
 
 // Exponer en window para compatibilidad con inline onclick
