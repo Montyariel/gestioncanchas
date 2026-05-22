@@ -519,7 +519,7 @@ app.post('/api/webhook/turno-cancelado', async (req, res) => {
     console.log(`[Webhook] ¡Anotado encontrado! ${jugador.cliente_nombre} (${jugador.cliente_telefono})`);
 
     // 3. Mandar WhatsApp de alerta
-    const msgWA = `¡Che crack! ⚽🔥 Se acaba de liberar un turno para *${jugador.deporte}* en la sede *${jugador.sucursal_id.toUpperCase()}*.\n\n📅 *Fecha:* ${jugador.fecha}\n⏰ *Hora:* ${jugador.hora}\n\nComo te anotaste en la lista de espera, tenés la prioridad absoluta. ¡Volá a responder este mensaje si lo querés antes de que se lo quede otro! 🏟️🏃‍♂️💨`;
+    const msgWA = `¡Che crack! ⚽🔥 Se acaba de liberar un turno para *${jugador.deporte}* en la sede *${jugador.sucursal_id.toUpperCase()}*.\n\n📅 *Fecha:* ${jugador.fecha}\n⏰ *Hora:* ${jugador.hora}\n\nComo te anotaste in la lista de espera, tenés la prioridad absoluta. ¡Volá a responder este mensaje si lo querés antes de que se lo quede otro! 🏟️🏃‍♂️💨`;
 
     const tel = jugador.cliente_telefono.startsWith('+')
       ? jugador.cliente_telefono
@@ -542,6 +542,96 @@ app.post('/api/webhook/turno-cancelado', async (req, res) => {
     return res.status(200).json({ ok: false, msg: 'Error interno.' });
   }
 });
+
+
+// ============================================================
+// WEBHOOK: Supabase → Reservas Web → WhatsApp de Confirmación
+// URL estable en producción: /api/webhook/reserva-web
+// ============================================================
+async function handleReservaWebWebhook(req, res) {
+  try {
+    const payload = req.body;
+    const record = payload?.record;
+    if (!record) {
+      return res.status(200).json({ ok: false, msg: 'Payload incompleto, ignorado.' });
+    }
+
+    const clienteNombre = record.cliente_nombre;
+    const clienteTelefono = record.cliente_telefono;
+    const turnoId = record.turno_id;
+    const sucursalId = record.sucursal_id || 'lanus';
+
+    if (!clienteNombre || !clienteTelefono || !turnoId) {
+      return res.status(200).json({ ok: false, msg: 'Faltan datos de la reserva, ignorado.' });
+    }
+
+    const db = getAdminSupabase();
+    // 1. Obtener detalles del turno y de la cancha
+    const { data: turno, error: errTurno } = await db
+      .from('turnos')
+      .select('fecha, hora, canchas(nombre, precio)')
+      .eq('id', turnoId)
+      .single();
+
+    if (errTurno || !turno) {
+      console.error('[Webhook Reserva] Turno no encontrado:', errTurno);
+      return res.status(200).json({ ok: false, msg: 'Turno no encontrado.' });
+    }
+
+    const fecha = turno.fecha;
+    const hora = (turno.hora || '').substring(0, 5);
+    const canchaNombre = turno.canchas?.nombre || 'Cancha';
+
+    console.log(`[Webhook Reserva] Nueva reserva detectada — Cliente: ${clienteNombre}, Tel: ${clienteTelefono}`);
+
+    // 2. Generar link de pago seña dinámico
+    let linkPagoStr = '';
+    try {
+      const preference = new Preference(mpClient);
+      const result = await preference.create({
+        body: {
+          items: [{
+            title: `Seña Cancha: ${canchaNombre} (${hora})`,
+            unit_price: 5000,
+            quantity: 1,
+            currency_id: 'ARS'
+          }],
+          back_urls: {
+            success: `${process.env.APP_URL || 'https://gestioncanchas.vercel.app'}/client/index.html?status=success`,
+            failure: `${process.env.APP_URL || 'https://gestioncanchas.vercel.app'}/client/index.html?status=failure`,
+            pending: `${process.env.APP_URL || 'https://gestioncanchas.vercel.app'}/client/index.html?status=pending`
+          },
+          auto_return: "approved",
+        }
+      });
+      if (result && result.init_point) {
+        linkPagoStr = `\n\n💳 *Link de pago (Seña $5.000):* ${result.init_point}`;
+      }
+    } catch (errMp) {
+      console.error('[Webhook Reserva] Error al crear preferencia de Mercado Pago:', errMp.message);
+    }
+
+    // 3. Mandar WhatsApp de confirmación
+    const msgWA = `¡Hola *${clienteNombre}*! ⚽🔥 Tu reserva en *canchaOS* está confirmada.\n\n🏟️ *Sede:* ${sucursalId.toUpperCase()}\n🏆 *Cancha:* ${canchaNombre}\n📅 *Fecha:* ${fecha}\n⏰ *Hora:* ${hora} hs${linkPagoStr}\n\n¡Te esperamos para el picado! Volá a pagar la seña si no lo hiciste para asegurar tu lugar. 🏟️🏃‍♂️💨`;
+
+    const tel = clienteTelefono.startsWith('+') ? clienteTelefono : `+${clienteTelefono}`;
+    const waResult = await twilioSendWhatsApp(tel, msgWA);
+
+    if (waResult && waResult.status === 201) {
+      console.log(`[Webhook Reserva] ✅ WhatsApp de confirmación enviado a ${tel}`);
+      return res.status(200).json({ ok: true, msg: `WhatsApp de confirmación enviado a ${clienteNombre}.`, sid: waResult.body.sid });
+    } else {
+      console.error('[Webhook Reserva] Error enviando WhatsApp:', waResult);
+      return res.status(200).json({ ok: false, msg: 'Error enviando WhatsApp.' });
+    }
+  } catch (err) {
+    console.error('[Webhook Reserva] Error inesperado:', err.message);
+    return res.status(200).json({ ok: false, msg: 'Error interno.' });
+  }
+}
+
+app.post('/api/webhook/reserva-web', handleReservaWebWebhook);
+app.post('/api/webhook/reserva-confirmada', handleReservaWebWebhook);
 
 app.get('*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'app', 'index.html'));
