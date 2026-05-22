@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
+const https = require('https');
 const { z } = require('zod');
 const { createClient } = require('@supabase/supabase-js');
 const { MercadoPagoConfig, Preference } = require('mercadopago');
@@ -9,11 +10,52 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const app = express();
 
+// ============================================================
+// TWILIO: Envío directo de WhatsApp sin depender de n8n
+// ============================================================
+function twilioSendWhatsApp(to, body) {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken  = process.env.TWILIO_AUTH_TOKEN;
+  if (!accountSid || !authToken) {
+    console.warn('[Twilio] Faltan credenciales en .env (TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN)');
+    return Promise.resolve(null);
+  }
+  const postData = new URLSearchParams({
+    To:   `whatsapp:${to}`,
+    From: 'whatsapp:+14155238886',
+    Body: body
+  }).toString();
+  const auth = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: 'api.twilio.com',
+      path: `/2010-04-01/Accounts/${accountSid}/Messages.json`,
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type':  'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(postData)
+      }
+    };
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        try { resolve({ status: res.statusCode, body: JSON.parse(data) }); }
+        catch(e) { resolve({ status: res.statusCode, body: data }); }
+      });
+    });
+    req.on('error', reject);
+    req.write(postData);
+    req.end();
+  });
+}
+
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://cdn.tailwindcss.com", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
       imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://*.supabase.co", "https://lh3.googleusercontent.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
@@ -406,6 +448,99 @@ app.get('/api/agent/run-all', agentAuth, async (req, res) => {
     resultados.sesiones_abiertas = (abiertas || []).length;
   } catch (e) { resultados.sesiones_error = e.message; }
   res.json({ ok: true, timestamp: new Date().toISOString(), resultados });
+});
+
+
+// ============================================================
+// WEBHOOK: Supabase → Lista de Espera → WhatsApp (SIN n8n)
+// URL estable en producción: /api/webhook/turno-cancelado
+// Configurar en Supabase → Database → Webhooks
+// ============================================================
+app.post('/api/webhook/turno-cancelado', async (req, res) => {
+  try {
+    const payload = req.body;
+
+    // Validar que sea una cancelación real (reservado: true → false)
+    const recordNuevo = payload?.record;
+    const recordViejo = payload?.old_record;
+
+    if (!recordNuevo || !recordViejo) {
+      return res.status(200).json({ ok: false, msg: 'Payload incompleto, ignorado.' });
+    }
+
+    const esCancelacion = (recordNuevo.reservado === false && recordViejo.reservado === true);
+    if (!esCancelacion) {
+      return res.status(200).json({ ok: false, msg: 'No es una cancelación, ignorado.' });
+    }
+
+    const canchaId = recordNuevo.cancha_id;
+    const fecha    = recordNuevo.fecha;
+    const hora     = (recordNuevo.hora || '').substring(0, 5); // '21:00:00' → '21:00'
+
+    console.log(`[Webhook] Cancelación detectada — cancha_id: ${canchaId}, fecha: ${fecha}, hora: ${hora}`);
+
+    // 1. Obtener datos de la cancha (sucursal + tipo/deporte)
+    const db = getAdminSupabase();
+    const { data: cancha, error: errCancha } = await db
+      .from('canchas').select('sucursal_id, tipo').eq('id', canchaId).single();
+
+    if (errCancha || !cancha) {
+      console.error('[Webhook] Cancha no encontrada:', errCancha);
+      return res.status(200).json({ ok: false, msg: 'Cancha no encontrada.' });
+    }
+
+    // Mapear tipo de cancha al deporte que usa lista_espera
+    const deporte = cancha.tipo === 'Polvo de ladrillo' ? 'Pádel' : cancha.tipo;
+
+    console.log(`[Webhook] Buscando en lista_espera → sucursal: ${cancha.sucursal_id}, deporte: ${deporte}, fecha: ${fecha}, hora: ${hora}`);
+
+    // 2. Buscar el primero en lista de espera para ese slot exacto
+    const { data: espera, error: errEspera } = await db
+      .from('lista_espera')
+      .select('*')
+      .eq('sucursal_id', cancha.sucursal_id)
+      .eq('deporte', deporte)
+      .eq('fecha', fecha)
+      .eq('hora', hora)
+      .order('created_at', { ascending: true })
+      .limit(1);
+
+    if (errEspera) {
+      console.error('[Webhook] Error consultando lista_espera:', errEspera);
+      return res.status(200).json({ ok: false, msg: 'Error consultando lista_espera.' });
+    }
+
+    if (!espera || espera.length === 0) {
+      console.log('[Webhook] Nadie en lista de espera para este slot.');
+      return res.status(200).json({ ok: true, msg: 'Sin anotados en lista de espera.' });
+    }
+
+    const jugador = espera[0];
+    console.log(`[Webhook] ¡Anotado encontrado! ${jugador.cliente_nombre} (${jugador.cliente_telefono})`);
+
+    // 3. Mandar WhatsApp de alerta
+    const msgWA = `¡Che crack! ⚽🔥 Se acaba de liberar un turno para *${jugador.deporte}* en la sede *${jugador.sucursal_id.toUpperCase()}*.\n\n📅 *Fecha:* ${jugador.fecha}\n⏰ *Hora:* ${jugador.hora}\n\nComo te anotaste en la lista de espera, tenés la prioridad absoluta. ¡Volá a responder este mensaje si lo querés antes de que se lo quede otro! 🏟️🏃‍♂️💨`;
+
+    const tel = jugador.cliente_telefono.startsWith('+')
+      ? jugador.cliente_telefono
+      : `+${jugador.cliente_telefono}`;
+
+    const waResult = await twilioSendWhatsApp(tel, msgWA);
+
+    if (waResult && waResult.status === 201) {
+      console.log(`[Webhook] ✅ WhatsApp enviado a ${tel}. SID: ${waResult.body.sid}`);
+      // 4. Borrar de lista de espera para no volver a notificar
+      await db.from('lista_espera').delete().eq('id', jugador.id);
+      return res.status(200).json({ ok: true, msg: `WhatsApp enviado a ${jugador.cliente_nombre}.`, sid: waResult.body.sid });
+    } else {
+      console.error('[Webhook] Error enviando WhatsApp:', waResult);
+      return res.status(200).json({ ok: false, msg: 'Error enviando WhatsApp.' });
+    }
+
+  } catch (err) {
+    console.error('[Webhook] Error inesperado:', err.message);
+    return res.status(200).json({ ok: false, msg: 'Error interno.' });
+  }
 });
 
 app.get('*splat', (req, res) => {
