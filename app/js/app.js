@@ -15,6 +15,7 @@ const App = {
     buffet:      { render: (s) => BuffetView.render(s),      label: 'Buffet' },
     gastos:      { render: (s) => GastosView.render(s),      label: 'Gastos' },
     goleadores:  { render: (s) => GoleadoresView.render(s),  label: 'Goleadores' },
+    whatsapp:    { render: (s) => WhatsappView.render(s),    label: 'WhatsApp Business' },
     torneos:     { render: (s) => TorneosView.render(s),     label: 'Torneos' },
     matchmaking: { render: (s) => MatchmakingView.render(s), label: 'Matchmaking' },
     reportes:    { render: (s) => ReportesView.render(s),    label: 'Reportes' },

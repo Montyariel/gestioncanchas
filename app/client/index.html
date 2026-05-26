@@ -94,9 +94,8 @@
             <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-dark font-bold">⚽</div>
             <h1 class="text-xl font-extrabold tracking-tighter text-primary">CanchaOS</h1>
         </div>
-        <select id="sedeSelector" class="bg-surface-high border border-slate-700 rounded-full px-4 py-1.5 text-xs font-bold focus:outline-none focus:border-primary">
+        <select id="sedeSelector" class="bg-surface-high border border-slate-700 rounded-full px-4 py-1.5 text-xs font-bold focus:outline-none focus:border-primary hidden">
             <option value="lanus">🏟️ Lanús</option>
-            <option value="belgrano">🏟️ Belgrano</option>
         </select>
     </header>
 
@@ -171,14 +170,20 @@
 
     <!-- Success Modal -->
     <div id="successModal" class="fixed inset-0 z-[100] bg-dark/95 flex items-center justify-center p-6 hidden">
-        <div class="text-center animate-slide-up">
+        <div class="text-center animate-slide-up max-w-sm">
             <div class="w-24 h-24 bg-primary rounded-full flex items-center justify-center text-dark text-5xl mx-auto mb-6 shadow-2xl shadow-primary/40">🏟️</div>
             <h2 class="text-4xl font-black mb-2 text-white italic tracking-tighter">¡GOOOOOL!</h2>
-            <p class="text-slate-400 mb-8">Tu reserva está confirmada crack. <br> Te esperamos en la cancha.</p>
-            <button onclick="location.reload()" class="w-full bg-white text-dark py-4 rounded-2xl font-black mb-4">LISTO</button>
-            <a href="#" id="waLink" class="text-primary font-bold flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined">share</span> Avisale a los pibes
+            <p class="text-slate-400 mb-8 text-sm">Tu reserva está confirmada crack.<br>Convocá a tu equipo para armar el partido.</p>
+            
+            <!-- Botón de Convocatoria Obligatorio -->
+            <a href="#" id="waLink" target="_blank" class="w-full bg-[#25D366] text-white py-4 px-6 rounded-2xl font-black mb-4 flex items-center justify-center gap-2 shadow-lg shadow-[#25D366]/20 transition-transform active:scale-95">
+                CONVOCAR EQUIPO POR WHATSAPP 📢
             </a>
+            
+            <!-- Botón de Finalización (oculto hasta compartir) -->
+            <button id="successListoBtn" onclick="location.reload()" class="w-full bg-white text-dark py-4 rounded-2xl font-black mb-4 hidden active:scale-95 transition-transform">
+                ¡LISTO, IR AL VESTUARIO! 🏃‍♂️
+            </button>
         </div>
     </div>
 

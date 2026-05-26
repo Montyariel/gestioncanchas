@@ -1,0 +1,24 @@
+{
+  "name": "CanchaOS — Sistema de Gestión Deportiva",
+  "short_name": "CanchaOS",
+  "description": "Sistema administrativo e inteligente para complejos de fútbol y pádel. Gestión de turnos, buffet offline-first y auditoría en tiempo real.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#111319",
+  "theme_color": "#111319",
+  "icons": [
+    {
+      "src": "./img/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./img/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
