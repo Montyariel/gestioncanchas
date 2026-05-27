@@ -863,7 +863,7 @@ const WhatsappView = {
               <span class="text-[10px] text-slate-500">¿Habilitar envíos de API reales?</span>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="waGatewayActive" class="sr-only peer" \${settings.active ? 'checked' : ''}>
+              <input type="checkbox" id="waGatewayActive" class="sr-only peer" ${settings.active ? 'checked' : ''}>
               <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#c3f400]"></div>
             </label>
           </div>
@@ -871,19 +871,19 @@ const WhatsappView = {
           <!-- Endpoint Input -->
           <div class="space-y-1">
             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">API Endpoint URL</label>
-            <input type="url" id="waGatewayEndpoint" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#c3f400]" placeholder="https://api.tuservidor.com/v1/messages" value="\${settings.endpoint || ''}">
+            <input type="url" id="waGatewayEndpoint" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#c3f400]" placeholder="https://api.tuservidor.com/v1/messages" value="${settings.endpoint || ''}">
           </div>
 
           <!-- Token Input -->
           <div class="space-y-1">
             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">API Bearer Token / Secret</label>
-            <input type="password" id="waGatewayToken" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#c3f400]" placeholder="Bearer o API Token de autenticación" value="\${settings.token || ''}">
+            <input type="password" id="waGatewayToken" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#c3f400]" placeholder="Bearer o API Token de autenticación" value="${settings.token || ''}">
           </div>
 
           <!-- Owner Phone -->
           <div class="space-y-1">
             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">WhatsApp del Dueño (Alertas de Caja)</label>
-            <input type="text" id="waGatewayOwnerPhone" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#c3f400]" placeholder="5491122334455" value="\${settings.ownerPhone || '5491122334455'}">
+            <input type="text" id="waGatewayOwnerPhone" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#c3f400]" placeholder="5491122334455" value="${settings.ownerPhone || '5491122334455'}">
             <span class="text-[9px] text-slate-500 block">Número de Ariel para recibir alertas inmediatas de faltantes de caja.</span>
           </div>
         </div>
@@ -915,12 +915,12 @@ const WhatsappView = {
 
     App.toast('Enviando mensaje piloto... 🚀', 'info');
 
-    const text = \`🏟️ *¡GOLAZO! CANCHAOS CONEXIÓN VERIFICADA* 🏟️\\n\\nHola Ariel, Nico al habla. Te confirmo que enlazamos el Gateway API a tu WhatsApp con éxito. El agente 24/7 de CanchaOS está listo para mantenerte alerta ante cualquier discrepancia. ⚽🔥\`;
+    const text = `🏟️ *¡GOLAZO! CANCHAOS CONEXIÓN VERIFICADA* 🏟️\n\nHola Ariel, Nico al habla. Te confirmo que enlazamos el Gateway API a tu WhatsApp con éxito. El agente 24/7 de CanchaOS está listo para mantenerte alerta ante cualquier discrepancia. ⚽🔥`;
 
     if (!active) {
       setTimeout(() => {
         App.toast('🧪 Simulación: Mensaje piloto exitoso (ver consola).', 'success');
-        console.log(\`[WhatsappGateway TEST SIMULATED] To \${ownerPhone}: \${text}\`);
+        console.log(`[WhatsappGateway TEST SIMULATED] To ${ownerPhone}: ${text}`);
       }, 800);
       return;
     }
@@ -930,14 +930,14 @@ const WhatsappView = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': token ? \`Bearer \${token}\` : ''
+          'Authorization': token ? `Bearer ${token}` : ''
         },
         body: JSON.stringify({ phone: ownerPhone, message: text })
       });
       if (response.ok) {
         App.toast('🚀 ¡Mensaje piloto enviado con éxito al WhatsApp del dueño!', 'success');
       } else {
-        App.toast(\`⚠️ Error de API: Código HTTP \${response.status}\`, 'error');
+        App.toast(`⚠️ Error de API: Código HTTP ${response.status}`, 'error');
       }
     } catch (e) {
       App.toast('❌ Falló la conexión: ' + e.message, 'error');
