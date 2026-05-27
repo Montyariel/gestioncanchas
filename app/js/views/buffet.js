@@ -1,4 +1,4 @@
-// ===== VISTA: BUFFET / STOCK =====
+// ===== VISTA: BUFFET / STOCK PREMIM POS =====
 const BuffetView = {
   cart: [],
   stockItems: [],
@@ -16,10 +16,10 @@ const BuffetView = {
     this._activeCategory = 'all';
     const container = document.getElementById('viewContainer');
     
-    // Mostramos un loader simple
+    // Loader de diseño premium
     container.innerHTML = `
       <div class="absolute inset-0 flex items-center justify-center bg-surface">
-        <div class="skeleton" style="width:300px;height:300px;border-radius:20px"></div>
+        <div class="skeleton" style="width:360px;height:360px;border-radius:24px"></div>
       </div>
     `;
 
@@ -35,17 +35,91 @@ const BuffetView = {
     const container = document.getElementById('viewContainer');
     
     const html = `
+    <style>
+      /* Liquid Hover Animation */
+      @keyframes waveRise {
+        0% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-8px) rotate(180deg); }
+        100% { transform: translateY(0) rotate(360deg); }
+      }
+      @keyframes bubbleFloat {
+        0% { transform: translateY(20px) scale(0.3); opacity: 0; }
+        30% { opacity: 0.8; }
+        80% { opacity: 0.4; }
+        100% { transform: translateY(-160px) scale(1.1); opacity: 0; }
+      }
+      .liquid-bg {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        z-index: 1;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .group:hover .liquid-bg {
+        opacity: 1;
+      }
+      .liquid-wave-1 {
+        position: absolute;
+        bottom: -70%; left: -50%;
+        width: 200%; height: 200%;
+        background: rgba(195, 244, 0, 0.08);
+        border-radius: 38%;
+        animation: waveRise 7s infinite linear;
+      }
+      .liquid-wave-2 {
+        position: absolute;
+        bottom: -75%; left: -45%;
+        width: 190%; height: 190%;
+        background: rgba(0, 227, 253, 0.05);
+        border-radius: 42%;
+        animation: waveRise 11s infinite linear;
+      }
+      .bubble-1 { position: absolute; bottom: 0; left: 20%; width: 6px; height: 6px; background: rgba(195,244,0,0.3); border-radius: 50%; animation: bubbleFloat 4s infinite ease-in; }
+      .bubble-2 { position: absolute; bottom: 0; left: 50%; width: 4px; height: 4px; background: rgba(0,227,253,0.3); border-radius: 50%; animation: bubbleFloat 3s infinite ease-in; animation-delay: 1.5s; }
+      .bubble-3 { position: absolute; bottom: 0; left: 75%; width: 8px; height: 8px; background: rgba(195,244,0,0.25); border-radius: 50%; animation: bubbleFloat 5s infinite ease-in; animation-delay: 0.8s; }
+
+      /* Spring Easing Elastic Cart Sidebar */
+      .spring-cart {
+        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      
+      /* Bento combo card premium shine */
+      .bento-glow-purple {
+        background: linear-gradient(135deg, rgba(30, 27, 46, 0.95), rgba(17, 19, 25, 0.98));
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05);
+        border: 1px solid rgba(156, 240, 255, 0.1);
+      }
+      .bento-glow-purple:hover {
+        border-color: #00e3fd;
+        box-shadow: 0 20px 45px rgba(0, 227, 253, 0.15);
+      }
+      .bento-glow-lime {
+        background: linear-gradient(135deg, rgba(29, 32, 26, 0.95), rgba(17, 19, 25, 0.98));
+        box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05);
+        border: 1px solid rgba(195, 244, 0, 0.1);
+      }
+      .bento-glow-lime:hover {
+        border-color: #c3f400;
+        box-shadow: 0 20px 45px rgba(195, 244, 0, 0.15);
+      }
+    </style>
+
     <div class="absolute inset-0 flex bg-background overflow-hidden">
-      <!-- Catalog Area -->
-      <div class="flex-1 overflow-y-auto p-16">
-        <header class="mb-10 flex items-center justify-between">
+      <!-- Catalog Area (Touch POS Grid) -->
+      <div class="flex-1 overflow-y-auto p-8 md:p-12">
+        <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h2 class="font-h1 text-h1 text-on-surface mb-1">Buffet &amp; Bar</h2>
-            <p class="font-body-lg text-body-lg text-on-surface-variant">Elevate your game with our premium selections.</p>
+            <h2 class="font-h1 text-h1 text-on-surface mb-1 flex items-center gap-2">
+              <span class="material-symbols-outlined text-[#c3f400] text-4xl">local_pizza</span>
+              Buffet &amp; Bar
+            </h2>
+            <p class="text-on-surface-variant text-sm font-medium">Despacho táctil exprés de bebidas, minutas y combos. Sincronización inmutable.</p>
           </div>
-          <button onclick="BuffetView.openAdminModal()" class="flex items-center gap-2 bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] px-5 py-2.5 rounded-xl font-bold transition-all shadow-md cursor-pointer border-none font-body-md">
+          <button onclick="BuffetView.openAdminModal()" class="flex items-center gap-2 bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] px-5 py-2.5 rounded-xl font-bold transition-all shadow-md cursor-pointer border-none font-body-md active:scale-95">
             <span class="material-symbols-outlined" style="font-size: 20px;">inventory_2</span>
-            Gestionar Inventario
+            Auditar Inventario
           </button>
         </header>
 
@@ -55,58 +129,65 @@ const BuffetView = {
           <span><strong>Modo Resiliente Offline Activo:</strong> Estás sin conexión a internet. Podés reponer o vender stock normalmente, las operaciones se guardarán localmente y se sincronizarán al recuperar la señal.</span>
         </div>
 
-        <!-- Quick Order Presets (Bento) -->
-        <section class="mb-16">
-          <h3 class="font-h3 text-h3 text-on-surface mb-6 flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary-fixed" data-icon="bolt">bolt</span>
-            Quick Presets
+        <!-- Quick Order Presets (Futuristic Bento Grid) -->
+        <section class="mb-12">
+          <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#c3f400] text-[18px]">bolt</span>
+            Combos Promocionales Nico
           </h3>
-          <div class="grid grid-cols-3 gap-6">
-            <div onclick="BuffetView.addPreset('Third Half Combo')" class="col-span-2 relative rounded-xl overflow-hidden group cursor-pointer border border-outline-variant hover:border-primary-fixed transition-colors h-64">
-              <img alt="" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzaEJ9IGGc0nMdJr7Xeg9ZtzW2QW9wP5VBTfp6_IfurppHkAWoNXANOQ_VlGx2Q5v84xWrUs82mYISnwrCZKxqqQTGDlKbS-h4HqGrB4PGo3DNguXGx_bUv2MN8S7vLVPSv6YYHf4dy-4jsetRuykOu0tHw43QmMmGxcqaVi-v_ZGL6UTbvtEPos_X8xowSGPztqXqc5Qn-1wb60OJbNn2X-gmUvgi9FI3hau6A2444gV21UtFk_FpKklmZ1jG2_uIeSyhV8-v54IS"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
-              <div class="absolute bottom-0 left-0 p-6 w-full flex justify-between items-end">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Combo 1 (2/3 size) -->
+            <div onclick="BuffetView.addPreset('Third Half Combo')" class="lg:col-span-2 relative rounded-3xl overflow-hidden group cursor-pointer bento-glow-lime transition-all duration-300 h-64 flex flex-col justify-end">
+              <img alt="Pizza y Cerveza" class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 opacity-45" src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=800&auto=format&fit=crop"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-[#0c0e14] via-[#0c0e14]/70 to-transparent z-10"></div>
+              
+              <div class="relative z-20 p-6 w-full flex flex-col md:flex-row justify-between md:items-end gap-4">
                 <div>
-                  <span class="font-label-caps text-label-caps text-secondary-fixed bg-secondary-fixed/10 px-3 py-1 rounded-full mb-2 inline-block">MOST POPULAR</span>
-                  <h4 class="font-h2 text-h2 text-on-surface leading-tight mb-1">Third Half Combo</h4>
-                  <p class="font-body-md text-body-md text-on-surface-variant">6 Ice-cold Beers + Large Neapolitan Pizza</p>
+                  <span class="text-[9px] font-bold text-[#c3f400] bg-[#c3f400]/10 px-2.5 py-1 rounded-full mb-2 inline-block border border-[#c3f400]/20 tracking-wider">EL PREFERIDO DE BELGRANO/LANUS</span>
+                  <h4 class="text-2xl font-black text-on-surface leading-tight mb-1">Combo 3er Tiempo 🍻🍕</h4>
+                  <p class="text-xs text-on-surface-variant font-medium">6 Cervezas heladas Quilmes/Brahma + 1 Pizza Grande de Muzzarella al horno.</p>
                 </div>
-                <button class="bg-primary-fixed text-on-primary-fixed px-6 py-2 rounded-lg font-h3 text-body-md whitespace-nowrap hover:opacity-90 active:scale-95 transition-all">
-                  Add - $35
+                <button class="bg-[#c3f400] text-[#161e00] px-5 py-2.5 rounded-xl font-bold text-sm whitespace-nowrap hover:bg-[#d4ff1a] active:scale-95 transition-all shadow-lg shadow-[#c3f400]/10">
+                  Agregar combo
                 </button>
               </div>
             </div>
             
-            <div onclick="BuffetView.addPreset('Recovery Pack')" class="col-span-1 relative rounded-xl overflow-hidden group cursor-pointer border border-outline-variant hover:border-primary-fixed transition-colors h-64">
-              <img alt="" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmMlD1WHpDMrWLQqVRz6CodZgRenJJXwvGzj4dFLCwyBUQdLgTyQ_x8DQ4d4tDbkBh4Ry0FTzpS8tuyaZdPWj4WKQ54_w7EUm_ru4iW7OSXf4qars2fBd-2xWblX6iQOzUbjkl3oKJINkw1alC9m5vh5ai1zVPgLkh3Yo3cBw7CaAdv7fxf3uuPsVApMdzH9tGton57SudAqMSa7S0jvIVP6cV9C-kILs5wQTCe2R2asyKnlWvMVPK36yECP96mltGpwv-OylS1yWh"/>
-              <div class="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
-              <div class="absolute bottom-0 left-0 p-6 w-full">
-                <h4 class="font-h3 text-h3 text-on-surface mb-1">Recovery Pack</h4>
-                <p class="font-body-md text-body-md text-on-surface-variant mb-4">2 Isotonics + Protein Bar</p>
-                <button class="w-full bg-surface-container-high text-on-surface border border-outline-variant px-4 py-2 rounded-lg font-h3 text-body-md hover:border-primary-fixed transition-all">
-                  Add - $12
-                </button>
+            <!-- Combo 2 (1/3 size) -->
+            <div onclick="BuffetView.addPreset('Recovery Pack')" class="lg:col-span-1 relative rounded-3xl overflow-hidden group cursor-pointer bento-glow-purple transition-all duration-300 h-64 flex flex-col justify-end">
+              <img alt="Gatorade" class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 opacity-45" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=800&auto=format&fit=crop"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-[#0c0e14] via-[#0c0e14]/70 to-transparent z-10"></div>
+              
+              <div class="relative z-20 p-6 w-full flex flex-col justify-between h-full text-left">
+                <span class="text-[9px] font-bold text-[#00e3fd] bg-[#00e3fd]/10 px-2.5 py-1 rounded-full border border-[#00e3fd]/20 tracking-wider self-start">POST-PARTIDO</span>
+                <div>
+                  <h4 class="text-xl font-black text-on-surface mb-1">Pack Recuperación ⚡🥤</h4>
+                  <p class="text-xs text-on-surface-variant font-medium mb-3">2 Gatorade/Powerade frías + 1 Alfajor Jorgito.</p>
+                  <button class="w-full bg-slate-800 text-slate-200 hover:text-white border border-slate-700 py-2 rounded-xl font-bold text-xs hover:border-[#00e3fd] transition-all">
+                    Cargar Pack
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         <!-- Category Nav -->
-        <div class="flex gap-4 mb-10 border-b border-surface-container-highest pb-3">
-          <button onclick="BuffetView.setCategory('all')" class="${this._activeCategory === 'all' ? 'font-h3 text-body-lg text-primary-fixed border-b-2 border-primary-fixed' : 'font-body-lg text-body-lg text-on-surface-variant hover:text-on-surface'} pb-2 px-2 transition-all cursor-pointer border-none bg-transparent">All Items</button>
-          <button onclick="BuffetView.setCategory('drinks')" class="${this._activeCategory === 'drinks' ? 'font-h3 text-body-lg text-primary-fixed border-b-2 border-primary-fixed' : 'font-body-lg text-body-lg text-on-surface-variant hover:text-on-surface'} pb-2 px-2 transition-all cursor-pointer border-none bg-transparent">Drinks</button>
-          <button onclick="BuffetView.setCategory('snacks')" class="${this._activeCategory === 'snacks' ? 'font-h3 text-body-lg text-primary-fixed border-b-2 border-primary-fixed' : 'font-body-lg text-body-lg text-on-surface-variant hover:text-on-surface'} pb-2 px-2 transition-all cursor-pointer border-none bg-transparent">Snacks</button>
-          <button onclick="BuffetView.setCategory('pizzas')" class="${this._activeCategory === 'pizzas' ? 'font-h3 text-body-lg text-primary-fixed border-b-2 border-primary-fixed' : 'font-body-lg text-body-lg text-on-surface-variant hover:text-on-surface'} pb-2 px-2 transition-all cursor-pointer border-none bg-transparent">Pizzas</button>
+        <div class="flex gap-2 md:gap-4 mb-8 border-b border-slate-800/80 pb-3 overflow-x-auto">
+          <button onclick="BuffetView.setCategory('all')" class="pb-2 px-3 transition-all cursor-pointer border-none bg-transparent ${this._activeCategory === 'all' ? 'font-bold text-[#c3f400] border-b-2 border-[#c3f400]' : 'text-slate-500 hover:text-slate-200'}">Todos</button>
+          <button onclick="BuffetView.setCategory('drinks')" class="pb-2 px-3 transition-all cursor-pointer border-none bg-transparent ${this._activeCategory === 'drinks' ? 'font-bold text-[#c3f400] border-b-2 border-[#c3f400]' : 'text-slate-500 hover:text-slate-200'}">Bebidas y Cervezas 🥤🍻</button>
+          <button onclick="BuffetView.setCategory('snacks')" class="pb-2 px-3 transition-all cursor-pointer border-none bg-transparent ${this._activeCategory === 'snacks' ? 'font-bold text-[#c3f400] border-b-2 border-[#c3f400]' : 'text-slate-500 hover:text-slate-200'}">Minutas y Snacks 🍔🍫</button>
+          <button onclick="BuffetView.setCategory('pizzas')" class="pb-2 px-3 transition-all cursor-pointer border-none bg-transparent ${this._activeCategory === 'pizzas' ? 'font-bold text-[#c3f400] border-b-2 border-[#c3f400]' : 'text-slate-500 hover:text-slate-200'}">Pizzas 🍕</button>
         </div>
 
-        <!-- Catalog Grid -->
+        <!-- Catalog Grid (Tactile POS Style) -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="buffetCatalogGrid">
           <!-- Items will be injected here -->
         </div>
       </div>
 
-      <!-- Cart Sidebar -->
-      <aside class="w-96 bg-surface-container-lowest border-l border-surface-container-highest flex flex-col shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-10" id="buffetCartSidebar">
+      <!-- Cart Sidebar (Spring Drawer) -->
+      <aside class="w-[360px] bg-slate-950 border-l border-slate-800 flex flex-col shadow-[-15px_0_35px_rgba(0,0,0,0.7)] z-10 spring-cart" id="buffetCartSidebar">
         <!-- Cart will be injected here -->
       </aside>
     </div>
@@ -124,25 +205,21 @@ const BuffetView = {
 
   getImg(name) {
     const n = name.toLowerCase();
-    if (n.includes('hamburguesa')) return '/assets/images/champion_burger.png';
-    if (n.includes('pancho')) return '/assets/images/executive_hotdog.png';
-    if (n.includes('picada')) return '/assets/images/premium_picada.png';
+    if (n.includes('hamburguesa')) return 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=600&auto=format&fit=crop';
+    if (n.includes('pancho') || n.includes('hotdog')) return 'https://images.unsplash.com/photo-1619740455993-9e612b1af08a?q=80&w=600&auto=format&fit=crop';
+    if (n.includes('picada')) return 'https://images.unsplash.com/photo-1541014741259-df5290dbb2f7?q=80&w=600&auto=format&fit=crop';
     
-    if (n.includes('coca') || n.includes('cola')) return '/assets/images/coca_cola.png';
-    if (n.includes('sprite') || n.includes('fanta')) return '/assets/images/sprite.png';
-    if (n.includes('gatorade') || n.includes('powerade')) return '/assets/images/gatorade.png';
-    if (n.includes('red bull') || n.includes('speed')) return '/assets/images/red_bull.png';
-    if (n.includes('agua')) return '/assets/images/agua_mineral.png';
-    if (n.includes('jugo') || n.includes('licuado')) return '/assets/images/sports_drinks.png';
-
-    if (n.includes('jorgito') || n.includes('alfajor')) return '/img/alfajor_jorgito.png';
-    if (n.includes('quilmes')) return '/img/cerveza_quilmes.png';
-    if (n.includes('heineken')) return '/img/cerveza_heineken.png';
-    if (n.includes('brahma')) return '/img/cerveza_brahma.png';
-    if (n.includes('cerveza') || n.includes('lager')) return 'https://lh3.googleusercontent.com/aida-public/AB6AXuCS5IFjU8KGfq6ywZTr3jfBJ3RwTFUsIdv4lkyyy40br1NyZc5CkZmv5zmvJ2dWqm_KqspBJt1TOymW4J3P59Hfe-3BdqdmNM-D-F1cyCtN75uizsiqbaH2nrh-iGYp--O7qOP2SB_18ajI98n1Rbwwyg07pCNfY83OSRaD6Af46YvAffcXqSZFZr8wBRGFvnrPXSrANZ7SvPmqUN3dgbd8Uz_OqY3BRtortovMwyiMMKtbvFgEhOhYc9MhjyJtGwvqaEzDzRv200Oa';
-    if (n.includes('pizza') || n.includes('pechera')) return 'https://lh3.googleusercontent.com/aida-public/AB6AXuDCU6ZHOgUQSYPAKJLg00qn7dNPMxTtY95hxnfNkuhZaZFr1XWTyBtiUMrG6ykkuaJbiEwNhY8KQNVsqhHIO5D_fLVjSfJuztEuCdR1-7k_cQXVWlZAxkLhlP9CT_PPZ80BZrioEXl_KSUv-wna6nVcRxNKk8r-qEvpqpBKDPpH_felVRKBwhukOAapcW1a0jrHHfmMj8wnGG1pLrlwjh9ILBF85hx2U21Qi3kag8QmuqZgkxLYbLbtq_uIIw1QqkhUhyRXCQSCHUM6';
+    if (n.includes('coca') || n.includes('cola')) return 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=600&auto=format&fit=crop';
+    if (n.includes('sprite')) return 'https://images.unsplash.com/photo-1625772290748-160b2a603897?q=80&w=600&auto=format&fit=crop';
+    if (n.includes('gatorade') || n.includes('powerade') || n.includes('isoton')) return 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=80&w=600&auto=format&fit=crop';
+    if (n.includes('red bull') || n.includes('energy') || n.includes('speed')) return 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=600&auto=format&fit=crop';
+    if (n.includes('agua')) return 'https://images.unsplash.com/photo-1523362628745-0c100150b504?q=80&w=600&auto=format&fit=crop';
+    
+    if (n.includes('alfajor') || n.includes('jorgito')) return 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?q=80&w=600&auto=format&fit=crop';
+    if (n.includes('cerveza') || n.includes('quilmes') || n.includes('heineken') || n.includes('brahma')) return 'https://images.unsplash.com/photo-1608270586620-248524c67de9?q=80&w=600&auto=format&fit=crop';
+    if (n.includes('pizza')) return 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=600&auto=format&fit=crop';
     if (n.includes('pelota')) return 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=600&auto=format&fit=crop';
-    return 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=600&auto=format&fit=crop';
+    return 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600&auto=format&fit=crop';
   },
 
   renderCatalog() {
@@ -150,7 +227,7 @@ const BuffetView = {
     if (!grid) return;
 
     if (!this.stockItems.length) {
-      grid.innerHTML = `<div class="col-span-full p-10 text-center text-on-surface-variant bg-surface-container rounded-xl">Sin stock cargado en esta sucursal</div>`;
+      grid.innerHTML = `<div class="col-span-full p-12 text-center text-slate-500 bg-slate-900 border border-slate-800 rounded-2xl">Sin stock cargado en esta sucursal</div>`;
       return;
     }
 
@@ -172,31 +249,53 @@ const BuffetView = {
     }
 
     if (!filtered.length) {
-      grid.innerHTML = `<div class="col-span-full p-10 text-center text-on-surface-variant bg-surface-container rounded-xl">Sin productos disponibles en esta categoría</div>`;
+      grid.innerHTML = `<div class="col-span-full p-12 text-center text-slate-500 bg-slate-900 border border-slate-800 rounded-2xl">Sin productos disponibles en esta categoría</div>`;
       return;
     }
 
     grid.innerHTML = filtered.map(s => {
-      const stockColor = s.cantidad < 5 ? 'text-error' : 'text-on-surface-variant';
-      const stockBadge = s.cantidad < 5 ? 
-        `<div class="absolute top-3 right-3 bg-error/90 backdrop-blur-sm px-2 py-1 rounded font-label-caps text-label-caps text-on-error">LOW: ${s.cantidad}</div>` : 
-        `<div class="absolute top-3 right-3 bg-background/80 backdrop-blur-sm px-2 py-1 rounded font-label-caps text-label-caps text-on-surface">${s.cantidad} en stock</div>`;
+      const isCritical = s.cantidad < 5;
+      const isOut = s.cantidad <= 0;
+      
+      const stockBadge = isOut 
+        ? `<div class="absolute top-3 right-3 bg-red-600/90 text-white backdrop-blur-sm px-2.5 py-1 rounded-md font-bold text-[9px] uppercase tracking-wider">AGOTADO ❌</div>`
+        : isCritical 
+          ? `<div class="absolute top-3 right-3 bg-red-500/20 border border-red-500/30 text-red-400 backdrop-blur-sm px-2.5 py-1 rounded-md font-bold text-[9px] uppercase tracking-wider animate-pulse">STOCK CRÍTICO: ${s.cantidad}</div>`
+          : `<div class="absolute top-3 right-3 bg-slate-950/80 border border-slate-800 text-slate-300 backdrop-blur-sm px-2.5 py-1 rounded-md font-bold text-[9px] uppercase tracking-wider">${s.cantidad} EN STOCK</div>`;
+
+      // Check if drink to add Liquid Animation in background
+      const isDrink = s.item.toLowerCase().includes('coke') || s.item.toLowerCase().includes('coca') || s.item.toLowerCase().includes('cola') || s.item.toLowerCase().includes('gatorade') || s.item.toLowerCase().includes('cerveza') || s.item.toLowerCase().includes('beer') || s.item.toLowerCase().includes('agua') || s.item.toLowerCase().includes('powerade') || s.item.toLowerCase().includes('sprite') || s.item.toLowerCase().includes('fanta');
 
       return `
-      <div class="bg-surface-container rounded-xl overflow-hidden border border-outline-variant border-t-surface-bright flex flex-col group">
-        <div class="h-48 overflow-hidden relative">
-          <img alt="${s.item}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${this.getImg(s.item)}"/>
+      <div class="relative bg-slate-900/60 rounded-3xl overflow-hidden border border-slate-800/80 hover:border-[#c3f400]/40 flex flex-col group cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-[#c3f400]/5 hover:translate-y-[-4px] active:scale-[0.98]" onclick="BuffetView.addToCart(${s.id})">
+        
+        <!-- Liquid Sloshing Container (only for drinks) -->
+        ${isDrink ? `
+          <div class="liquid-bg">
+            <div class="liquid-wave-1"></div>
+            <div class="liquid-wave-2"></div>
+            <div class="bubble-1"></div>
+            <div class="bubble-2"></div>
+            <div class="bubble-3"></div>
+          </div>
+        ` : ''}
+
+        <!-- Product Image -->
+        <div class="h-44 overflow-hidden relative bg-slate-950">
+          <img alt="${s.item}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isOut ? 'grayscale opacity-30' : ''}" src="${this.getImg(s.item)}"/>
           ${stockBadge}
         </div>
-        <div class="p-6 flex-1 flex flex-col">
-          <h4 class="font-h3 text-h3 text-on-surface mb-1 line-clamp-2" title="${s.item}">${s.item}</h4>
-          <p class="font-body-md text-body-md ${stockColor} mb-4 mt-2 flex-1">
-            ${s.cantidad > 0 ? `Disponible` : 'Agotado'}
-          </p>
-          <div class="flex items-center justify-between mt-auto">
-            <span class="font-stat-number text-stat-number text-on-surface">${fmt.money(s.precio_venta)}</span>
-            <button onclick="BuffetView.addToCart(${s.id})" ${s.cantidad <= 0 ? 'disabled' : ''} class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center text-on-surface hover:bg-primary-fixed hover:text-on-primary-fixed hover:border-primary-fixed transition-colors active:scale-95 disabled:opacity-50 disabled:pointer-events-none">
-              <span class="material-symbols-outlined" data-icon="add">add</span>
+
+        <!-- Info -->
+        <div class="p-5 flex-1 flex flex-col relative z-10 bg-slate-900/40">
+          <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">${s.categoria.toUpperCase()}</span>
+          <h4 class="text-md font-black text-slate-100 leading-tight mb-2 group-hover:text-[#c3f400] transition-colors line-clamp-1" title="${s.item}">${s.item}</h4>
+          
+          <div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-800/60">
+            <span class="text-lg font-black text-slate-100 font-mono">${fmt.money(s.precio_venta)}</span>
+            
+            <button ${isOut ? 'disabled' : ''} class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700/80 flex items-center justify-center text-slate-300 group-hover:bg-[#c3f400] group-hover:text-[#161e00] group-hover:border-[#c3f400] transition-all cursor-pointer">
+              <span class="material-symbols-outlined text-[18px]">add</span>
             </button>
           </div>
         </div>
@@ -215,29 +314,33 @@ const BuffetView = {
 
     if (this.cart.length === 0) {
       itemsHtml = `
-        <div class="flex-1 flex flex-col items-center justify-center text-on-surface-variant p-6 text-center">
-          <span class="material-symbols-outlined text-[64px] mb-4 opacity-50">shopping_cart</span>
-          <p class="font-body-md text-body-md">El carrito está vacío.</p>
-          <p class="text-sm mt-2 opacity-75">Agregá productos desde el catálogo.</p>
+        <div class="flex-1 flex flex-col items-center justify-center text-slate-500 p-6 text-center">
+          <span class="material-symbols-outlined text-[54px] mb-4 text-[#c3f400]/40">shopping_cart</span>
+          <p class="font-bold text-sm text-slate-400">El mostrador está vacío</p>
+          <p class="text-xs mt-1.5 opacity-70">Tocá los productos del catálogo a la izquierda para cargarlos.</p>
         </div>
       `;
     } else {
-      itemsHtml = `<div class="flex-1 overflow-y-auto p-6 flex flex-col gap-4">` + this.cart.map((item, index) => {
+      itemsHtml = `<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-3">` + this.cart.map((item, index) => {
         total += item.precio_venta * item.qty;
         return `
         <!-- Cart Item -->
-        <div class="flex items-center gap-4 bg-surface-container p-3 rounded-lg border border-outline-variant/50">
-          <div class="w-12 h-12 rounded bg-surface-container-high overflow-hidden">
+        <div class="flex items-center gap-3 bg-slate-900/60 p-3 rounded-2xl border border-slate-800/60">
+          <div class="w-12 h-12 rounded-xl bg-slate-950 overflow-hidden flex-shrink-0">
             <img alt="${item.item}" class="w-full h-full object-cover" src="${this.getImg(item.item)}"/>
           </div>
-          <div class="flex-1">
-            <h5 class="font-h3 text-body-md text-on-surface leading-tight">${item.item}</h5>
-            <span class="font-body-md text-sm text-on-surface-variant">${fmt.money(item.precio_venta)}</span>
+          <div class="flex-1 min-w-0">
+            <h5 class="text-xs font-bold text-slate-200 leading-snug truncate">${item.item}</h5>
+            <span class="text-xs font-mono font-bold text-[#c3f400] mt-0.5 block">${fmt.money(item.precio_venta)}</span>
           </div>
-          <div class="flex items-center gap-2 bg-background rounded-lg border border-outline-variant/50 p-1">
-            <button onclick="BuffetView.updateQty(${index}, -1)" class="w-6 h-6 rounded flex items-center justify-center hover:bg-surface-container-high text-on-surface-variant"><span class="material-symbols-outlined text-[16px]">remove</span></button>
-            <span class="font-stat-number text-sm w-4 text-center">${item.qty}</span>
-            <button onclick="BuffetView.updateQty(${index}, 1)" class="w-6 h-6 rounded flex items-center justify-center hover:bg-surface-container-high text-on-surface-variant"><span class="material-symbols-outlined text-[16px]">add</span></button>
+          <div class="flex items-center gap-1.5 bg-slate-950/80 rounded-xl border border-slate-800 p-1">
+            <button onclick="BuffetView.updateQty(${index}, -1); event.stopPropagation();" class="w-6 h-6 rounded-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 cursor-pointer border-none bg-transparent">
+              <span class="material-symbols-outlined text-[14px]">remove</span>
+            </button>
+            <span class="text-xs font-bold font-mono w-5 text-center text-slate-100">${item.qty}</span>
+            <button onclick="BuffetView.updateQty(${index}, 1); event.stopPropagation();" class="w-6 h-6 rounded-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 cursor-pointer border-none bg-transparent">
+              <span class="material-symbols-outlined text-[14px]">add</span>
+            </button>
           </div>
         </div>
         `;
@@ -245,47 +348,47 @@ const BuffetView = {
     }
 
     sidebar.innerHTML = `
-      <div class="p-6 border-b border-surface-container-highest flex items-center justify-between bg-surface-container/50">
-        <h2 class="font-h2 text-h3 text-on-surface flex items-center gap-2">
-          <span class="material-symbols-outlined">shopping_cart</span>
-          Current Order
+      <div class="p-6 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/60">
+        <h2 class="text-md font-bold text-slate-200 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#c3f400]">shopping_cart</span>
+          Pedido en Marcha
         </h2>
-        <span class="bg-primary-fixed/20 text-primary-fixed font-label-caps text-label-caps px-2 py-1 rounded-full">${totalItems} ITEMS</span>
+        <span class="bg-[#c3f400]/10 text-[#c3f400] font-bold text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#c3f400]/20">${totalItems} items</span>
       </div>
       
       ${itemsHtml}
       
-      <div class="p-6 bg-surface-container border-t border-surface-container-highest">
+      <div class="p-5 bg-slate-950 border-t border-slate-800/80">
         <div class="mb-4">
-          <label class="font-label-caps text-label-caps text-on-surface-variant mb-2 block">DELIVERY TARGET</label>
-          <div class="relative mb-4">
-            <select id="buffetDeliveryTarget" class="w-full bg-background border border-outline-variant rounded-lg py-3 px-4 appearance-none font-body-md text-on-surface focus:ring-1 focus:ring-primary-fixed focus:border-primary-fixed">
-              <option value="bar">Pick up at Bar</option>
-              <option value="cancha1">Send to Cancha 1</option>
-              <option value="cancha2">Send to Cancha 2</option>
-              <option value="cancha3">Send to Cancha 3</option>
+          <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Destino de Entrega</label>
+          <div class="relative mb-3">
+            <select id="buffetDeliveryTarget" class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 outline-none focus:border-[#c3f400] cursor-pointer">
+              <option value="bar">Recoge en Mostrador del Bar 🏟️</option>
+              <option value="cancha1">Enviar a Cancha 1 ⚽</option>
+              <option value="cancha2">Enviar a Cancha 2 ⚽</option>
+              <option value="cancha3">Enviar a Cancha 3 ⚽</option>
             </select>
-            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
           </div>
           
-          <label class="font-label-caps text-label-caps text-on-surface-variant mb-2 block">MÉTODO DE PAGO</label>
+          <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Medio de Pago</label>
           <div class="relative">
-            <select id="buffetMetodoPago" class="w-full bg-background border border-outline-variant rounded-lg py-3 px-4 appearance-none font-body-md text-on-surface focus:ring-1 focus:ring-primary-fixed focus:border-primary-fixed">
-              <option value="Efectivo">Efectivo</option>
-              <option value="Mercado Pago">Mercado Pago</option>
-              <option value="Transferencia">Transferencia Bancaria</option>
-              <option value="Débito">Tarjeta Débito</option>
+            <select id="buffetMetodoPago" class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 outline-none focus:border-[#c3f400] cursor-pointer">
+              <option value="Efectivo">💵 Efectivo Físico</option>
+              <option value="Mercado Pago">📱 Mercado Pago</option>
+              <option value="Transferencia">⚡ Transferencia Bancaria</option>
+              <option value="Débito">💳 Tarjeta Débito</option>
             </select>
-            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
           </div>
         </div>
-        <div class="flex justify-between items-end mb-6">
-          <span class="font-body-lg text-body-lg text-on-surface-variant">Total</span>
-          <span class="font-stat-number text-[32px] text-on-surface leading-none">${fmt.money(total)}</span>
+
+        <div class="flex justify-between items-end mb-5 pt-3 border-t border-slate-800/50">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Total del Pedido</span>
+          <span class="text-2xl font-black text-slate-100 font-mono leading-none">${fmt.money(total)}</span>
         </div>
-        <button onclick="BuffetView.checkout()" ${totalItems === 0 ? 'disabled' : ''} class="w-full bg-primary-fixed text-on-primary-fixed font-h2 text-body-lg py-4 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(195,244,0,0.2)] disabled:opacity-50 disabled:pointer-events-none">
-          <span class="material-symbols-outlined">send</span>
-          Place Order
+
+        <button onclick="BuffetView.checkout()" ${totalItems === 0 ? 'disabled' : ''} class="w-full bg-[#c3f400] text-[#161e00] font-bold py-3.5 rounded-xl hover:bg-[#d4ff1a] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer border-none shadow-lg shadow-[#c3f400]/10 disabled:opacity-30 disabled:pointer-events-none font-h3 text-sm">
+          <span class="material-symbols-outlined text-[18px] font-bold">check_circle</span>
+          Confirmar Venta y Despachar
         </button>
       </div>
     `;
@@ -293,14 +396,17 @@ const BuffetView = {
 
   addToCart(id) {
     const stockItem = this.stockItems.find(s => s.id === id);
-    if (!stockItem || stockItem.cantidad <= 0) return;
+    if (!stockItem || stockItem.cantidad <= 0) {
+      App.toast('Producto agotado en el stock ⚠️', 'error');
+      return;
+    }
 
     const existing = this.cart.find(c => c.id === id);
     if (existing) {
       if (existing.qty < stockItem.cantidad) {
         existing.qty++;
       } else {
-        App.toast('Stock insuficiente ❌', 'error');
+        App.toast('Stock disponible insuficiente ❌', 'error');
         return;
       }
     } else {
@@ -319,7 +425,7 @@ const BuffetView = {
     if (newQty <= 0) {
       this.cart.splice(index, 1);
     } else if (stockItem && newQty > stockItem.cantidad) {
-      App.toast('Stock insuficiente ❌', 'error');
+      App.toast('Stock disponible insuficiente ❌', 'error');
       return;
     } else {
       item.qty = newQty;
@@ -331,7 +437,7 @@ const BuffetView = {
     if (name === 'Third Half Combo') {
       const cerveza = this.stockItems.find(s => {
         const itemLower = s.item.toLowerCase();
-        return itemLower.includes('cerveza') || itemLower.includes('quilmes') || itemLower.includes('heineken') || itemLower.includes('brahma') || itemLower.includes('corona') || itemLower.includes('lager');
+        return itemLower.includes('cerveza') || itemLower.includes('quilmes') || itemLower.includes('heineken') || itemLower.includes('brahma') || itemLower.includes('lager');
       });
       const pizza = this.stockItems.find(s => {
         const itemLower = s.item.toLowerCase();
@@ -374,7 +480,7 @@ const BuffetView = {
       });
       const snack = this.stockItems.find(s => {
         const itemLower = s.item.toLowerCase();
-        return itemLower.includes('alfajor') || itemLower.includes('jorgito') || itemLower.includes('barra') || itemLower.includes('snack') || itemLower.includes('pancho') || itemLower.includes('hamburguesa');
+        return itemLower.includes('alfajor') || itemLower.includes('jorgito') || itemLower.includes('barra') || itemLower.includes('snack');
       });
       
       let addedAny = false;
@@ -415,17 +521,17 @@ const BuffetView = {
     if (this.cart.length === 0) return;
     
     const btn = document.querySelector('#buffetCartSidebar button[onclick="BuffetView.checkout()"]');
-    if (btn) btn.innerHTML = `<span class="material-symbols-outlined animate-spin">refresh</span> Procesando...`;
+    if (btn) btn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[16px]">refresh</span> Procesando...`;
 
     try {
       const total = this.cart.reduce((sum, item) => sum + item.precio_venta * item.qty, 0);
 
-      // Usar API segura para cada producto
+      // Despachar cada item de forma segura
       for (const item of this.cart) {
         await API.ventaBuffet(this.sucursal, item.item, item.qty);
       }
       
-      // Intentar registrar el ingreso en la Caja Diaria (si hay una abierta)
+      // Registrar el ingreso en la Caja Diaria activa
       try {
         const { data: sesiones } = await db
           .from('sesiones_caja')
@@ -447,14 +553,14 @@ const BuffetView = {
             descripcion: `[${metodoPago}] Venta Buffet: ${descItems}`
           }]);
         } else {
-          console.warn("No hay caja abierta. La venta no se registró en el Libro Diario.");
-          App.toast("⚠️ Venta realizada, pero la Caja está cerrada. Abrí la caja para futuros registros.", "error");
+          console.warn("No hay caja abierta. Venta guardada sin asentar en el arqueo.");
+          App.toast("⚠️ Venta realizada, pero la Caja está cerrada. Abrí el turno de caja para asentar ingresos.", "error");
         }
       } catch (errCaja) {
         console.error("Error registrando en caja:", errCaja);
       }
 
-      App.toast(`✅ Venta registrada: ${fmt.money(total)}`, 'success');
+      App.toast(`✅ ¡Venta registrada y descontada del stock: ${fmt.money(total)}!`, 'success');
       
       this.cart = [];
       this.stockItems = await DB.getStock(this.sucursal);
@@ -462,7 +568,7 @@ const BuffetView = {
       this.renderCatalog();
       this.renderCart();
     } catch(e) {
-      App.toast('Error al procesar venta: ' + e.message, 'error');
+      App.toast('Error al procesar la venta: ' + e.message, 'error');
       if (btn) btn.innerHTML = `<span class="material-symbols-outlined">send</span> Place Order`;
     }
   },
@@ -471,7 +577,7 @@ const BuffetView = {
   // ADMIN DE INVENTARIO SEGURO (MODAL + AUDITORÍA HISTÓRICA)
   // ============================================================
   
-  _activeAdminTab: 0, // 0 = Stock Control, 1 = Nuevo Producto, 2 = Auditoría, 3 = Recetas
+  _activeAdminTab: 0, 
   
   openAdminModal() {
     let modal = document.getElementById('inventoryAdminModal');
@@ -491,7 +597,6 @@ const BuffetView = {
     if (modal) {
       modal.classList.add('hidden');
     }
-    // Refrescar el catálogo principal tras salir del admin
     this.render(this.sucursal);
   },
 
@@ -506,7 +611,7 @@ const BuffetView = {
 
     const isOffline = !navigator.onLine;
 
-    // Renderizar cabecera del modal y tabs
+    // Estructura de cabecera y tabs del modal administrativo
     let contentHtml = `
     <div class="bg-slate-900 border border-slate-700 w-full max-w-5xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
       <!-- Modal Header -->
@@ -514,8 +619,8 @@ const BuffetView = {
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-lime-400 text-3xl">shield_person</span>
           <div>
-            <h3 class="text-xl font-bold text-slate-100 font-h2">Control y Auditoría de Stock</h3>
-            <p class="text-xs text-slate-400">canchaOS Blindaje Anti-Robo &amp; Carga Segura</p>
+            <h3 class="text-xl font-bold text-slate-100 font-h2">Auditoría de Buffet</h3>
+            <p class="text-xs text-slate-400">canchaOS Control de Pérdidas &amp; Abastecimiento Seguro</p>
           </div>
         </div>
         <button onclick="BuffetView.closeAdminModal()" class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-100 hover:bg-slate-700 transition-colors border-none cursor-pointer">
@@ -540,10 +645,10 @@ const BuffetView = {
           🍔 Cargar Nuevo Producto
         </button>
         <button onclick="BuffetView.setAdminTab(2)" class="flex-1 py-4 text-xs font-semibold border-b-2 transition-all cursor-pointer border-none ${this._activeAdminTab === 2 ? 'text-lime-400 border-lime-400 bg-lime-400/5' : 'text-slate-400 border-transparent bg-transparent hover:text-slate-200'}">
-          📋 Auditoría Inmutable
+          📋 Historial Seguro
         </button>
-        <button onclick="BuffetView.setAdminTab(3)" style="display: none;" class="flex-1 py-4 text-xs font-semibold border-b-2 transition-all cursor-pointer border-none ${this._activeAdminTab === 3 ? 'text-lime-400 border-lime-400 bg-lime-400/5' : 'text-slate-400 border-transparent bg-transparent hover:text-slate-200'}">
-          🧾 Recetas
+        <button onclick="BuffetView.setAdminTab(3)" class="flex-1 py-4 text-xs font-semibold border-b-2 transition-all cursor-pointer border-none ${this._activeAdminTab === 3 ? 'text-lime-400 border-lime-400 bg-lime-400/5' : 'text-slate-400 border-transparent bg-transparent hover:text-slate-200'}">
+          🧾 Recetas de Buffet
         </button>
       </div>
 
@@ -556,8 +661,8 @@ const BuffetView = {
       contentHtml += `
         <div class="flex flex-col gap-6">
           <div class="flex justify-between items-center">
-            <h4 class="text-md font-bold text-slate-200">Inventario Actual en ${this.sucursal.toUpperCase()}</h4>
-            <span class="text-xs text-slate-400">Presioná + o - para modificar cantidades. Todo cambio requiere motivo.</span>
+            <h4 class="text-md font-bold text-slate-200">Inventario en Sede ${this.sucursal.toUpperCase()}</h4>
+            <span class="text-xs text-slate-400">Los cambios de inventario manual requerirán especificar un motivo.</span>
           </div>
           
           <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/30">
@@ -579,18 +684,18 @@ const BuffetView = {
                     <td class="p-4 font-bold text-slate-200">${s.item}</td>
                     <td class="p-4 text-xs font-semibold text-slate-400">${s.categoria}</td>
                     <td class="p-4 text-center">
-                      <span class="px-2.5 py-1 rounded font-bold ${critical ? 'bg-red-500/20 text-red-400' : 'bg-slate-800 text-slate-300'}">
+                      <span class="px-2.5 py-1 rounded font-bold ${critical ? 'bg-red-500/20 text-red-400' : 'bg-slate-800 text-slate-300'} font-mono">
                         ${s.cantidad}
                       </span>
                     </td>
-                    <td class="p-4 text-right font-semibold text-lime-400">${fmt.money(s.precio_venta)}</td>
+                    <td class="p-4 text-right font-bold text-[#c3f400] font-mono">${fmt.money(s.precio_venta)}</td>
                     <td class="p-4">
                       <div class="flex gap-2 justify-center">
-                        <button onclick="BuffetView.reponerStockPrompt(${s.id})" class="px-3 py-1.5 rounded-lg bg-lime-400 text-[#161e00] font-bold text-xs hover:bg-lime-300 active:scale-95 transition-all border-none cursor-pointer flex items-center gap-1">
+                        <button onclick="BuffetView.reponerStockPrompt(${s.id})" class="px-3 py-1.5 rounded-lg bg-[#c3f400] text-[#161e00] font-bold text-xs hover:bg-[#d4ff1a] active:scale-95 transition-all border-none cursor-pointer flex items-center gap-1">
                           <span class="material-symbols-outlined text-[14px]">add</span> Reponer
                         </button>
                         <button onclick="BuffetView.ajustarStockPrompt(${s.id})" class="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 font-bold text-xs hover:bg-red-500/30 active:scale-95 transition-all cursor-pointer flex items-center gap-1">
-                          <span class="material-symbols-outlined text-[14px]">remove</span> Pérdida / Ajuste
+                          <span class="material-symbols-outlined text-[14px]">remove</span> Pérdida / Mermas
                         </button>
                       </div>
                     </td>
@@ -618,11 +723,9 @@ const BuffetView = {
             <div>
               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Categoría</label>
               <select id="newProdCategory" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-lime-400 transition-colors outline-none cursor-pointer">
-                <option value="Bebidas">Bebidas</option>
-                <option value="Cervezas">Cervezas</option>
-                <option value="Hamburguesas">Hamburguesas</option>
-                <option value="Panchos">Panchos</option>
-                <option value="Picadas">Picadas</option>
+                <option value="Drinks">Drinks (Bebidas)</option>
+                <option value="Snacks">Snacks (Minutas)</option>
+                <option value="Pizzas">Pizzas</option>
               </select>
             </div>
             
@@ -641,7 +744,7 @@ const BuffetView = {
               <input type="number" id="newProdAlert" value="5" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-lime-400 transition-colors" />
             </div>
 
-            <!-- Costeo Inteligente por Pack (Wholesale) -->
+            <!-- Costeo Inteligente por Pack -->
             <div class="col-span-2 p-4 bg-slate-950/60 rounded-xl border border-slate-800 flex flex-col gap-3">
               <h5 class="text-xs font-bold text-lime-400 uppercase tracking-wider flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-[16px]">inventory_2</span> 
@@ -671,14 +774,14 @@ const BuffetView = {
       `;
     }
 
-    // --- TAB 2: AUDITORÍA INMUTABLE ---
+    // --- TAB 2: AUDITORÍA HISTÓRICA ---
     else if (this._activeAdminTab === 2) {
       contentHtml += `
         <div class="flex flex-col gap-6">
           <div class="flex justify-between items-center">
-            <h4 class="text-md font-bold text-slate-200">Historial Inmutable de Auditoría - Sede ${this.sucursal.toUpperCase()}</h4>
+            <h4 class="text-md font-bold text-slate-200">Historial Seguro de Auditoría - Sede ${this.sucursal.toUpperCase()}</h4>
             <span class="flex items-center gap-1.5 text-xs text-lime-400 bg-lime-400/10 px-3 py-1.5 rounded-full border border-lime-400/20">
-              <span class="material-symbols-outlined text-[14px]">lock</span> A Prueba de Manipulaciones
+              <span class="material-symbols-outlined text-[14px]">lock</span> Inalterable
             </span>
           </div>
 
@@ -697,7 +800,7 @@ const BuffetView = {
               <tbody class="divide-y divide-slate-800/50 text-sm text-slate-300" id="auditLogsBody">
                 <tr>
                   <td colspan="6" class="p-8 text-center text-slate-400">
-                    <span class="material-symbols-outlined animate-spin text-lime-400 mb-2">refresh</span><br>
+                    <span class="material-symbols-outlined animate-spin text-[#c3f400] mb-2">refresh</span><br>
                     Cargando logs del historial seguro...
                   </td>
                 </tr>
@@ -708,13 +811,13 @@ const BuffetView = {
       `;
     }
 
-    // --- TAB 3: RECETAS (PRODUCTOS COMPUESTOS) ---
+    // --- TAB 3: RECETAS DE BUFFET ---
     else if (this._activeAdminTab === 3) {
       contentHtml += `
         <style>
           .insumo-chip { transition: all 0.15s ease; }
           .insumo-chip:hover { transform: scale(1.02); }
-          .receta-canvas-empty { border: 2px dashed rgba(163,230,53,0.2); }
+          .receta-canvas-empty { border: 2px dashed rgba(195,244,0,0.2); }
           #recetaSearchInsumo:focus { border-color: #c3f400; }
           #recetaSearchProducto:focus { border-color: #c3f400; }
         </style>
@@ -722,12 +825,12 @@ const BuffetView = {
           <div class="flex items-center justify-between">
             <div>
               <h4 class="text-md font-bold text-slate-200">🧾 Constructor de Recetas</h4>
-              <p class="text-xs text-slate-400 mt-0.5">Buscá el producto final, clic en los insumos para agregarlos. Así de rápido.</p>
+              <p class="text-xs text-slate-400 mt-0.5">Buscá el producto final y asociá los insumos del mostrador para deducirlos del stock automáticamente al vender.</p>
             </div>
           </div>
 
           <!-- BUILDER: 2 COLUMNAS -->
-          <div class="grid grid-cols-2 gap-4" style="min-height:400px">
+          <div class="grid grid-cols-2 gap-4" style="min-height:360px">
 
             <!-- COLUMNA IZQUIERDA: Catálogo de insumos -->
             <div class="bg-slate-950/60 border border-slate-700 rounded-xl flex flex-col overflow-hidden">
@@ -743,7 +846,7 @@ const BuffetView = {
               <div id="insumoCatalog" class="flex-1 overflow-y-auto p-3 flex flex-col gap-1.5">
                 ${this.stockItems.map(s => `
                   <button 
-                    class="insumo-chip w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-lime-400/50 hover:bg-lime-400/5 text-left cursor-pointer"
+                    class="insumo-chip w-full flex items-center gap-3 px-3 py-2 rounded bg-slate-900 border border-slate-800 hover:border-[#c3f400]/50 hover:bg-[#c3f400]/5 text-left cursor-pointer"
                     data-item="${s.item.replace(/"/g,'&quot;')}"
                     onclick="BuffetView._addChip('${s.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')"
                   >
@@ -752,7 +855,6 @@ const BuffetView = {
                       <div class="text-xs font-semibold text-slate-200 truncate">${s.item}</div>
                       <div class="text-[10px] text-slate-500">${s.categoria} · Stock: ${s.cantidad}</div>
                     </div>
-                    ${s.es_compuesto ? '<span class="text-[10px] bg-lime-400/10 text-lime-400 px-1.5 py-0.5 rounded flex-shrink-0">🧾</span>' : ''}
                   </button>`).join('')}
               </div>
             </div>
@@ -765,7 +867,7 @@ const BuffetView = {
                 <p class="text-xs font-bold text-slate-400 uppercase mb-2">Producto final que vas a vender</p>
                 <div class="relative">
                   <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[18px]">restaurant</span>
-                  <input id="recetaSearchProducto" type="text" placeholder="Escribi el nombre del producto terminado..." 
+                  <input id="recetaSearchProducto" type="text" placeholder="Escribí el producto terminado..." 
                     oninput="BuffetView._filterProductoFinal(this.value)"
                     class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-200 outline-none focus:border-lime-400 transition-colors" />
                 </div>
@@ -775,20 +877,20 @@ const BuffetView = {
 
               <!-- Chips de insumos agregados -->
               <div class="flex-1 overflow-y-auto p-4">
-                <p class="text-xs font-bold text-slate-400 uppercase mb-3">Insumos de la receta</p>
-                <div id="recetaChips" class="flex flex-col gap-2 receta-canvas-empty rounded-xl p-3 min-h-[140px]">
-                  <div id="recetaChipsEmpty" class="flex flex-col items-center justify-center h-24 text-slate-600 text-xs text-center">
-                    <span class="material-symbols-outlined text-2xl mb-1">touch_app</span>
-                    Clic en los insumos de la izquierda
+                <p class="text-xs font-bold text-slate-400 uppercase mb-3">Insumos asociados</p>
+                <div id="recetaChips" class="flex flex-col gap-2 receta-canvas-empty rounded-xl p-3 min-h-[120px]">
+                  <div id="recetaChipsEmpty" class="flex flex-col items-center justify-center h-20 text-slate-600 text-xs text-center">
+                    <span class="material-symbols-outlined text-xl mb-1">touch_app</span>
+                    Asociá insumos del lateral izquierdo
                   </div>
                 </div>
               </div>
 
               <!-- Costo en tiempo real -->
               <div id="recetaCostoBar" class="px-4 pb-3 hidden">
-                <div class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 flex items-center justify-between text-xs">
+                <div class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 flex items-center justify-between text-xs">
                   <span class="text-slate-400">Costo insumos: <span id="rcCosto" class="text-slate-200 font-bold">$0</span></span>
-                  <span class="text-slate-400">Precio venta: <span id="rcVenta" class="text-lime-400 font-bold">$0</span></span>
+                  <span class="text-slate-400">Venta: <span id="rcVenta" class="text-[#c3f400] font-bold">$0</span></span>
                   <span id="rcMargenBadge" class="px-2 py-0.5 rounded text-xs font-bold">Margen: -</span>
                 </div>
               </div>
@@ -806,9 +908,9 @@ const BuffetView = {
 
           <!-- RECETAS GUARDADAS -->
           <div>
-            <h5 class="text-sm font-bold text-slate-300 mb-3">Recetas activas</h5>
+            <h5 class="text-sm font-bold text-slate-300 mb-3">Recetas activas en base</h5>
             <div id="recetasGuardadasList" class="text-slate-500 text-sm">
-              <span class="material-symbols-outlined animate-spin text-lime-400 text-[16px]">refresh</span> Cargando...
+              <span class="material-symbols-outlined animate-spin text-[#c3f400] text-[16px]">refresh</span> Cargando...
             </div>
           </div>
         </div>
@@ -851,8 +953,8 @@ const BuffetView = {
     box.classList.remove('hidden');
     box.innerHTML = matches.slice(0, 6).map(s => `
       <button onclick="BuffetView._selectProductoFinal('${s.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')" 
-        class="w-full text-left px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-lime-400/50 text-xs text-slate-200 cursor-pointer flex items-center gap-2">
-        <span class="material-symbols-outlined text-lime-400 text-[14px]">check_circle</span>
+        class="w-full text-left px-3 py-2 rounded bg-slate-900 border border-slate-800 hover:border-lime-400/50 text-xs text-slate-200 cursor-pointer flex items-center gap-2">
+        <span class="material-symbols-outlined text-[#c3f400] text-[14px]">check_circle</span>
         ${s.item}
       </button>`).join('');
   },
@@ -895,19 +997,19 @@ const BuffetView = {
     const container = document.getElementById('recetaChips');
     if (!container) return;
     if (this._recetaChips.length === 0) {
-      container.innerHTML = `<div class="flex flex-col items-center justify-center h-24 text-slate-600 text-xs text-center">Clic en los insumos de la izquierda</div>`;
+      container.innerHTML = `<div class="flex flex-col items-center justify-center h-20 text-slate-600 text-xs text-center">Asociá insumos del lateral izquierdo</div>`;
       return;
     }
     container.innerHTML = this._recetaChips.map(c => `
-      <div class="flex items-center gap-3 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 group mb-2">
-        <span class="material-symbols-outlined text-lime-400 text-[16px]">restaurant</span>
-        <span class="flex-1 text-sm text-slate-200 font-semibold truncate">${c.item}</span>
+      <div class="flex items-center gap-3 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 group mb-2">
+        <span class="material-symbols-outlined text-[#c3f400] text-[16px]">restaurant</span>
+        <span class="flex-1 text-xs text-slate-200 font-semibold truncate">${c.item}</span>
         <div class="flex items-center gap-1">
-          <button onclick="BuffetView._changeChipQty('${c.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', -0.5)" class="w-6 h-6 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 flex items-center justify-center cursor-pointer border border-slate-700 text-[12px] font-bold">-</button>
-          <span class="text-lime-400 font-bold text-sm w-8 text-center">${c.qty}</span>
-          <button onclick="BuffetView._changeChipQty('${c.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', 0.5)" class="w-6 h-6 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 flex items-center justify-center cursor-pointer border border-slate-700 text-[12px] font-bold">+</button>
+          <button onclick="BuffetView._changeChipQty('${c.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', -0.5)" class="w-6 h-6 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 flex items-center justify-center cursor-pointer border border-slate-700 text-[12px] font-bold border-none">-</button>
+          <span class="text-[#c3f400] font-bold text-xs w-6 text-center">${c.qty}</span>
+          <button onclick="BuffetView._changeChipQty('${c.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', 0.5)" class="w-6 h-6 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 flex items-center justify-center cursor-pointer border border-slate-700 text-[12px] font-bold border-none">+</button>
         </div>
-        <button onclick="BuffetView._removeChip('${c.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')" class="w-6 h-6 rounded-md bg-red-500/10 hover:bg-red-500/30 text-red-400 flex items-center justify-center cursor-pointer border border-red-500/20"><span class="material-symbols-outlined text-[13px]">close</span></button>
+        <button onclick="BuffetView._removeChip('${c.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')" class="w-6 h-6 rounded-md bg-red-500/10 hover:bg-red-500/30 text-red-400 flex items-center justify-center cursor-pointer border border-red-500/20 border-none"><span class="material-symbols-outlined text-[13px]">close</span></button>
       </div>`).join('');
   },
 
@@ -953,12 +1055,12 @@ const BuffetView = {
       if (!recetas || recetas.length === 0) { container.innerHTML = 'Sin recetas creadas.'; return; }
       const grouped = {};
       for (const r of recetas) { if (!grouped[r.item_nombre]) grouped[r.item_nombre] = []; grouped[r.item_nombre].push(r); }
-      container.innerHTML = `<div class="grid grid-cols-2 gap-3">${Object.entries(grouped).map(([producto, items]) => {
+      container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${Object.entries(grouped).map(([producto, items]) => {
         const costoTotal = items.reduce((sum, ing) => { const insumo = this.stockItems.find(s => s.item.toLowerCase().includes(ing.insumo_nombre.toLowerCase())); return sum + ((insumo?.precio_compra || 0) * ing.cantidad_insumo); }, 0);
         const productoEnStock = this.stockItems.find(s => s.item === producto);
         const precioVenta = productoEnStock?.precio_venta || 0;
         const margen = costoTotal > 0 && precioVenta > 0 ? Math.round(((precioVenta - costoTotal) / precioVenta) * 100) : null;
-        return `<div class="bg-slate-950/60 border border-slate-700 rounded-xl p-4"><div class="flex items-start justify-between mb-3"><div><div class="font-bold text-slate-200 text-sm">${producto}</div><div class="text-xs text-slate-500">Margen: ${margen}%</div></div><button onclick="BuffetView.deleteReceta('${producto.replace(/'/g, "\\'")}')" class="text-red-400 text-xs">🗑️</button></div></div>`;
+        return `<div class="bg-slate-950/60 border border-slate-700 rounded-xl p-3 flex items-center justify-between"><div class="min-w-0 flex-1"><div class="font-bold text-slate-200 text-xs truncate">${producto}</div><div class="text-[10px] text-slate-500">Costo: ${fmt.money(costoTotal)} · Margen: ${margen}%</div></div><button onclick="BuffetView.deleteReceta('${producto.replace(/'/g, "\\'")}')" class="text-red-400 hover:text-red-300 text-sm border-none bg-transparent cursor-pointer ml-2">🗑️</button></div>`;
       }).join('')}</div>`;
     } catch (e) { container.innerHTML = 'Error cargando recetas.'; }
   },
@@ -983,7 +1085,7 @@ const BuffetView = {
       if (!logs || logs.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" class="p-8 text-center text-slate-400">
+            <td colspan="6" class="p-8 text-center text-slate-400 text-xs">
               📭 Sin movimientos de auditoría registrados para esta sucursal.
             </td>
           </tr>
@@ -991,18 +1093,18 @@ const BuffetView = {
         return;
       }
 
-      tbody.innerHTML = logs.map(l => {
-        const dateStr = new Date(l.created_at).toLocaleString('es-AR');
+      tbody.innerHTML = logs.slice(0, 100).map(l => {
+        const dateStr = new Date(l.created_at).toLocaleString('es-AR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute:'2-digit'});
         
         let typeBadge = '';
         if (l.tipo_movimiento === 'INGRESO') {
-          typeBadge = '<span class="bg-lime-400/10 text-lime-400 px-2 py-0.5 rounded text-xs font-semibold">📈 REPOSICIÓN</span>';
+          typeBadge = '<span class="bg-lime-400/10 text-lime-400 px-2 py-0.5 rounded text-[10px] font-bold border border-lime-400/15">📈 REPOSICIÓN</span>';
         } else if (l.tipo_movimiento === 'VENTA') {
-          typeBadge = '<span class="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-xs font-semibold">🛒 VENTA</span>';
+          typeBadge = '<span class="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-[10px] font-bold border border-blue-500/15">🛒 VENTA</span>';
         } else if (l.tipo_movimiento === 'AJUSTE_PERDIDA') {
-          typeBadge = '<span class="bg-red-500/10 text-red-400 px-2 py-0.5 rounded text-xs font-semibold">🚨 MERMA / PÉRDIDA</span>';
+          typeBadge = '<span class="bg-red-500/10 text-red-400 px-2 py-0.5 rounded text-[10px] font-bold border border-red-500/15">🚨 MERMA</span>';
         } else {
-          typeBadge = `<span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-xs font-semibold">${l.tipo_movimiento}</span>`;
+          typeBadge = `<span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px] font-bold">${l.tipo_movimiento}</span>`;
         }
 
         const diffStr = l.diferencia > 0 ? `+${l.diferencia}` : `${l.diferencia}`;
@@ -1010,12 +1112,12 @@ const BuffetView = {
 
         return `
           <tr class="hover:bg-slate-800/20 transition-colors">
-            <td class="p-4 text-xs font-mono text-slate-400">${dateStr}</td>
-            <td class="p-4 font-bold text-slate-200">${l.item_nombre}</td>
-            <td class="p-4">${typeBadge}</td>
-            <td class="p-4 text-center font-bold font-mono ${diffColor}">${diffStr}</td>
-            <td class="p-4 text-slate-300 font-semibold">${l.usuario_nombre || 'API / System'}</td>
-            <td class="p-4 text-xs italic text-slate-400 max-w-xs truncate" title="${l.motivo || ''}">${l.motivo || '—'}</td>
+            <td class="p-3 text-[11px] font-mono text-slate-500">${dateStr}</td>
+            <td class="p-3 font-bold text-slate-200 text-xs">${l.item_nombre}</td>
+            <td class="p-3">${typeBadge}</td>
+            <td class="p-3 text-center font-bold font-mono text-xs ${diffColor}">${diffStr}</td>
+            <td class="p-3 text-slate-300 text-xs">${l.usuario_nombre || 'API / Sistema'}</td>
+            <td class="p-3 text-[11px] italic text-slate-500 truncate max-w-[150px]" title="${l.motivo || ''}">${l.motivo || '—'}</td>
           </tr>
         `;
       }).join('');
@@ -1023,7 +1125,7 @@ const BuffetView = {
     } catch (e) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="6" class="p-8 text-center text-red-400">
+          <td colspan="6" class="p-8 text-center text-red-400 text-xs">
             ❌ Error al cargar logs: ${e.message}
           </td>
         </tr>
@@ -1087,9 +1189,8 @@ const BuffetView = {
       await API.addProduct(payload);
       App.toast('🍔 ¡Producto agregado al inventario con éxito!', 'success');
       
-      // Volver a cargar stock local
       this.stockItems = await DB.getStock(this.sucursal);
-      this.setAdminTab(0); // Volver a la pestaña de control
+      this.setAdminTab(0); 
     } catch (e) {
       App.toast('Error al agregar producto: ' + e.message, 'error');
     }
@@ -1117,7 +1218,6 @@ const BuffetView = {
       await API.updateStockAudit(stockId, qty, 'INGRESO', motivo.trim());
       App.toast('📈 Stock repuesto con éxito y log guardado.', 'success');
       
-      // Recargar stock y renderizar modal
       this.stockItems = await DB.getStock(this.sucursal);
       this.renderAdminModalUI();
     } catch (e) {
@@ -1144,16 +1244,14 @@ const BuffetView = {
 
     const motivo = prompt(`Motivo del retiro / pérdida (ej. Botellas rotas, vencido, consumo no registrado):`);
     if (motivo === null || motivo.trim().length < 3) {
-      App.toast('❌ Se requiere un motivo válido para auditar la tarea y evitar robos', 'error');
+      App.toast('❌ Se requiere un motivo válido para auditar la tarea y evitar pérdidas no registradas', 'error');
       return;
     }
 
     try {
-      // Registrar cantidad de cambio negativa
       await API.updateStockAudit(stockId, -qty, 'AJUSTE_PERDIDA', motivo.trim());
       App.toast('🚨 Pérdida/Ajuste registrado en el historial inmutable.', 'warning');
       
-      // Recargar stock y renderizar modal
       this.stockItems = await DB.getStock(this.sucursal);
       this.renderAdminModalUI();
     } catch (e) {
@@ -1161,4 +1259,3 @@ const BuffetView = {
     }
   }
 };
-
