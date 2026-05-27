@@ -238,12 +238,11 @@ const CanchasView = {
           ${canchas.map(c => {
             const list = turnos[c.id] || [];
             const libres = list.filter(t => !t.reservado).length;
-            const estado = c.status === 'maintenance' ? 'maintenance' : (libres > 0 ? 'available' : 'occupied');
+            const estado = c.disponible === false ? 'maintenance' : (libres > 0 ? 'available' : 'occupied');
 
             let surfClass = 'surface-futbol';
             const tipoLower = (c.tipo || c.type || 'futbol').toLowerCase();
             if (tipoLower.includes('padel') || tipoLower.includes('pádel')) surfClass = 'surface-padel';
-            else if (tipoLower.includes('basket') || tipoLower.includes('basquet') || tipoLower.includes('parquet')) surfClass = 'surface-parquet';
 
             let ledClass = 'led-indicator-green';
             if (estado === 'occupied') ledClass = 'led-indicator-red';
@@ -282,7 +281,7 @@ const CanchasView = {
           const libres = list.filter(t => !t.reservado).length;
           const total = list.length;
           const ocupados = total - libres;
-          const estado = c.status === 'maintenance' ? 'maintenance' : (libres > 0 ? 'available' : 'occupied');
+          const estado = c.disponible === false ? 'maintenance' : (libres > 0 ? 'available' : 'occupied');
 
           let statusBadge = '';
           let rowClass = 'border-slate-800/80 hover:border-[#c3f400]/40';
@@ -405,9 +404,9 @@ const CanchasView = {
           <div class="space-y-1.5">
             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Tipo de Superficie</label>
             <select id="editCanchaTipo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#c3f400] cursor-pointer">
-              <option value="futbol" ${tipo === 'futbol' ? 'selected' : ''}>⚽ Césped Sintético (Fútbol)</option>
-              <option value="padel" ${tipo === 'padel' ? 'selected' : ''}>🎾 Cristal Templado (Pádel)</option>
-              <option value="parquet" ${tipo === 'parquet' ? 'selected' : ''}>🏀 Madera Parquet (Básquet/Salón)</option>
+              <option value="Fútbol 5" ${tipo === 'fútbol 5' || tipo === 'futbol 5' ? 'selected' : ''}>⚽ Fútbol 5 (Césped Sintético)</option>
+              <option value="Fútbol 7" ${tipo === 'fútbol 7' || tipo === 'futbol 7' ? 'selected' : ''}>⚽ Fútbol 7 (Césped Sintético)</option>
+              <option value="Pádel" ${tipo === 'pádel' || tipo === 'padel' ? 'selected' : ''}>🎾 Pádel (Cristal Templado)</option>
             </select>
           </div>
 
@@ -424,7 +423,7 @@ const CanchasView = {
               <span class="text-[9px] text-slate-500">¿Bloquear reservas por reparaciones?</span>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="editCanchaMantenimiento" class="sr-only peer" ${cancha.status === 'maintenance' ? 'checked' : ''}>
+              <input type="checkbox" id="editCanchaMantenimiento" class="sr-only peer" ${cancha.disponible === false ? 'checked' : ''}>
               <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-500"></div>
             </label>
           </div>
@@ -462,12 +461,12 @@ const CanchasView = {
     try {
       const nuevoStatus = editMantenimiento ? 'maintenance' : 'active';
 
-      // 1. Persistir tipo de superficie y estado en Supabase
+      // 1. Persistir tipo de superficie y estado disponible en Supabase
       const { error } = await db.from('canchas')
         .update({ 
           tipo: editTipo,
           precio: editPrecio,
-          status: nuevoStatus
+          disponible: !editMantenimiento
         })
         .eq('id', canchaId);
 
