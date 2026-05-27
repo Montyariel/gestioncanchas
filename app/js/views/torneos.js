@@ -1,162 +1,273 @@
-// ===== VISTA: TORNEOS =====
+// ===== VISTA: TORNEOS CHAMPIONS LEAGUE BRACKET =====
 const TorneosView = {
   async render(sucursal) {
     const container = document.getElementById('viewContainer');
     
-    if (!document.getElementById('torneos-styles')) {
-      const style = document.createElement('style');
-      style.id = 'torneos-styles';
-      style.textContent = `
-        .glass-panel {
-            background: rgba(25, 27, 34, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .bracket-node {
-            position: relative;
-        }
-        .bracket-node::after {
-            content: '';
-            position: absolute;
-            right: -24px;
-            top: 50%;
-            width: 24px;
-            height: 2px;
-            background: rgba(255,255,255,0.1);
-        }
-        .bracket-node.winner::after {
-            background: #c3f400;
-        }
-      `;
-      document.head.appendChild(style);
-    }
-
+    // Inyectar estilos premium del bracket eliminatorio y podio de copas
     container.innerHTML = `
+      <style>
+        /* Moving space grid background */
+        .bracket-board {
+          background-color: #0b0d19;
+          background-image: 
+            linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+          background-size: 20px 20px;
+          background-position: center;
+          position: relative;
+          min-height: 400px;
+          border-radius: 24px;
+        }
+        
+        /* Metallic Match Cards */
+        .match-card-3d {
+          background: linear-gradient(135deg, #161a26, #0e111a);
+          border: 1.5px solid rgba(255, 255, 255, 0.05);
+          box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+          transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+          position: relative;
+          z-index: 10;
+        }
+        .match-card-3d:hover {
+          transform: translateY(-4px) scale(1.02);
+          border-color: #c3f400;
+          box-shadow: 0 15px 30px rgba(195, 244, 0, 0.15), 0 0 15px rgba(195, 244, 0, 0.05);
+        }
+        
+        /* Active Bracket Connectors */
+        .bracket-connector-r {
+          position: absolute;
+          border: 2px solid rgba(255, 255, 255, 0.06);
+          border-left: none;
+          z-index: 1;
+          transition: all 0.4s ease;
+        }
+        .match-card-3d:hover + .bracket-connector-r {
+          border-color: #c3f400;
+          filter: drop-shadow(0 0 4px #c3f400);
+        }
+        
+        /* Trophy Spinning Animation */
+        @keyframes trophySpin {
+          0% { transform: rotateY(0deg) translateY(0); }
+          50% { transform: rotateY(180deg) translateY(-4px); }
+          100% { transform: rotateY(360deg) translateY(0); }
+        }
+        @keyframes shineStar {
+          0%, 100% { opacity: 0.3; transform: scale(0.8); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        .trophy-glow-gold {
+          filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5));
+          animation: trophySpin 6s infinite linear;
+        }
+        .trophy-glow-silver {
+          filter: drop-shadow(0 0 6px rgba(192, 192, 192, 0.4));
+          animation: trophySpin 6s infinite linear;
+          animation-delay: 2s;
+        }
+        .trophy-glow-bronze {
+          filter: drop-shadow(0 0 6px rgba(205, 127, 50, 0.4));
+          animation: trophySpin 6s infinite linear;
+          animation-delay: 4s;
+        }
+      </style>
+
       <div class="max-w-6xl mx-auto space-y-6 h-full flex flex-col">
         <!-- Header -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
           <div>
-            <h1 class="text-3xl font-black text-primary tracking-tight">Torneos y Ligas</h1>
-            <p class="text-on-surface-variant font-medium mt-1">Gestiona campeonatos y tabla de posiciones</p>
+            <h1 class="text-3xl font-black text-slate-100 tracking-tight flex items-center gap-3">
+              <span class="material-symbols-outlined text-[#c3f400]" style="font-size: 32px;">emoji_events</span>
+              Torneos &amp; Ligas CanchaOS
+            </h1>
+            <p class="text-on-surface-variant font-medium mt-1">Gestiona fixture eliminatorios, ligas fijas y el podio de campeones.</p>
           </div>
-          <button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center gap-2 shadow-sm" onclick="App.toast('Modo de creación próximamente', 'info')">
-            <span class="material-symbols-outlined icon-fill">add</span>
-            Crear Torneo
+          <button class="bg-[#c3f400] text-[#161e00] px-5 py-2.5 rounded-xl font-bold hover:bg-[#d4ff1a] active:scale-95 transition-all flex items-center gap-2 border-none shadow-lg shadow-[#c3f400]/10 cursor-pointer" onclick="App.toast('Módulo de creación próximamente disponible', 'info')">
+            <span class="material-symbols-outlined icon-fill">add_circle</span>
+            Crear Nuevo Torneo
           </button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 overflow-hidden">
           
-          <!-- Brackets View -->
-          <div class="lg:col-span-2 glass-panel rounded-2xl border border-outline-variant/30 flex flex-col h-full overflow-hidden">
-            <div class="p-6 border-b border-outline-variant/30 bg-surface-container-low/50 flex justify-between items-center">
-              <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary">emoji_events</span>
-                Copa de Verano 2026
+          <!-- BRACKETS CAMPEONATO (2/3 Col) -->
+          <div class="lg:col-span-2 bg-slate-900/40 rounded-3xl border border-slate-800/80 flex flex-col h-full overflow-hidden">
+            <div class="p-5 border-b border-slate-800/60 bg-slate-950/20 flex justify-between items-center">
+              <h2 class="text-sm font-bold text-slate-300 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#ffd700]">trophy</span>
+                Copa de Verano Premium 2026
               </h2>
-              <span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span> En Juego
+              <span class="bg-[#c3f400]/10 text-[#c3f400] border border-[#c3f400]/20 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 led-active">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#c3f400] animate-pulse"></span> Fase Final
               </span>
             </div>
             
-            <div class="flex-1 overflow-x-auto overflow-y-auto p-8 relative bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-surface-container-low via-background to-background">
-              <!-- Visual Mockup of Brackets -->
-              <div class="flex gap-12 min-w-max items-center h-full">
-                <!-- Quarter Finals -->
-                <div class="flex flex-col gap-8 w-64">
-                  <!-- Match 1 -->
-                  <div class="bg-surface-container border border-outline-variant/50 rounded-xl overflow-hidden shadow-lg bracket-node winner relative group">
-                    <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="p-3 border-b border-outline-variant/30 flex justify-between items-center">
-                      <span class="font-bold text-on-surface">Los Pibes FC</span>
-                      <span class="font-stat-number text-primary">3</span>
+            <!-- Bracket Board Visual Area -->
+            <div class="flex-1 overflow-x-auto overflow-y-auto p-8 flex items-center justify-center bracket-board">
+              
+              <div class="flex gap-16 min-w-max items-center h-full relative">
+                
+                <!-- COLUMN 1: QUARTER FINALS -->
+                <div class="flex flex-col justify-center gap-8 w-60 relative z-10">
+                  
+                  <!-- Match 1 Card -->
+                  <div class="relative">
+                    <div class="match-card-3d rounded-2xl overflow-hidden">
+                      <div class="p-3 border-b border-slate-850 flex justify-between items-center bg-slate-950/30">
+                        <span class="font-bold text-slate-200 text-xs flex items-center gap-1.5">Los Pibes FC <span class="text-[#c3f400] font-black">🥇</span></span>
+                        <span class="font-mono text-sm font-black text-[#c3f400]">3</span>
+                      </div>
+                      <div class="p-3 flex justify-between items-center bg-slate-900/40 opacity-40">
+                        <span class="font-medium text-slate-400 text-xs">Real Suciedad</span>
+                        <span class="font-mono text-sm font-bold text-slate-400">1</span>
+                      </div>
                     </div>
-                    <div class="p-3 flex justify-between items-center opacity-50">
-                      <span class="font-medium text-on-surface-variant">Real Suciedad</span>
-                      <span class="font-stat-number text-on-surface-variant">1</span>
-                    </div>
+                    <!-- Connector line to Semis Match 1 -->
+                    <div class="bracket-connector-r" style="top: 50%; right: -64px; width: 64px; height: 96px; border-radius: 0 16px 0 0; border-bottom: none;"></div>
                   </div>
-                  <!-- Match 2 -->
-                  <div class="bg-surface-container border border-outline-variant/50 rounded-xl overflow-hidden shadow-lg bracket-node winner relative group mt-4">
-                     <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="p-3 border-b border-outline-variant/30 flex justify-between items-center opacity-50">
-                      <span class="font-medium text-on-surface-variant">Aston Birra</span>
-                      <span class="font-stat-number text-on-surface-variant">0</span>
+
+                  <!-- Match 2 Card -->
+                  <div class="relative">
+                    <div class="match-card-3d rounded-2xl overflow-hidden">
+                      <div class="p-3 border-b border-slate-850 flex justify-between items-center bg-slate-900/40 opacity-40">
+                        <span class="font-medium text-slate-400 text-xs">Aston Birra</span>
+                        <span class="font-mono text-sm font-bold text-slate-400">0</span>
+                      </div>
+                      <div class="p-3 flex justify-between items-center bg-slate-950/30">
+                        <span class="font-bold text-slate-200 text-xs flex items-center gap-1.5">Deportivo Tapita <span class="text-slate-400 font-bold">🥈</span></span>
+                        <span class="font-mono text-sm font-black text-[#c3f400]">2</span>
+                      </div>
                     </div>
-                    <div class="p-3 flex justify-between items-center">
-                      <span class="font-bold text-on-surface">Deportivo Tapita</span>
-                      <span class="font-stat-number text-primary">2</span>
-                    </div>
+                    <!-- Connector line to Semis Match 1 -->
+                    <div class="bracket-connector-r" style="bottom: 50%; right: -64px; width: 64px; height: 96px; border-radius: 0 0 16px 0; border-top: none;"></div>
                   </div>
+
                 </div>
 
-                <!-- Semi Finals -->
-                <div class="flex flex-col justify-center gap-16 w-64 h-full relative">
-                  <!-- Connector Lines -->
-                  <div class="absolute -left-12 top-[30%] bottom-[30%] w-12 border-t-2 border-b-2 border-r-2 border-primary/50 rounded-r-xl"></div>
-                  <div class="absolute -left-12 top-1/2 w-12 border-t-2 border-primary/50"></div>
+                <!-- COLUMN 2: SEMI FINALS -->
+                <div class="flex flex-col justify-center gap-16 w-60 relative z-10">
                   
-                  <!-- Match 3 -->
-                  <div class="bg-surface-container border border-primary/50 rounded-xl overflow-hidden shadow-[0_0_20px_rgba(195,244,0,0.1)] bracket-node relative group z-10">
-                    <div class="p-3 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-high">
-                      <span class="font-bold text-on-surface flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> Los Pibes FC</span>
-                      <span class="font-stat-number text-on-surface-variant">-</span>
+                  <!-- Semis Match (Match 3) -->
+                  <div class="match-card-3d rounded-2xl overflow-hidden border border-[#c3f400]/20 shadow-[0_0_20px_rgba(195,244,0,0.08)]">
+                    <div class="p-3 border-b border-slate-850 flex justify-between items-center bg-slate-950/40">
+                      <span class="font-bold text-slate-200 text-xs flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#c3f400] animate-pulse"></span>
+                        Los Pibes FC
+                      </span>
+                      <span class="font-mono text-xs text-slate-500">-</span>
                     </div>
-                    <div class="p-3 flex justify-between items-center bg-surface-container-high">
-                      <span class="font-bold text-on-surface flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> Deportivo Tapita</span>
-                      <span class="font-stat-number text-on-surface-variant">-</span>
+                    <div class="p-3 flex justify-between items-center bg-slate-950/40">
+                      <span class="font-bold text-slate-200 text-xs flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-[#c3f400] animate-pulse"></span>
+                        Deportivo Tapita
+                      </span>
+                      <span class="font-mono text-xs text-slate-500">-</span>
                     </div>
-                    <div class="bg-primary text-on-primary text-center py-1 text-[10px] font-bold uppercase tracking-widest">
-                      Hoy 21:00 hs - Cancha 1
+                    <div class="bg-[#c3f400]/10 border-t border-slate-800 text-[#c3f400] text-center py-1.5 text-[9px] font-black uppercase tracking-widest font-mono">
+                      Hoy 21:00 hs · Cancha 1 🏟️
                     </div>
                   </div>
+
                 </div>
+
               </div>
+
             </div>
           </div>
 
-          <!-- Leaderboard Sidebar -->
-          <div class="lg:col-span-1 glass-panel rounded-2xl border border-outline-variant/30 flex flex-col h-full overflow-hidden">
-            <div class="p-6 border-b border-outline-variant/30 bg-surface-container-low/50">
-              <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
-                <span class="material-symbols-outlined text-secondary-fixed">format_list_numbered</span>
-                Tabla General
-              </h2>
+          <!-- TROPHY ROOM & POSICIONES (1/3 Col) -->
+          <div class="lg:col-span-1 flex flex-col gap-6">
+            
+            <!-- Trophy Room Podio -->
+            <div class="bg-slate-900/60 rounded-3xl border border-slate-800 p-6 flex flex-col items-center shadow-2xl relative overflow-hidden">
+              <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,215,0,0.03),transparent_70%)] pointer-events-none"></div>
+              <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-6 self-start flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[#ffd700]" style="font-size:14px;">workspace_premium</span>
+                Podio de Campeones (Trophy Room)
+              </h3>
+              
+              <!-- Podio visual elements -->
+              <div class="flex items-end justify-center gap-5 w-full py-4 border-b border-slate-800/80 mb-4">
+                
+                <!-- 2nd Place -->
+                <div class="flex flex-col items-center">
+                  <span class="text-2xl trophy-glow-silver mb-2">🥈</span>
+                  <div class="w-12 h-14 bg-slate-800 rounded-t-xl border border-slate-700/60 flex items-center justify-center shadow-md">
+                    <span class="text-[10px] font-black text-slate-400">2do</span>
+                  </div>
+                  <span class="text-[10px] font-bold text-slate-400 mt-2 truncate w-14 text-center">Tapita</span>
+                </div>
+
+                <!-- 1st Place (Gold) -->
+                <div class="flex flex-col items-center">
+                  <span class="text-3xl trophy-glow-gold mb-2">🏆</span>
+                  <div class="w-14 h-20 bg-yellow-500/10 border-t-2 border-l border-r border-[#ffd700]/30 rounded-t-2xl flex items-center justify-center shadow-2xl shadow-yellow-500/5">
+                    <span class="text-xs font-black text-[#ffd700]">1ro</span>
+                  </div>
+                  <span class="text-xs font-black text-[#ffd700] mt-2 truncate w-16 text-center">Pibes FC</span>
+                </div>
+
+                <!-- 3rd Place -->
+                <div class="flex flex-col items-center">
+                  <span class="text-2xl trophy-glow-bronze mb-2">🥉</span>
+                  <div class="w-12 h-10 bg-slate-800/50 rounded-t-xl border border-slate-750 flex items-center justify-center shadow-md">
+                    <span class="text-[10px] font-black text-amber-600">3ro</span>
+                  </div>
+                  <span class="text-[10px] font-bold text-slate-500 mt-2 truncate w-14 text-center">Aston</span>
+                </div>
+
+              </div>
+
+              <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest font-mono text-center">
+                🏆 COPA DE VERANO CANCHAOS LEYENDAS
+              </div>
             </div>
-            <div class="flex-1 overflow-y-auto p-0">
-              <table class="w-full text-left">
-                <thead class="bg-surface-container sticky top-0 border-b border-outline-variant/50">
-                  <tr>
-                    <th class="py-2 px-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider w-8">#</th>
-                    <th class="py-2 px-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Equipo</th>
-                    <th class="py-2 px-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-wider text-center">PTS</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-outline-variant/30 text-sm">
-                  <tr class="bg-primary/5 hover:bg-surface-container/50 transition-colors">
-                    <td class="py-3 px-4 font-black text-primary">1</td>
-                    <td class="py-3 px-4 font-bold text-on-surface">Los Pibes FC</td>
-                    <td class="py-3 px-4 text-center font-black text-primary">15</td>
-                  </tr>
-                  <tr class="hover:bg-surface-container/50 transition-colors">
-                    <td class="py-3 px-4 font-bold text-on-surface-variant">2</td>
-                    <td class="py-3 px-4 font-bold text-on-surface">Deportivo Tapita</td>
-                    <td class="py-3 px-4 text-center font-bold text-on-surface">12</td>
-                  </tr>
-                  <tr class="hover:bg-surface-container/50 transition-colors">
-                    <td class="py-3 px-4 font-bold text-on-surface-variant">3</td>
-                    <td class="py-3 px-4 font-bold text-on-surface">Aston Birra</td>
-                    <td class="py-3 px-4 text-center font-bold text-on-surface">9</td>
-                  </tr>
-                  <tr class="hover:bg-surface-container/50 transition-colors">
-                    <td class="py-3 px-4 font-bold text-on-surface-variant">4</td>
-                    <td class="py-3 px-4 font-bold text-on-surface">Real Suciedad</td>
-                    <td class="py-3 px-4 text-center font-bold text-on-surface">4</td>
-                  </tr>
-                </tbody>
-              </table>
+
+            <!-- Tabla General -->
+            <div class="bg-slate-900/40 rounded-3xl border border-slate-800 flex flex-col overflow-hidden shadow-xl flex-1 max-h-[300px]">
+              <div class="p-5 border-b border-slate-800 bg-slate-950/20">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[#c3f400]" style="font-size:18px;">format_list_numbered</span>
+                  Tabla General de Posiciones
+                </h3>
+              </div>
+              <div class="flex-1 overflow-y-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                  <thead class="bg-slate-950/60 sticky top-0 border-b border-slate-800 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    <tr>
+                      <th class="py-2.5 px-4 w-8 text-center">#</th>
+                      <th class="py-2.5 px-4">Plantel</th>
+                      <th class="py-2.5 px-4 text-center w-12">PTS</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-850 text-slate-300">
+                    <tr class="bg-[#c3f400]/5 font-semibold text-slate-200">
+                      <td class="py-3 px-4 text-center font-black text-[#c3f400] font-mono text-sm">1</td>
+                      <td class="py-3 px-4 font-bold flex items-center gap-1.5">Los Pibes FC <span class="text-[10px]" title="Clasificado a playoffs">🔥</span></td>
+                      <td class="py-3 px-4 text-center font-black text-[#c3f400] font-mono text-sm">15</td>
+                    </tr>
+                    <tr class="hover:bg-slate-800/10 transition-colors">
+                      <td class="py-3 px-4 text-center font-bold text-slate-400 font-mono text-xs">2</td>
+                      <td class="py-3 px-4">Deportivo Tapita</td>
+                      <td class="py-3 px-4 text-center font-bold font-mono text-xs">12</td>
+                    </tr>
+                    <tr class="hover:bg-slate-800/10 transition-colors">
+                      <td class="py-3 px-4 text-center font-bold text-slate-400 font-mono text-xs">3</td>
+                      <td class="py-3 px-4">Aston Birra</td>
+                      <td class="py-3 px-4 text-center font-bold font-mono text-xs">9</td>
+                    </tr>
+                    <tr class="hover:bg-slate-800/10 transition-colors opacity-60">
+                      <td class="py-3 px-4 text-center font-bold text-slate-500 font-mono text-xs">4</td>
+                      <td class="py-3 px-4 text-slate-400">Real Suciedad</td>
+                      <td class="py-3 px-4 text-center font-semibold font-mono text-xs">4</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
+
           </div>
 
         </div>
