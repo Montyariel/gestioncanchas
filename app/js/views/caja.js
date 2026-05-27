@@ -218,7 +218,10 @@ const CajaView = {
               <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Monto Inicial en Efectivo</label>
               <div class="flex items-center">
                 <span class="text-2xl font-black text-slate-600 mr-1.5">$</span>
-                <input type="text" id="inputMontoInicial" readonly value="" class="w-full bg-transparent border-none text-2xl font-black text-[#c3f400] focus:ring-0 p-0 placeholder-slate-800 font-mono" placeholder="0">
+                <input type="text" id="inputMontoInicial" value="" 
+                  oninput="this.value = this.value.replace(/\D/g, '')"
+                  class="w-full bg-transparent border-none text-2xl font-black text-[#c3f400] focus:ring-0 focus:outline-none p-0 placeholder-slate-800 font-mono" 
+                  placeholder="0" autofocus>
               </div>
             </div>
 
@@ -248,6 +251,48 @@ const CajaView = {
         </div>
       </div>
     `;
+
+    // Habilitar auto-foco y teclado dinámico para no usar mouse
+    setTimeout(() => {
+      const input = document.getElementById('inputMontoInicial');
+      if (input) {
+        input.focus();
+      }
+    }, 100);
+
+    const handleGlobalKeydown = (e) => {
+      const input = document.getElementById('inputMontoInicial');
+      if (!input) {
+        document.removeEventListener('keydown', handleGlobalKeydown);
+        return;
+      }
+
+      // Ignorar si el usuario está escribiendo en el chat o en otro modal
+      if (document.activeElement && document.activeElement !== input &&
+          (document.activeElement.tagName === 'INPUT' || 
+           document.activeElement.tagName === 'TEXTAREA' || 
+           document.activeElement.isContentEditable)) {
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        CajaView.animarYAbrirCaja();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        CajaView.keypadPress('C');
+      } else if (e.key >= '0' && e.key <= '9') {
+        if (document.activeElement !== input) {
+          input.focus();
+        }
+      }
+    };
+
+    if (window._cajaClosedKeydownHandler) {
+      document.removeEventListener('keydown', window._cajaClosedKeydownHandler);
+    }
+    window._cajaClosedKeydownHandler = handleGlobalKeydown;
+    document.addEventListener('keydown', handleGlobalKeydown);
   },
 
   keypadPress(val) {
