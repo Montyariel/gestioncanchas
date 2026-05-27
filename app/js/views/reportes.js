@@ -202,38 +202,212 @@ const ReportesView = {
   _cardComparativa(comp, ticket, margen) {
     if (!comp) return this._card('Comparativa Sedes', '🏆', '<p style="color:#8e9379;font-size:13px">Sin datos.</p>', true);
     const { lanus, belgrano, ganadorSemana } = comp;
-    const maxNeto = Math.max(Math.abs(lanus?.netoTotal || 0), Math.abs(belgrano?.netoTotal || 0), 1);
+
+    // Inyectar estilos para comparativa premium y 3D
+    if (!document.getElementById('reportes-comparison-styles')) {
+      const style = document.createElement('style');
+      style.id = 'reportes-comparison-styles';
+      style.textContent = `
+        @keyframes vsPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(195,244,0,0.3); border-color: #c3f400; }
+            50% { transform: scale(1.1); box-shadow: 0 0 24px rgba(195,244,0,0.7); border-color: #00e3fd; }
+        }
+        @keyframes sweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 30px 30px; }
+        }
+        .hologram-card-active {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(195,244,0,0.06), rgba(17,19,25,0.95));
+            border: 2px solid rgba(195,244,0,0.3) !important;
+            box-shadow: 0 12px 36px -8px rgba(195,244,0,0.12);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .hologram-card-active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(195,244,0,0.12), transparent);
+            transform: skewX(-25deg);
+            animation: sweep 4s infinite linear;
+        }
+        .hologram-card-active:hover {
+            transform: translateY(-4px);
+            border-color: rgba(195,244,0,0.6) !important;
+            box-shadow: 0 20px 48px -10px rgba(195,244,0,0.22);
+        }
+        .hologram-card-inactive {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(30,41,59,0.04), rgba(17,19,25,0.85));
+            border: 1.5px solid rgba(255,255,255,0.05) !important;
+            opacity: 0.75;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .hologram-card-inactive::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(255,255,255,0.01) 1px, transparent 0), linear-gradient(90deg, rgba(255,255,255,0.01) 1px, transparent 0);
+            background-size: 15px 15px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+        }
+        .hologram-card-inactive:hover {
+            opacity: 0.9;
+            border-color: rgba(255,255,255,0.15) !important;
+        }
+        .vs-badge-glow {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #080a0f;
+            border: 2.5px solid #c3f400;
+            color: #c3f400;
+            font-family: 'Lexend', sans-serif;
+            font-size: 10px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(195,244,0,0.4);
+            animation: vsPulse 3s infinite ease-in-out;
+            z-index: 10;
+        }
+        .energy-bar-3d {
+            height: 14px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 9999px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+        }
+        .energy-fill-glow {
+            height: 100%;
+            border-radius: 9999px;
+            background: linear-gradient(90deg, #c3f400, #a6d000, #c3f400);
+            background-size: 200% 200%;
+            animation: progressGlow 2.5s infinite linear;
+            box-shadow: 0 0 10px rgba(195,244,0,0.5);
+            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .energy-fill-muted {
+            height: 100%;
+            border-radius: 9999px;
+            background: #334155;
+            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .energy-fill-empty {
+            height: 100%;
+            border-radius: 9999px;
+            background: #1e2029;
+        }
+        .metallic-widget {
+            background: linear-gradient(180deg, #181920, #0f1014);
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow: 0 8px 24px -6px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+        .metallic-widget:hover {
+            border-color: rgba(255,255,255,0.08);
+            transform: translateY(-2px);
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    const renderingLanusActive = (lanus?.netoTotal || 0) > 0;
+    const renderingBelgranoActive = (belgrano?.netoTotal || 0) > 0;
 
     return this._card('Comparativa Lanús vs Belgrano', '🏆', `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
-        ${[{d: lanus, label:'Lanús'},{d: belgrano, label:'Belgrano'}].map(({d, label}) => `
-          <div style="background:#111319;border-radius:12px;padding:14px;border:1.5px solid ${ganadorSemana===label?'#c3f400':'#1e1f26'}">
-            <div style="font-size:12px;font-weight:700;color:${ganadorSemana===label?'#c3f400':'#8e9379'};margin-bottom:8px">${ganadorSemana===label?'🏆':''} ${label}</div>
-            <div style="font-size:22px;font-weight:800;color:#e2e2eb;font-family:Lexend">${fmt.money(d?.netoTotal||0)}</div>
-            <div style="font-size:11px;color:#8e9379;margin-top:4px">Ing: ${fmt.money(d?.totalIngresos||0)} · Eg: ${fmt.money(d?.totalEgresos||0)}</div>
-            ${this._bar(d?.share||0)}
-            <div style="font-size:10px;color:#8e9379;margin-top:3px">${d?.share||0}% del total del sistema</div>
-          </div>`).join('')}
+      <!-- Hologram VS Combat Panel -->
+      <div class="relative flex flex-col md:flex-row gap-5 items-stretch justify-between mb-6">
+        
+        <!-- Tarjeta Lanús -->
+        <div class="flex-1 rounded-3xl p-5 ${renderingLanusActive ? 'hologram-card-active' : 'hologram-card-inactive'} flex flex-col justify-between min-h-[195px]">
+          <div class="space-y-1">
+            <div class="flex justify-between items-center">
+              <span class="text-[10px] font-black tracking-widest ${renderingLanusActive ? 'text-[#c3f400]' : 'text-slate-500'} uppercase">Sede Lanús</span>
+              ${ganadorSemana === 'Lanús' ? '<span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-[#c3f400]/25 text-[#c3f400]">🏆 SEDE GANADORA</span>' : ''}
+            </div>
+            <h2 class="text-3xl font-black font-stat-number tracking-tighter text-white mt-2 flex items-baseline gap-0.5">
+              ${fmt.money(lanus?.netoTotal || 0)}
+            </h2>
+            <p class="text-[10px] text-slate-500 font-mono">Ingresos: ${fmt.money(lanus?.totalIngresos || 0)} • Egresos: ${fmt.money(lanus?.totalEgresos || 0)}</p>
+          </div>
+
+          <div class="space-y-1.5 mt-4">
+            <div class="flex justify-between items-center text-[9px] font-bold text-slate-400">
+              <span>CUOTA DE MERCADO</span>
+              <span class="${renderingLanusActive ? 'text-[#c3f400]' : 'text-slate-500'}">${lanus?.share || 0}% del total</span>
+            </div>
+            <div class="energy-bar-3d">
+              <div class="${renderingLanusActive ? 'energy-fill-glow' : 'energy-fill-muted'}" style="width: ${lanus?.share || 0}%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VS Divider Badge -->
+        <div class="hidden md:flex items-center justify-center vs-divider pointer-events-none">
+          <div class="vs-badge-glow">VS</div>
+        </div>
+
+        <!-- Tarjeta Belgrano -->
+        <div class="flex-1 rounded-3xl p-5 ${renderingBelgranoActive ? 'hologram-card-active' : 'hologram-card-inactive'} flex flex-col justify-between min-h-[195px]">
+          <div class="space-y-1">
+            <div class="flex justify-between items-center">
+              <span class="text-[10px] font-black tracking-widest ${renderingBelgranoActive ? 'text-[#c3f400]' : 'text-slate-500'} uppercase">Sede Belgrano</span>
+              ${ganadorSemana === 'Belgrano' ? '<span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-[#c3f400]/25 text-[#c3f400]">🏆 SEDE GANADORA</span>' : ''}
+              ${!renderingBelgranoActive ? '<span class="text-[8px] font-black uppercase px-2.5 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-slate-500 tracking-wider">💤 EN REPOSO</span>' : ''}
+            </div>
+            <h2 class="text-3xl font-black font-stat-number tracking-tighter text-white mt-2 flex items-baseline gap-0.5">
+              ${fmt.money(belgrano?.netoTotal || 0)}
+            </h2>
+            <p class="text-[10px] text-slate-500 font-mono">Ingresos: ${fmt.money(belgrano?.totalIngresos || 0)} • Egresos: ${fmt.money(belgrano?.totalEgresos || 0)}</p>
+          </div>
+
+          <div class="space-y-1.5 mt-4">
+            <div class="flex justify-between items-center text-[9px] font-bold text-slate-400">
+              <span>CUOTA DE MERCADO</span>
+              <span class="${renderingBelgranoActive ? 'text-[#c3f400]' : 'text-slate-500'}">${belgrano?.share || 0}% del total</span>
+            </div>
+            <div class="energy-bar-3d">
+              <div class="${renderingBelgranoActive ? 'energy-fill-glow' : 'energy-fill-empty'}" style="width: ${belgrano?.share || 0}%"></div>
+            </div>
+          </div>
+        </div>
+
       </div>
+
+      <!-- Métricas del Ticket Promedio y Buffet con diseño metálico -->
       ${ticket ? `
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-        <div style="background:#111319;border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:10px;color:#8e9379;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Ticket Promedio</div>
-          <div style="font-size:18px;font-weight:800;color:#c3f400;font-family:Lexend">${fmt.money(ticket.ticketPromedio)}</div>
+      <div class="grid grid-cols-3 gap-3">
+        <div class="metallic-widget rounded-2xl p-3 text-center">
+          <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">Ticket Promedio</p>
+          <p class="text-md font-black text-[#c3f400] font-stat-number">${fmt.money(ticket.ticketPromedio)}</p>
         </div>
-        <div style="background:#111319;border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:10px;color:#8e9379;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Solo Cancha</div>
-          <div style="font-size:18px;font-weight:800;color:#e2e2eb;font-family:Lexend">${fmt.money(ticket.ticketSoloCancha)}</div>
+        <div class="metallic-widget rounded-2xl p-3 text-center">
+          <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">Solo Cancha</p>
+          <p class="text-md font-black text-white font-stat-number">${fmt.money(ticket.ticketSoloCancha)}</p>
         </div>
-        <div style="background:#111319;border-radius:10px;padding:12px;text-align:center">
-          <div style="font-size:10px;color:#8e9379;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em">Buffet Extra</div>
-          <div style="font-size:18px;font-weight:800;color:#bdf4ff;font-family:Lexend">${fmt.money(ticket.ticketBuffetExtra)}</div>
+        <div class="metallic-widget rounded-2xl p-3 text-center">
+          <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">Buffet Extra</p>
+          <p class="text-md font-black text-[#00e3fd] font-stat-number">${fmt.money(ticket.ticketBuffetExtra)}</p>
         </div>
       </div>` : ''}
+
       ${margen?.margenPromedio ? `
-      <div style="margin-top:12px;background:rgba(195,244,0,.06);border:1px solid rgba(195,244,0,.2);border-radius:10px;padding:12px;font-size:13px">
-        📈 Margen promedio buffet: <strong style="color:#c3f400">${margen.margenPromedio}%</strong>
-        ${margen.estrellaMargen ? ` · Mejor producto: <strong style="color:#e2e2eb">${margen.estrellaMargen.item} (${margen.estrellaMargen.margen}%)</strong>` : ''}
+      <div class="mt-4 bg-[#c3f400]/5 border border-[#c3f400]/20 rounded-2xl p-3 flex items-center justify-between text-xs transition-all hover:bg-[#c3f400]/10">
+        <span class="flex items-center gap-1.5 font-medium"><span class="text-base">📈</span> Margen promedio buffet: <strong class="text-[#c3f400]">${margen.margenPromedio}%</strong></span>
+        ${margen.estrellaMargen ? `<span class="text-slate-500 text-[10px]">Mejor producto: <strong class="text-white font-bold">${margen.estrellaMargen.item} (${margen.estrellaMargen.margen}%)</strong></span>` : ''}
       </div>` : ''}`, true);
   }
 };

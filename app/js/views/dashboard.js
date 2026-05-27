@@ -1,4 +1,14 @@
 // ===== VISTA: DASHBOARD — Dark Theme Stitch Premium v3.0 =====
+function getSlotPrice(precioBase, hora) {
+  const base = Number(precioBase) || 15000;
+  if (!hora) return base;
+  const horaNum = parseInt(hora.split(':')[0], 10);
+  if (horaNum >= 19 && horaNum <= 23) {
+    return Math.round(base * 1.20);
+  }
+  return base;
+}
+
 const DashboardView = {
   async render(sucursal) {
     const fecha = fmt.dateISO();
