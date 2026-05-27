@@ -147,9 +147,9 @@ const GoleadoresView = {
     }
 
     container.innerHTML = `
-      <div class="max-w-6xl mx-auto space-y-6 h-full flex flex-col">
+      <div class="max-w-6xl mx-auto space-y-6 pb-20">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 class="text-3xl font-black text-primary tracking-tight flex items-center gap-3">
               <span class="material-symbols-outlined text-[#c3f400]" style="font-size: 32px;">military_tech</span>
@@ -163,7 +163,7 @@ const GoleadoresView = {
           </button>
         </div>
 
-        <div id="goleadoresContent" class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-hidden">
+        <div id="goleadoresContent" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="col-span-1 lg:col-span-3 flex justify-center items-center h-64"><div class="skeleton w-full h-full rounded-2xl"></div></div>
         </div>
       </div>
