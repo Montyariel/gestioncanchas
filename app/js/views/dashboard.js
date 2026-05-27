@@ -1,4 +1,4 @@
-// ===== VISTA: DASHBOARD — Dark Theme Stitch =====
+// ===== VISTA: DASHBOARD — Dark Theme Stitch Premium v3.0 =====
 const DashboardView = {
   async render(sucursal) {
     const fecha = fmt.dateISO();
@@ -6,160 +6,265 @@ const DashboardView = {
 
     const dayName = new Date().toLocaleDateString('es-AR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
+    // Inyectar estilos CSS exclusivos con animaciones premium
+    if (!document.getElementById('dashboard-styles')) {
+      const style = document.createElement('style');
+      style.id = 'dashboard-styles';
+      style.textContent = `
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .glow-banner {
+            background: linear-gradient(135deg, #161a24, #262e3d, #111319);
+            background-size: 200% 200%;
+            animation: gradientMove 8s ease infinite;
+        }
+        .glow-card {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glow-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(195, 244, 0, 0.3) !important;
+            box-shadow: 0 16px 36px -12px rgba(195, 244, 0, 0.18);
+        }
+        .glow-card-blue:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 218, 243, 0.3) !important;
+            box-shadow: 0 16px 36px -12px rgba(0, 218, 243, 0.18);
+        }
+        .glow-card-red:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 180, 171, 0.3) !important;
+            box-shadow: 0 16px 36px -12px rgba(255, 180, 171, 0.18);
+        }
+        .cancha-led-ping {
+            animation: ledPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        @keyframes ledPing {
+            75%, 100% { transform: scale(1.8); opacity: 0; }
+        }
+        .fill-bar {
+            transition: width 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .radial-progress-svg {
+            transform: rotate(-90deg);
+        }
+        .radial-circle {
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
     container.innerHTML = `
-      <!-- Welcome Banner -->
-      <section class="grid grid-cols-1 gap-6 mb-8">
-        <div class="bg-surface-container-low rounded-xl p-10 relative overflow-hidden border border-surface-container-highest shadow-lg flex items-center justify-between">
-          <div class="relative z-10">
-            <h1 class="font-h1 text-h1 text-on-surface mb-2">¡Buen día! 👋</h1>
-            <p class="font-body-lg text-body-lg text-on-surface-variant">Resumen de hoy — ${dayName}</p>
+      <!-- Welcome Banner con Gradiente Animado y Facha -->
+      <section class="grid grid-cols-1 gap-6 mb-8 animate-in fade-in duration-500">
+        <div class="glow-banner rounded-3xl p-8 relative overflow-hidden border border-slate-800/80 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div class="relative z-10 space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="text-xs bg-[#c3f400]/15 text-[#c3f400] px-2.5 py-1 rounded-full font-black uppercase tracking-wider">MODO GURÚ ACTIVO 🧠</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-[#c3f400] animate-pulse"></span>
+            </div>
+            <h1 class="font-h1 text-3xl md:text-4xl font-black text-white tracking-tight flex items-center gap-2">¡Qué hacés, Ariel crack! 👋</h1>
+            <p class="text-slate-400 text-xs md:text-sm font-medium">El estadio de ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'} está listo. Hoy es <strong class="text-white">${dayName}</strong></p>
           </div>
-          <div class="hidden md:block absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-primary-fixed/10 to-transparent"></div>
-          <button onclick="App.navigate('agenda')" class="relative z-10 hidden md:flex items-center gap-2 py-3 px-5 rounded-lg font-bold text-sm transition-opacity hover:opacity-90" style="background:#c3f400;color:#161e00">
-            <span class="material-symbols-outlined" style="font-size:18px">calendar_month</span>
-            Ver Agenda
+          <div class="hidden lg:block absolute right-0 top-0 bottom-0 w-1/4 bg-gradient-to-l from-[#c3f400]/5 to-transparent pointer-events-none"></div>
+          <button onclick="App.navigate('agenda')" class="relative z-10 py-3.5 px-6 rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 active:scale-95 flex items-center gap-2 shrink-0 shadow-lg shadow-[#c3f400]/10 cursor-pointer" style="background:#c3f400;color:#161e00">
+            <span class="material-symbols-outlined text-sm font-bold">calendar_month</span>
+            Abrir Agenda Semanal
           </button>
         </div>
       </section>
 
-      <!-- Stats Cards -->
+      <!-- Grid de Métricas Principales (Stats Cards) con efecto Glow en Hover -->
       <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="metricsGrid">
-        ${[1,2,3,4].map(()=>`<div class="bg-surface-container rounded-xl p-6 border-t border-surface-container-highest"><div class="skeleton" style="height:80px"></div></div>`).join('')}
+        ${[1,2,3,4].map(()=>`
+          <div class="bg-slate-900/50 rounded-2xl p-6 border border-slate-800/80">
+            <div class="skeleton" style="height:76px"></div>
+          </div>`).join('')}
       </section>
 
-      <!-- Bento Layout -->
-      <section class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8" id="dashBottom">
-        <div class="col-span-1 md:col-span-8 bg-surface-container rounded-xl p-8 border-t border-surface-container-highest">
-          <div class="skeleton" style="height:240px"></div>
+      <!-- Dashboard Bento Grid con Widgets Destacados y Modernos -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8" id="dashBottom">
+        <!-- Turnos Libres (8 columnas) -->
+        <div class="col-span-1 lg:col-span-8 bg-slate-900/40 rounded-3xl p-6 border border-slate-800/80">
+          <div class="skeleton" style="height:260px"></div>
         </div>
-        <div class="col-span-1 md:col-span-4 bg-surface-container rounded-xl p-6 border-t border-surface-container-highest">
-          <div class="skeleton" style="height:240px"></div>
+        <!-- Termómetro Radial de Nico (4 columnas) -->
+        <div class="col-span-1 lg:col-span-4 bg-slate-900/40 rounded-3xl p-6 border border-slate-800/80">
+          <div class="skeleton" style="height:260px"></div>
         </div>
       </section>
 
-      <!-- Happy Hour -->
-      <div id="happyHourSection"></div>`;
+      <!-- Happy Hour Section -->
+      <div id="happyHourSection" class="animate-in slide-in-from-bottom-6 duration-500"></div>`;
 
     try {
       const m = await DB.getMetrics(sucursal, fecha);
 
+      // Inyectar Métricas Principales con efectos hover
       document.getElementById('metricsGrid').innerHTML = `
-        <div class="bg-surface-container rounded-xl p-6 border-t border-surface-container-highest shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(195,244,0,.1)">
-              <span class="material-symbols-outlined" style="color:#c3f400;font-size:20px">sports_soccer</span>
+        <!-- Card Canchas -->
+        <div class="glow-card bg-[#111319]/70 rounded-2xl p-5 border border-slate-800/80 shadow-lg">
+          <div class="flex items-center gap-2.5 mb-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#c3f400]/10 border border-[#c3f400]/20">
+              <span class="material-symbols-outlined text-md font-bold text-[#c3f400]">sports_soccer</span>
             </div>
-            <span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8e9379">CANCHAS</span>
+            <span class="text-[9px] font-black tracking-widest text-slate-500 uppercase">Canchas</span>
           </div>
-          <div style="font-size:28px;font-weight:700;color:#c3f400;font-family:Lexend,sans-serif;letter-spacing:-0.02em">${m.canchas}</div>
-          <p style="font-size:13px;color:#8e9379;margin-top:6px">Canchas activas — ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}</p>
+          <div class="text-3xl font-black text-[#c3f400] font-stat-number tracking-tighter">${m.canchas}</div>
+          <p class="text-[10px] text-slate-500 mt-2 font-medium">Complejos en ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}</p>
         </div>
-        <div class="bg-surface-container rounded-xl p-6 border-t border-surface-container-highest shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(0,218,243,.1)">
-              <span class="material-symbols-outlined" style="color:#00daf3;font-size:20px">bolt</span>
+
+        <!-- Card Ocupación -->
+        <div class="glow-card-blue bg-[#111319]/70 rounded-2xl p-5 border border-slate-800/80 shadow-lg">
+          <div class="flex items-center gap-2.5 mb-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#00daf3]/10 border border-[#00daf3]/20">
+              <span class="material-symbols-outlined text-md font-bold text-[#00daf3]">bolt</span>
             </div>
-            <span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8e9379">OCUPACIÓN</span>
+            <span class="text-[9px] font-black tracking-widest text-slate-500 uppercase">Ocupación</span>
           </div>
-          <div style="font-size:28px;font-weight:700;color:#e2e2eb;font-family:Lexend,sans-serif">${m.ocupacion}<span style="font-size:16px;color:#8e9379">%</span></div>
-          <p style="font-size:13px;color:#8e9379;margin-top:6px">${m.ocupados} ocupados · ${m.libres} libres</p>
+          <div class="text-3xl font-black text-white font-stat-number tracking-tighter flex items-baseline gap-0.5">
+            ${m.ocupacion}<span class="text-sm font-bold text-slate-500">%</span>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-2 font-medium">${m.ocupados} reservados · ${m.libres} libres</p>
         </div>
-        <div class="bg-surface-container rounded-xl p-6 border-t border-surface-container-highest shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(195,244,0,.1)">
-              <span class="material-symbols-outlined" style="color:#c3f400;font-size:20px">payments</span>
+
+        <!-- Card Ingresos -->
+        <div class="glow-card bg-[#111319]/70 rounded-2xl p-5 border border-slate-800/80 shadow-lg">
+          <div class="flex items-center gap-2.5 mb-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#c3f400]/10 border border-[#c3f400]/20">
+              <span class="material-symbols-outlined text-md font-bold text-[#c3f400]">payments</span>
             </div>
-            <span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8e9379">INGRESOS</span>
+            <span class="text-[9px] font-black tracking-widest text-slate-500 uppercase">Ingresos Neto</span>
           </div>
-          <div style="font-size:22px;font-weight:700;color:#e2e2eb;font-family:Lexend,sans-serif">${fmt.money(m.ingresos)}</div>
-          <p style="font-size:13px;color:#8e9379;margin-top:6px">${m.egresos > 0 ? 'Gastos: ' + fmt.money(m.egresos) : 'Sin gastos hoy'}</p>
+          <div class="text-xl md:text-2xl font-black text-white font-stat-number tracking-tighter">${fmt.money(m.ingresos)}</div>
+          <p class="text-[10px] text-slate-500 mt-2 font-medium">${m.egresos > 0 ? 'Caja: ' + fmt.money(m.egresos) + ' egresos' : 'Sin egresos cargados'}</p>
         </div>
-        <div class="bg-surface-container rounded-xl p-6 border-t border-surface-container-highest shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(255,180,171,.1)">
-              <span class="material-symbols-outlined" style="color:#ffb4ab;font-size:20px">inventory_2</span>
+
+        <!-- Card Stock Bajo -->
+        <div class="glow-card-red bg-[#111319]/70 rounded-2xl p-5 border border-slate-800/80 shadow-lg">
+          <div class="flex items-center gap-2.5 mb-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-red-500/10 border border-red-500/20">
+              <span class="material-symbols-outlined text-md font-bold text-red-400">inventory_2</span>
             </div>
-            <span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8e9379">STOCK BAJO</span>
+            <span class="text-[9px] font-black tracking-widest text-slate-500 uppercase">Alertas Stock</span>
           </div>
-          <div style="font-size:28px;font-weight:700;font-family:Lexend,sans-serif;color:${m.stockAlertas>0?'#ffb4ab':'#e2e2eb'}">${m.stockAlertas}</div>
-          <p style="font-size:13px;margin-top:6px;color:${m.stockAlertas>0?'#ffb4ab':'#8e9379'}">${m.stockAlertas > 0 ? '⚠️ Reponer pronto' : '✅ Stock OK'}</p>
+          <div class="text-3xl font-black font-stat-number tracking-tighter ${m.stockAlertas > 0 ? 'text-red-400' : 'text-slate-300'}">${m.stockAlertas}</div>
+          <p class="text-[10px] mt-2 font-medium ${m.stockAlertas > 0 ? 'text-red-400 animate-pulse font-bold' : 'text-slate-500'}">
+            ${m.stockAlertas > 0 ? '⚠️ Reponer panchos buffet' : '✅ Stock abastecido'}
+          </p>
         </div>`;
 
-      // Turnos del día
+      // Cargar Turnos
       const turnos = await DB.getTurnos(sucursal, fecha);
-      const proximos = turnos.filter(t => !t.reservado).slice(0, 6);
-      const ocupados = turnos.filter(t => t.reservado).slice(0, 6);
+      const proximos = turnos.filter(t => !t.reservado).slice(0, 5);
+      const ocupados = turnos.filter(t => t.reservado).slice(0, 5);
 
+      // Bento Layout inferior
       document.getElementById('dashBottom').innerHTML = `
-        <!-- Próximos libres -->
-        <div class="col-span-1 md:col-span-8 bg-surface-container rounded-xl p-8 border-t border-surface-container-highest shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
-          <div class="flex items-center justify-between mb-6">
+        <!-- WIDGET 1: Canchas Libres & Ocupación en Vivo (8 columnas) -->
+        <div class="col-span-1 lg:col-span-8 bg-[#111319]/65 rounded-3xl p-6 border border-slate-800/80 shadow-xl flex flex-col min-h-0 justify-between">
+          <div class="flex items-start justify-between mb-4 flex-shrink-0">
             <div>
-              <h2 style="font-size:22px;font-weight:700;color:#e2e2eb">🟢 Turnos disponibles hoy</h2>
-              <p style="font-size:14px;color:#8e9379;margin-top:4px">Hacé click en Reservar para asignar un cliente</p>
+              <h2 class="text-lg font-black text-white italic flex items-center gap-2 uppercase tracking-tight">🟢 Turnos Disponibles hoy</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Asigná reservas en un click o cargá combos especiales de buffet</p>
             </div>
-            <button onclick="App.navigate('agenda')" style="padding:8px 16px;border-radius:8px;border:1.5px solid #444933;background:transparent;color:#c4c9ac;font-size:13px;font-weight:600;cursor:pointer">Ver Agenda</button>
+            <button onclick="App.navigate('agenda')" class="text-[10px] font-black uppercase px-3 py-2 bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded-xl hover:border-slate-700 transition-all cursor-pointer">
+              Ver Grilla Completa
+            </button>
           </div>
+
           ${proximos.length ? `
-          <div style="display:flex;flex-direction:column;gap:0">
-            ${proximos.map(t => `
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #333;transition:.2s">
-                <div style="display:flex;align-items:center;gap:14px">
-                  <div style="width:44px;height:44px;border-radius:10px;background:rgba(195,244,0,.08);border:1px solid rgba(195,244,0,.2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#c3f400">${t.hora?.substring(0,5)||'—'}</div>
-                  <div>
-                    <div style="font-weight:700;font-size:14px;color:#e2e2eb">${t.canchas?.nombre || 'Cancha'}</div>
-                    <div style="font-size:12px;color:#8e9379">${fmt.money(t.canchas?.precio)}/hora</div>
+          <!-- Lista de turnos interactivos -->
+          <div class="flex-1 overflow-y-auto space-y-2.5 max-h-[320px] pr-1 scroll-smooth">
+            ${proximos.map(t => {
+              const precioSlot = getSlotPrice(t.canchas?.precio || 15000, t.hora);
+              return `
+              <div class="flex items-center justify-between p-3.5 bg-slate-950/30 rounded-2xl border border-slate-800 hover:border-slate-700/80 transition-all duration-300 group">
+                <div class="flex items-center gap-3.5 min-w-0">
+                  <div class="w-11 h-11 rounded-xl bg-[#c3f400]/10 border border-[#c3f400]/20 flex items-center justify-center font-black text-xs text-[#c3f400] shrink-0 group-hover:scale-105 transition-transform duration-300">
+                    ${t.hora?.substring(0,5)||'—'}
+                  </div>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <h4 class="font-bold text-xs text-white truncate">${t.canchas?.nombre || 'Cancha'}</h4>
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 cancha-led-ping"></span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-0.5 font-mono">${fmt.money(precioSlot)}/hora • ${t.canchas?.tipo || 'Cancha'}</p>
                   </div>
                 </div>
-                <button onclick="App.openReservaModal(${t.id}, '${(t.canchas?.nombre||'Cancha').replace(/'/g,"\\'")}', '${t.hora}', ${t.canchas?.precio || 0})"
-                  style="padding:8px 16px;border-radius:8px;background:#c3f400;color:#161e00;font-size:13px;font-weight:700;cursor:pointer">
-                  + Reservar
+                <button onclick="App.openReservaModal(${t.id}, '${(t.canchas?.nombre||'Cancha').replace(/'/g,"\\'")}', '${t.hora}', ${precioSlot})"
+                  class="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-fixed text-[10px] font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-md shadow-[#c3f400]/5 flex items-center gap-1">
+                  Reservar <span class="material-symbols-outlined text-[10px] font-bold">add</span>
                 </button>
-              </div>`).join('')}
+              </div>`;
+            }).join('')}
           </div>` : `
-          <div style="text-align:center;padding:48px 20px;color:#8e9379">
-            <span class="material-symbols-outlined" style="font-size:48px;margin-bottom:12px;display:block">check_circle</span>
-            <p style="font-size:16px;font-weight:600;color:#c4c9ac">Sin turnos libres hoy</p>
+          <div class="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-500">
+            <span class="material-symbols-outlined text-4xl text-slate-700 mb-2">sports_score</span>
+            <h4 class="text-sm font-bold text-slate-400">¡Impresionante ocupación!</h4>
+            <p class="text-[10px] text-slate-600">No hay turnos libres en Lanús para lo que queda del día.</p>
           </div>`}
         </div>
 
-        <!-- Actividad reciente -->
-        <div class="col-span-1 md:col-span-4 bg-surface-container rounded-xl p-6 border-t border-surface-container-highest shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
-          <div class="flex items-center justify-between mb-6">
-            <h3 style="font-size:16px;font-weight:700;color:#e2e2eb">🔴 Ocupados hoy</h3>
-            <button onclick="App.navigate('reservas')" style="font-size:12px;color:#c3f400;background:none;border:none;cursor:pointer;font-weight:600">Ver todos</button>
+        <!-- WIDGET 2: El Termómetro de Nico (Progreso Circular Animado - 4 columnas) -->
+        <div class="col-span-1 lg:col-span-4 bg-[#111319]/65 rounded-3xl p-6 border border-slate-800/80 shadow-xl flex flex-col items-center justify-between min-h-[360px]">
+          <div class="w-full text-left shrink-0">
+            <h3 class="text-sm font-black text-white italic uppercase tracking-wider">🌡️ Termómetro Reservas</h3>
+            <p class="text-[10px] text-slate-500 mt-0.5">Estado térmico del complejo hoy</p>
           </div>
-          ${ocupados.length ? `
-          <div style="display:flex;flex-direction:column;gap:16px">
-            ${ocupados.map(t => `
-              <div style="display:flex;gap:12px">
-                <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,180,171,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-                  <span class="material-symbols-outlined" style="color:#ffb4ab;font-size:16px">lock</span>
-                </div>
-                <div>
-                  <p style="font-weight:600;font-size:14px;color:#e2e2eb">${t.canchas?.nombre || 'Cancha'} — ${t.hora}</p>
-                  <p style="font-size:13px;color:#c4c9ac">${t.cliente_nombre || 'Sin nombre'}</p>
-                </div>
-              </div>`).join('')}
-          </div>` : `
-          <div style="text-align:center;padding:32px 0;color:#8e9379">
-            <span class="material-symbols-outlined" style="font-size:36px;display:block;margin-bottom:8px">event_available</span>
-            <p style="font-size:14px">Sin reservas aún</p>
-          </div>`}
+
+          <!-- SVG Radial Progress -->
+          <div class="relative w-40 h-40 flex items-center justify-center shrink-0 my-4 animate-in zoom-in-95 duration-500">
+            <svg class="radial-progress-svg" width="140" height="140" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="56" fill="transparent" stroke="#1e2029" stroke-width="12"></circle>
+              <circle class="radial-circle" cx="70" cy="70" r="56" fill="transparent" 
+                stroke="${m.ocupacion < 40 ? '#f59e0b' : '#c3f400'}" stroke-width="12" 
+                stroke-dasharray="351.8" 
+                stroke-dashoffset="${351.8 - (351.8 * m.ocupacion) / 100}"
+                stroke-linecap="round">
+              </circle>
+            </svg>
+            <div class="absolute text-center">
+              <span class="text-3xl font-black font-stat-number text-white">${m.ocupacion}%</span>
+              <p class="text-[8px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">Reservado</p>
+            </div>
+          </div>
+
+          <!-- Nico Comentando el Termómetro -->
+          <div class="w-full bg-[#0c0e14]/50 border border-slate-800 rounded-2xl p-3.5 text-center shrink-0">
+            <p class="text-[10px] font-black text-[#c3f400] uppercase tracking-wider mb-1">🤖 Estado del Complejo:</p>
+            <p class="text-[11px] text-slate-400 italic">
+              ${m.ocupacion < 40 
+                ? `"Che Ariel crack, el termómetro está frío (${m.ocupacion}%). ¡Nos metieron en el área! Abajo te dejé un plan Happy Hour listo para levantar las canchas al toque. ¡Activalo ya!"` 
+                : m.ocupacion < 80 
+                  ? `"¡Lindo partido estamos jugando! El complejo está templado y a buen ritmo. A seguir metiéndole que hoy ganamos caminando."`
+                  : `"¡EXPLOTA EL ESTADIO CRACK! 🔥 100% de ocupación. La caja arde y los pibes están delirando de alegría. ¡A facturar!"`
+              }
+            </p>
+          </div>
         </div>`;
 
-      // Happy Hour analysis
+      // Renderizar Análisis Happy Hour (Puntos Flojos)
       this.renderHappyHour(sucursal, turnos);
 
-      // Badge stock sidebar
+      // Badge stock en la barra lateral
       const badgeStock = document.getElementById('badge-stock');
-      if (badgeStock) badgeStock.style.display = m.stockAlertas > 0 ? 'inline-flex' : 'none';
+      if (badgeStock) {
+        badgeStock.style.display = m.stockAlertas > 0 ? 'inline-flex' : 'none';
+      }
 
     } catch(e) {
-      container.innerHTML += `<div style="padding:20px;color:#ffb4ab;background:rgba(255,180,171,.1);border-radius:12px;border:1px solid rgba(255,180,171,.2)">
-        <strong>Error cargando dashboard:</strong> ${e.message}
-      </div>`;
-      console.error('Dashboard error:', e);
+      container.innerHTML += `
+        <div class="p-6 bg-red-500/10 border border-red-500/20 text-red-400 rounded-3xl mt-6 text-center space-y-2">
+          <span class="material-symbols-outlined text-4xl">sports_alert</span>
+          <h4 class="font-bold">Error cargando el Dashboard Premium</h4>
+          <p class="text-xs text-slate-500">${e.message}</p>
+        </div>`;
+      console.error('Dashboard premium error:', e);
     }
   },
 
@@ -181,46 +286,73 @@ const DashboardView = {
 
     if (!flojos.length) {
       section.innerHTML = `
-        <div style="background:rgba(195,244,0,.06);border:1px solid rgba(195,244,0,.2);border-radius:14px;padding:20px;display:flex;align-items:center;gap:16px">
-          <span style="font-size:36px">🔥</span>
+        <div class="bg-[#c3f400]/5 border border-[#c3f400]/20 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-5">
+          <div class="w-14 h-14 rounded-full bg-[#c3f400]/10 flex items-center justify-center text-3xl shadow-xl shadow-[#c3f400]/5 shrink-0">🏆</div>
           <div>
-            <div style="font-weight:800;font-size:16px;color:#c3f400">¡Excelente ocupación hoy!</div>
-            <div style="font-size:13px;color:#8e9379;margin-top:4px">Todos los horarios tienen más del 40% de ocupación. ¡Sos un crack, Ariel!</div>
+            <h4 class="font-black text-lg text-[#c3f400] italic uppercase tracking-wider">¡OCUPACIÓN PERFECTA, CRACK!</h4>
+            <p class="text-slate-400 text-xs mt-1">Todos los horarios del complejo hoy superan el 40% de reservas. Seguimos a paso firme y con la rentabilidad al ángulo. ¡Seguí así, Ariel! ⚽🔥</p>
           </div>
         </div>`;
       return;
     }
 
     section.innerHTML = `
-      <div style="background:#1e1f26;border:1px solid #444933;border-radius:14px;padding:24px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-          <span style="font-size:15px;font-weight:700;color:#f59e0b;display:flex;align-items:center;gap:8px">
-            <span class="material-symbols-outlined" style="font-size:20px">bolt</span>
-            Análisis Happy Hour — Puntos Flojos
+      <!-- Widget de Happy Hour con estilo Glassmorphism y Glow Naranja -->
+      <div class="bg-gradient-to-br from-slate-900/60 to-slate-950/80 border border-slate-800 rounded-[32px] p-6 shadow-2xl space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <h3 class="text-md font-black text-amber-500 italic flex items-center gap-2 uppercase tracking-wider">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+              🔥 ALERTA DE PUNTOS FLOJOS (HAPPY HOUR)
+            </h3>
+            <p class="text-xs text-slate-500">Detecté franjas horarias desiertas. ¡Vamos a meterle el centro por WhatsApp a los pibes!</p>
+          </div>
+          <span class="text-[10px] font-black uppercase bg-amber-500/10 border border-amber-500/20 text-amber-400 px-3 py-1.5 rounded-full self-start md:self-center shrink-0 tracking-wider">
+            ${flojos.length} bache${flojos.length > 1 ? 's' : ''} crítico${flojos.length > 1 ? 's' : ''} hoy
           </span>
-          <span style="background:rgba(245,158,11,.15);color:#f59e0b;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px">${flojos.length} horario${flojos.length>1?'s':''} con baja ocupación</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:18px">
+
+        <!-- Bento de tarjetas de baches -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           ${flojos.map(h => `
-            <div style="background:#111319;border:1px solid #444933;border-radius:12px;padding:14px">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-                <span style="font-size:18px;font-weight:800;color:#e2e2eb">${h.hora?.substring(0,5)||h.hora}</span>
-                <span style="background:rgba(245,158,11,.15);color:#f59e0b;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px">${h.pct}%</span>
+            <div class="bg-[#0c0e14]/50 border border-slate-800/80 rounded-2xl p-4 space-y-2 relative overflow-hidden group">
+              <div class="flex items-center justify-between">
+                <span class="text-lg font-black text-white font-stat-number">${h.hora?.substring(0,5)||h.hora}</span>
+                <span class="text-[10px] font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full font-mono">${h.pct}%</span>
               </div>
-              <div style="height:6px;background:#333;border-radius:10px;overflow:hidden">
-                <div style="height:100%;width:${h.pct}%;background:#f59e0b;border-radius:10px"></div>
+              <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden">
+                <div class="fill-bar h-full bg-amber-500 rounded-full" style="width: ${h.pct}%"></div>
               </div>
-              <div style="font-size:12px;color:#8e9379;margin-top:6px">${h.libre} lugar${h.libre>1?'es':''} libre${h.libre>1?'s':''}</div>
+              <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">${h.libre} cancha${h.libre > 1 ? 's' : ''} libre${h.libre > 1 ? 's' : ''}</p>
             </div>`).join('')}
         </div>
-        <div style="background:rgba(245,158,11,.06);border-radius:12px;padding:16px;border:1.5px dashed rgba(245,158,11,.3)">
-          <div style="font-weight:700;font-size:14px;color:#f59e0b;margin-bottom:8px">💡 Estrategia Happy Hour para Ariel:</div>
-          <div style="font-size:13px;color:#c4c9ac;line-height:1.7">
-            ${flojos.map(h => `• <strong style="color:#e2e2eb">${h.hora?.substring(0,5)||h.hora}</strong>: Solo ${h.pct}% ocupado. Propuesta: <em>Cancha + 6 Aguas al costo</em>.`).join('<br>')}
+
+        <!-- Estrategia de Happy Hour Premium de Nico -->
+        <div class="bg-amber-500/5 rounded-2xl p-5 border border-dashed border-amber-500/25 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">💡</span>
+            <h4 class="font-black text-sm text-amber-500 italic uppercase tracking-wider">ESTRATEGIA HAPPY HOUR ARMADA POR NICO</h4>
           </div>
-          <button onclick="App.navigate('buffet')" style="margin-top:12px;padding:8px 16px;border-radius:8px;background:#c3f400;color:#161e00;font-size:13px;font-weight:700;cursor:pointer">
-            📦 Ver stock para el combo
-          </button>
+          <div class="text-xs text-slate-400 leading-relaxed space-y-2">
+            <p>Ariel crack, hoy las canchas en estos horarios son un desierto. Te armé este plan de contingencia comercial para tirarlo al grupo de WhatsApp Link al toque:</p>
+            <div class="bg-slate-950/40 p-4 rounded-xl border border-slate-800 space-y-2.5 font-medium">
+              ${flojos.map(h => `
+                <div class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                  <span>En el turno de las <strong class="text-white">${h.hora?.substring(0,5)||h.hora} hs</strong>: Cancha + 6 Aguas frías al costo.</span>
+                </div>`).join('')}
+            </div>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row gap-3 pt-1">
+            <button onclick="App.navigate('whatsapp')" class="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-amber-500/10 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm font-bold">chat</span>
+              Mandar Promo por WhatsApp Link
+            </button>
+            <button onclick="App.navigate('buffet')" class="px-5 py-3 rounded-xl bg-transparent border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 text-xs font-black uppercase tracking-wider transition-all cursor-pointer">
+              Verificar stock buffet
+            </button>
+          </div>
         </div>
       </div>`;
   }
