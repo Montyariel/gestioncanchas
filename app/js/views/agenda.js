@@ -2,6 +2,14 @@
 const AgendaView = {
   currentDate: new Date(),
 
+  getSlotPrice(basePrecio, hora) {
+    const h = parseInt(hora.split(':')[0], 10);
+    if (h >= 19 && h <= 23) {
+      return Math.round(basePrecio * 1.20);
+    }
+    return basePrecio;
+  },
+
   async render(sucursal) {
     const container = document.getElementById('viewContainer');
     
@@ -61,27 +69,51 @@ const AgendaView = {
         <!-- Left/Center Canvas: Calendar Grid -->
         <div class="flex-1 min-w-0 flex flex-col bg-surface-container-lowest rounded-xl border border-surface-container-high overflow-hidden shadow-lg relative h-full">
           <!-- Filters & Controls Header -->
-          <div class="p-md border-b border-surface-container-high flex justify-between items-center bg-surface z-10 flex-wrap gap-4">
-            <div class="flex gap-sm">
-              <button class="px-md py-2 rounded-full font-label-caps text-label-caps bg-primary-container text-on-primary-container flex items-center gap-xs shadow-sm">
-                <span class="material-symbols-outlined text-[16px]">check</span>
-                Todas
-              </button>
-            </div>
-            <div class="flex items-center gap-md">
-              <div class="flex items-center bg-surface-container rounded-lg border border-outline-variant overflow-hidden">
-                <button onclick="AgendaView.changeDay(-1)" class="p-2 hover:bg-surface-container-highest transition-colors text-on-surface-variant">
-                  <span class="material-symbols-outlined">chevron_left</span>
-                </button>
-                <span id="agendaDateLabel" class="px-md font-body-md font-medium text-on-surface"></span>
-                <button onclick="AgendaView.changeDay(1)" class="p-2 hover:bg-surface-container-highest transition-colors text-on-surface-variant">
-                  <span class="material-symbols-outlined">chevron_right</span>
+          <div class="p-md border-b border-surface-container-high flex flex-col gap-sm bg-surface z-10">
+            <div class="flex justify-between items-center bg-surface flex-wrap gap-4 w-full">
+              <div class="flex gap-sm">
+                <button class="px-md py-2 rounded-full font-label-caps text-label-caps bg-primary-container text-on-primary-container flex items-center gap-xs shadow-sm">
+                  <span class="material-symbols-outlined text-[16px]">check</span>
+                  Todas
                 </button>
               </div>
-              <button onclick="AgendaView.goToday()" class="p-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors" title="Ir a hoy">
-                <span class="material-symbols-outlined">calendar_today</span>
-              </button>
+              <div class="flex items-center gap-md">
+                <div class="flex items-center bg-surface-container rounded-lg border border-outline-variant overflow-hidden">
+                  <button onclick="AgendaView.changeDay(-1)" class="p-2 hover:bg-surface-container-highest transition-colors text-on-surface-variant">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                  </button>
+                  <span id="agendaDateLabel" class="px-md font-body-md font-medium text-on-surface"></span>
+                  <button onclick="AgendaView.changeDay(1)" class="p-2 hover:bg-surface-container-highest transition-colors text-on-surface-variant">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                  </button>
+                </div>
+                <button onclick="AgendaView.goToday()" class="p-2 rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors" title="Ir a hoy">
+                  <span class="material-symbols-outlined">calendar_today</span>
+                </button>
+              </div>
             </div>
+            <!-- Transparent Night Surcharge Banner -->
+            <div class="bg-primary/5 text-primary border border-primary/20 rounded-lg p-3 text-xs flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-primary">lightbulb</span>
+              <span><strong>💡 Tarifas Nocturnas:</strong> Los turnos de 19:00 a 23:00 hs contemplan un +20% por costos de iluminación artificial.</span>
+            </div>
+            ${window.currentWeatherAlert === 'roja' ? `
+              <div class="bg-red-950/40 text-red-400 border border-red-900/50 rounded-lg p-3 text-xs flex items-center justify-between gap-2 animate-pulse mt-2">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[18px]">dangerous</span>
+                  <span><strong>⛈️ ALERTA METEOROLÓGICA ROJA:</strong> Tormentas eléctricas severas en Lanús. Te sugerimos reasignar las reservas preventivamente para evitar cancelaciones de último momento.</span>
+                </div>
+                <button onclick="AgendaView.abrirReasignadorClima()" class="bg-red-500 hover:bg-red-600 text-white font-bold px-3 py-1 rounded text-[10px] tracking-wide uppercase transition-all shadow-lg active:scale-95">Reasignar Reservas</button>
+              </div>
+            ` : window.currentWeatherAlert === 'amarilla' ? `
+              <div class="bg-amber-950/30 text-amber-400 border border-amber-900/40 rounded-lg p-3 text-xs flex items-center justify-between gap-2 mt-2">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[18px]">warning</span>
+                  <span><strong>⚠️ ALERTA METEOROLÓGICA AMARILLA:</strong> Lloviznas o vientos fuertes en Lanús. Monitoreá el clima para coordinar con los clientes del bloque actual.</span>
+                </div>
+                <button onclick="AgendaView.abrirReasignadorClima()" class="bg-amber-500 hover:bg-amber-600 text-black font-bold px-3 py-1 rounded text-[10px] tracking-wide uppercase transition-all shadow-lg active:scale-95">Coordinar Turnos</button>
+              </div>
+            ` : ''}
           </div>
           
           <div id="agendaContent" class="flex-1 flex flex-col overflow-hidden relative">
@@ -117,6 +149,11 @@ const AgendaView = {
     this.loadAgenda(App.state.sucursal);
   },
 
+  abrirReasignadorClima() {
+    App.navigate('reservas');
+    App.toast('🔍 Listado de reservas para reasignar por clima.', 'info');
+  },
+
   async loadAgenda(sucursal) {
     const fecha = fmt.dateISO(this.currentDate);
     const content = document.getElementById('agendaContent');
@@ -133,10 +170,10 @@ const AgendaView = {
         return;
       }
 
-      // Generate hours from 17:00 to 23:00 (or based on turnos)
+      // Generate hours from 14:00 to 23:00 (or based on turnos)
       let horas = [...new Set(turnos.map(t => t.hora))].sort();
       if (!horas.length) {
-        horas = ['17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
+        horas = ['14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
       }
 
       // Dynamic grid columns based on number of canchas
@@ -150,7 +187,7 @@ const AgendaView = {
             ${canchas.map(c => `
               <div class="font-label-caps text-label-caps text-on-surface text-center py-2 bg-surface-container rounded-md border-t border-outline-variant flex flex-col">
                 <span>${c.nombre}</span>
-                <span class="text-[10px] text-on-surface-variant mt-1">${fmt.money(c.precio)}</span>
+                <span class="text-[10px] text-on-surface-variant mt-1">${fmt.money(c.precio)} base</span>
               </div>
             `).join('')}
           </div>
@@ -177,9 +214,10 @@ const AgendaView = {
                     return `<div class="h-24 rounded-lg border border-surface-container-highest bg-surface opacity-50"></div>`;
                   }
                   
+                  const finalPrecio = AgendaView.getSlotPrice(c.precio, hora);
                   if (turno.reservado) {
                     return `
-                      <div class="h-24 rounded-lg grass-texture border-l-4 border-primary p-sm flex flex-col cursor-pointer hover:brightness-110 transition-all relative overflow-hidden group shadow-lg" onclick="AgendaView.showBookingDetails(${turno.id}, '${c.nombre}', '${hora}', '${turno.cliente_nombre || 'Sin Nombre'}', ${c.precio})">
+                      <div class="h-24 rounded-lg grass-texture border-l-4 border-primary p-sm flex flex-col cursor-pointer hover:brightness-110 transition-all relative overflow-hidden group shadow-lg" onclick="AgendaView.showBookingDetails(${turno.id}, '${c.nombre}', '${hora}', '${turno.cliente_nombre || 'Sin Nombre'}', ${finalPrecio})">
                         <div class="flex justify-between items-start mb-xs relative z-10">
                           <span class="reserved-badge">RESERVADO</span>
                           <span class="text-[10px] font-black text-white/50">${hora}</span>
@@ -192,8 +230,11 @@ const AgendaView = {
                     `;
                   } else {
                     return `
-                      <div onclick="App.openReservaModal(${turno.id}, '${c.nombre}', '${hora}', ${c.precio || 0})" class="h-24 rounded-lg border border-surface-container-highest bg-surface hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-colors flex items-center justify-center group shadow-sm">
-                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-3xl">add</span>
+                      <div onclick="App.openReservaModal(${turno.id}, '${c.nombre}', '${hora}', ${finalPrecio})" class="h-24 rounded-lg border border-surface-container-highest bg-surface hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-colors flex items-center justify-center group shadow-sm">
+                        <div class="flex flex-col items-center">
+                          <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-2xl">add</span>
+                          <span class="text-[9px] font-bold text-slate-500 mt-1">${fmt.money(finalPrecio)}</span>
+                        </div>
                       </div>
                     `;
                   }
@@ -319,4 +360,3 @@ const AgendaView = {
     }
   }
 };
-

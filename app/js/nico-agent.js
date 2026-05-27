@@ -86,7 +86,7 @@ const NicoAgent = {
   // ============================================================
   async aperturaAgendaSemanal() {
     console.log('[NicoAgent] 📅 Ejecutando apertura semanal de agenda...');
-    const sucursales = ['lanus', 'belgrano'];
+    const sucursales = ['lanus'];
     const resultados = [];
 
     for (const sucursal of sucursales) {
@@ -174,7 +174,7 @@ const NicoAgent = {
   // ============================================================
   async checkStockCritico(silencioso = false) {
     try {
-      const sucursales = ['lanus', 'belgrano'];
+      const sucursales = ['lanus'];
       let alertasTotal = [];
 
       for (const sucursal of sucursales) {
@@ -269,7 +269,7 @@ const NicoAgent = {
   // ============================================================
   async checkGoleadoresVip() {
     try {
-      const sucursales = ['lanus', 'belgrano'];
+      const sucursales = ['lanus'];
       const vips = [];
 
       for (const sucursal of sucursales) {
@@ -292,7 +292,7 @@ const NicoAgent = {
   async cierreCaja() {
     const fecha = fmt.dateISO();
     try {
-      const sucursales = ['lanus', 'belgrano'];
+      const sucursales = ['lanus'];
       let reporteTexto = `📊 CIERRE DE CAJA — ${fecha}\n${'═'.repeat(30)}\n`;
       let totalNeto = 0;
 

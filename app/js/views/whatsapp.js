@@ -35,6 +35,14 @@ const WhatsappView = {
   async render(sucursal) {
     const container = document.getElementById('viewContainer');
     
+    // Cargar jugadores del CRM
+    try {
+      this.state.crmJugadores = await DB.getJugadores(sucursal);
+    } catch(e) {
+      console.error("Error al cargar jugadores del CRM para WhatsApp:", e);
+      this.state.crmJugadores = [];
+    }
+
     if (!document.getElementById('whatsapp-styles')) {
       const style = document.createElement('style');
       style.id = 'whatsapp-styles';
@@ -51,6 +59,15 @@ const WhatsappView = {
         .qr-scanner-line {
             animation: scan 2s linear infinite;
         }
+        .text-dark {
+            color: #161e00 !important;
+        }
+        .bg-primary-container {
+            background-color: #c3f400 !important;
+        }
+        .text-on-primary-fixed {
+            color: #161e00 !important;
+        }
         @keyframes scan {
             0% { top: 0%; }
             50% { top: 100%; }
@@ -64,6 +81,14 @@ const WhatsappView = {
     this.updateStatusUI();
     this.renderChatsList();
     this.renderActiveChat();
+
+    // Atar listener de búsqueda
+    const searchInput = document.getElementById('waContactSearch');
+    if (searchInput) {
+      searchInput.oninput = (e) => {
+        this.renderChatsList(e.target.value);
+      };
+    }
   },
 
   renderLayout(container) {
@@ -93,9 +118,17 @@ const WhatsappView = {
 
             <!-- Active Chats List -->
             <div class="flex-1 glass-panel rounded-3xl border border-outline-variant/30 flex flex-col min-h-0">
-              <div class="p-4 border-b border-outline-variant/30 bg-surface-container-low/50 flex justify-between items-center">
-                <h2 class="text-sm font-bold text-on-surface uppercase tracking-wider">Conversaciones Activas</h2>
-                <span class="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-bold">Lobby</span>
+              <div class="p-4 border-b border-outline-variant/30 bg-surface-container-low/50 flex flex-col gap-2 shrink-0">
+                <div class="flex justify-between items-center">
+                  <h2 class="text-sm font-bold text-on-surface uppercase tracking-wider">Conversaciones Activas</h2>
+                  <span class="text-[10px] bg-[#c3f400]/25 text-[#c3f400] px-2 py-0.5 rounded-full font-bold">Lobby</span>
+                </div>
+                <!-- Buscador de contactos -->
+                <div class="relative mt-1">
+                  <input type="text" id="waContactSearch" class="w-full bg-[#0c0e14] border border-slate-700/80 rounded-xl pl-9 pr-8 py-2.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-[#c3f400] transition-colors" placeholder="Buscar contacto en CRM o escribir tel...">
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" style="font-size:16px">search</span>
+                  <button id="waClearSearch" onclick="WhatsappView.clearSearch()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200" style="display:none;"><span class="material-symbols-outlined" style="font-size:16px">close</span></button>
+                </div>
               </div>
               <div id="chatsListContainer" class="flex-1 overflow-y-auto p-2 space-y-1">
                 <!-- Chats list will render here -->
@@ -117,17 +150,17 @@ const WhatsappView = {
             <div class="p-2.5 bg-surface-container-low/30 border-t border-outline-variant/20 shrink-0">
               <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider px-2 mb-1.5 flex items-center gap-1">🤖 Plantillas rápidas de Nico:</p>
               <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
-                <button onclick="WhatsappView.applyTemplate('sena')" class="flex-shrink-0 bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary text-[10px] font-black px-3 py-1.5 rounded-xl transition-all">💳 Recordatorio Seña</button>
-                <button onclick="WhatsappView.applyTemplate('abono')" class="flex-shrink-0 bg-[#00e3fd]/10 hover:bg-[#00e3fd]/20 border border-[#00e3fd]/30 text-[#00e3fd] text-[10px] font-black px-3 py-1.5 rounded-xl transition-all">🌟 Abono Mensual</button>
-                <button onclick="WhatsappView.applyTemplate('espera')" class="flex-shrink-0 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-500 text-[10px] font-black px-3 py-1.5 rounded-xl transition-all">🔔 Se liberó Turno</button>
-                <button onclick="WhatsappView.applyTemplate('cumple')" class="flex-shrink-0 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-500 text-[10px] font-black px-3 py-1.5 rounded-xl transition-all">🎂 Regalo Cumple</button>
+                <button onclick="WhatsappView.applyTemplate('sena')" class="flex-shrink-0 bg-primary-container/15 hover:bg-primary-container/25 border border-primary-container/30 text-[#c3f400] text-[10px] font-black px-3 py-1.5 rounded-xl transition-all cursor-pointer">💳 Recordatorio Seña</button>
+                <button onclick="WhatsappView.applyTemplate('abono')" class="flex-shrink-0 bg-[#00e3fd]/10 hover:bg-[#00e3fd]/20 border border-[#00e3fd]/30 text-[#00e3fd] text-[10px] font-black px-3 py-1.5 rounded-xl transition-all cursor-pointer">🌟 Abono Mensual</button>
+                <button onclick="WhatsappView.applyTemplate('espera')" class="flex-shrink-0 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-500 text-[10px] font-black px-3 py-1.5 rounded-xl transition-all cursor-pointer">🔔 Se liberó Turno</button>
+                <button onclick="WhatsappView.applyTemplate('cumple')" class="flex-shrink-0 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-500 text-[10px] font-black px-3 py-1.5 rounded-xl transition-all cursor-pointer">🎂 Regalo Cumple</button>
               </div>
             </div>
 
             <!-- Message Input Area -->
             <div class="p-3 bg-surface border-t border-outline-variant/30 flex gap-2 shrink-0">
               <input type="text" id="chatMessageInput" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-primary transition-colors" placeholder="Escribí un mensaje..." autocomplete="off" onkeypress="if(event.key === 'Enter') WhatsappView.sendMessage()">
-              <button onclick="WhatsappView.sendMessage()" class="w-12 h-12 rounded-xl flex items-center justify-center bg-primary hover:opacity-90 transition-opacity text-dark">
+              <button onclick="WhatsappView.sendMessage()" class="w-12 h-12 rounded-xl flex items-center justify-center bg-primary-container hover:opacity-90 transition-opacity text-on-primary-fixed cursor-pointer">
                 <span class="material-symbols-outlined" style="font-size:22px">send</span>
               </button>
             </div>
@@ -246,33 +279,110 @@ const WhatsappView = {
     App.toast('🔐 Sesión de WhatsApp cerrada.', 'info');
   },
 
-  renderChatsList() {
+  renderChatsList(query = '') {
     const list = document.getElementById('chatsListContainer');
     if (!list) return;
 
-    list.innerHTML = this.state.chats.map(chat => {
-      const isSelected = chat.id === this.state.selectedChatId;
-      const activeClass = isSelected ? 'wa-chat-active' : 'hover:bg-slate-800/40';
-      const readBadge = !chat.leido ? `<span class="w-2.5 h-2.5 rounded-full bg-primary flex-shrink-0 animate-pulse"></span>` : '';
-      
-      return `
-        <div onclick="WhatsappView.selectChat(${chat.id})" class="flex items-center justify-between p-3.5 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-outline-variant/10 ${activeClass}">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700/50 flex items-center justify-center font-bold text-slate-300 text-sm flex-shrink-0">
-              ${chat.nombre.charAt(0)}
+    const clearBtn = document.getElementById('waClearSearch');
+    if (clearBtn) {
+      clearBtn.style.display = query.trim() ? 'block' : 'none';
+    }
+
+    const q = query.toLowerCase().trim();
+    
+    // 1. Filtrar chats activos
+    const filteredActive = this.state.chats.filter(c => 
+      c.nombre.toLowerCase().includes(q) || 
+      c.tel.includes(q)
+    );
+
+    let html = '';
+
+    if (filteredActive.length > 0) {
+      html += filteredActive.map(chat => {
+        const isSelected = chat.id === this.state.selectedChatId;
+        const activeClass = isSelected ? 'wa-chat-active' : 'hover:bg-slate-800/40';
+        const readBadge = !chat.leido ? `<span class="w-2.5 h-2.5 rounded-full bg-primary-container flex-shrink-0 animate-pulse"></span>` : '';
+        
+        return `
+          <div onclick="WhatsappView.selectChat(${chat.id})" class="flex items-center justify-between p-3.5 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-outline-variant/10 ${activeClass}">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700/50 flex items-center justify-center font-bold text-slate-300 text-sm flex-shrink-0">
+                ${chat.nombre.charAt(0)}
+              </div>
+              <div class="min-w-0">
+                <h3 class="font-bold text-sm text-on-surface truncate">${chat.nombre}</h3>
+                <p class="text-xs text-slate-400 mt-0.5 truncate">${chat.ultimo}</p>
+              </div>
             </div>
-            <div class="min-w-0">
-              <h3 class="font-bold text-sm text-on-surface truncate">${chat.nombre}</h3>
-              <p class="text-xs text-slate-400 mt-0.5 truncate">${chat.ultimo}</p>
+            <div class="text-right flex flex-col items-end gap-1 flex-shrink-0 pl-2">
+              <span class="text-[10px] text-slate-500 font-mono">${chat.fecha}</span>
+              ${readBadge}
             </div>
           </div>
-          <div class="text-right flex flex-col items-end gap-1 flex-shrink-0 pl-2">
-            <span class="text-[10px] text-slate-500 font-mono">${chat.fecha}</span>
-            ${readBadge}
+        `;
+      }).join('');
+    } else if (q && !/^\d+$/.test(q)) {
+      html += `<div class="p-4 text-center text-xs text-slate-500">Sin chats activos para "${query}"</div>`;
+    }
+
+    // 2. Si hay query, buscar en el CRM (Jugadores)
+    if (q) {
+      const activeTels = new Set(this.state.chats.map(c => c.tel));
+      const crmMatches = (this.state.crmJugadores || []).filter(j => {
+        const fullNombre = `${j.nombre} ${j.apellido || ''}`.toLowerCase();
+        const tel = String(j.telefono || '');
+        return (fullNombre.includes(q) || tel.includes(q)) && !activeTels.has(tel);
+      });
+
+      if (crmMatches.length > 0) {
+        html += `
+          <div class="px-3 py-2 mt-4 mb-2">
+            <p class="text-[10px] text-[#c3f400] font-bold uppercase tracking-wider">Contactos del CRM / Agenda</p>
           </div>
-        </div>
-      `;
-    }).join('');
+        `;
+        
+        html += crmMatches.map(j => {
+          const nombreCompleto = `${j.nombre} ${j.apellido || ''}`.trim();
+          const telefono = j.telefono;
+          
+          return `
+            <div onclick="WhatsappView.startChatWithCRM('${nombreCompleto}', '${telefono}')" class="flex items-center justify-between p-3 rounded-2xl cursor-pointer hover:bg-slate-800/40 border border-dashed border-outline-variant/20 hover:border-[#c3f400]/30 transition-all">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-full bg-primary-container/10 border border-primary-container/30 flex items-center justify-center font-bold text-primary-container text-xs flex-shrink-0">
+                  ${nombreCompleto.charAt(0)}
+                </div>
+                <div class="min-w-0">
+                  <h3 class="font-bold text-xs text-on-surface truncate">${nombreCompleto}</h3>
+                  <p class="text-[10px] text-slate-400 font-mono mt-0.5">${telefono}</p>
+                </div>
+              </div>
+              <span class="material-symbols-outlined text-primary-container shrink-0 pr-1 hover:scale-110 transition-transform" style="font-size:18px">chat</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 3. Opción de abrir chat directo por número si parece un teléfono
+      const digits = q.replace(/\D/g, '');
+      if (digits.length >= 8) {
+        html += `
+          <div class="px-2 mt-4">
+            <button onclick="WhatsappView.startChatWithCRM('Contacto Nuevo', '${digits}')" class="w-full py-3 bg-[#c3f400]/10 hover:bg-[#c3f400]/20 border border-dashed border-[#c3f400]/30 text-[#c3f400] text-xs font-black rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer">
+              <span class="material-symbols-outlined text-sm">add_call</span>
+              CHATEAR CON +${digits}
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    list.innerHTML = html || `
+      <div class="p-8 text-center text-xs text-slate-500">
+        <span class="material-symbols-outlined text-slate-600 text-3xl mb-2">chat_bubble</span>
+        <p>No tenés chats activos.</p>
+      </div>
+    `;
   },
 
   renderActiveChat() {
@@ -286,7 +396,7 @@ const WhatsappView = {
     // Header render
     header.innerHTML = `
       <div class="flex items-center gap-3 min-w-0">
-        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-lime-600 flex items-center justify-center text-dark font-black text-md shadow-md flex-shrink-0">
+        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-primary-container to-lime-600 flex items-center justify-center text-on-primary-fixed font-black text-md shadow-md flex-shrink-0">
           ${chat.nombre.charAt(0)}
         </div>
         <div class="min-w-0">
@@ -295,7 +405,7 @@ const WhatsappView = {
         </div>
       </div>
       <div class="flex items-center gap-1 shrink-0">
-        <a href="https://wa.me/${chat.tel}" target="_blank" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-slate-800 transition-colors" title="Abrir en celular">
+        <a href="https://wa.me/${chat.tel}" target="_blank" class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary-container hover:bg-slate-800 transition-colors" title="Abrir en celular">
           <span class="material-symbols-outlined text-[20px]">open_in_new</span>
         </a>
       </div>
@@ -307,13 +417,13 @@ const WhatsappView = {
       const isMe = m.sender === 'me';
       const wrapperClass = isMe ? 'items-end' : 'items-start';
       const bubbleClass = isMe 
-        ? 'bg-primary text-dark rounded-br-sm shadow-primary/10' 
+        ? 'bg-primary-container text-on-primary-fixed rounded-br-sm shadow-primary-container/10 font-bold' 
         : 'bg-[#1e1f26] text-slate-200 border border-slate-700/50 rounded-bl-sm';
-      const nameColor = isMe ? 'text-dark/60' : 'text-slate-400';
+      const nameColor = 'text-slate-500';
       
       return `
         <div class="flex flex-col gap-0.5 ${wrapperClass} max-w-[85%] ${isMe ? 'ml-auto' : 'mr-auto'} animate-in slide-in-from-bottom-2 duration-200">
-          <div class="${bubbleClass} px-4 py-2.5 rounded-2xl text-xs leading-relaxed font-medium">
+          <div class="${bubbleClass} px-4 py-2.5 rounded-2xl text-xs leading-relaxed">
             <p>${m.text}</p>
           </div>
           <span class="text-[9px] ${nameColor} font-mono mt-0.5 pr-1 pl-1">${m.time}</span>
@@ -329,7 +439,9 @@ const WhatsappView = {
     this.state.selectedChatId = id;
     const chat = this.state.chats.find(c => c.id === id);
     if (chat) chat.leido = true;
-    this.renderChatsList();
+    
+    // Limpiamos el buscador al seleccionar
+    this.clearSearch();
     this.renderActiveChat();
   },
 
@@ -395,6 +507,53 @@ const WhatsappView = {
 
     input.value = txt;
     input.focus();
+  },
+
+  startChatWithCRM(nombre, telefono) {
+    // Limpiamos el buscador
+    this.clearSearch();
+    
+    // Verificamos si ya existe el chat (por teléfono)
+    let chat = this.state.chats.find(c => c.tel === telefono);
+    if (!chat) {
+      // Creamos un nuevo ID incremental
+      const newId = this.state.chats.reduce((max, c) => Math.max(max, c.id), 0) + 1;
+      chat = {
+        id: newId,
+        nombre: nombre,
+        tel: telefono,
+        ultimo: 'Chat iniciado desde CRM',
+        fecha: new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
+        leido: true
+      };
+      this.state.chats.push(chat);
+      
+      // Inicializar mensajes vacíos para este chat
+      this.state.messages[newId] = [
+        { sender: 'them', text: `Hola Nico! Soy ${nombre}.`, time: 'Hace un momento' },
+        { sender: 'me', text: `¡Hola ${nombre.split(' ')[0]} crack! ⚽ Acá Nico de CanchaOS. ¿Cómo va todo?`, time: 'Hace un momento' }
+      ];
+    }
+    
+    // Seleccionar y refrescar
+    this.state.selectedChatId = chat.id;
+    this.renderChatsList();
+    this.renderActiveChat();
+    App.toast(`💬 Chat con ${nombre} iniciado.`, 'success');
+  },
+  
+  clearSearch() {
+    const searchInput = document.getElementById('waContactSearch');
+    if (searchInput) {
+      searchInput.value = '';
+    }
+    
+    const clearBtn = document.getElementById('waClearSearch');
+    if (clearBtn) {
+      clearBtn.style.display = 'none';
+    }
+    
+    this.renderChatsList('');
   }
 };
 
