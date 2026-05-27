@@ -109,6 +109,9 @@ const DashboardView = {
       <!-- Weather Impact & Nico automated suggestions -->
       <div id="weatherAlertContainer" class="animate-in fade-in duration-500"></div>
 
+      <!-- Live Nico Agent Alerts System -->
+      <div id="nicoAlertsContainer" class="animate-in fade-in duration-500"></div>
+
       <!-- Grid de Métricas Principales (Stats Cards) con efecto Glow en Hover -->
       <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="metricsGrid">
         ${[1,2,3,4].map(()=>`
@@ -198,6 +201,9 @@ const DashboardView = {
       
       // Renderizar Alertas del Clima de Nico
       this.renderWeatherAlertBanner(sucursal);
+
+      // Renderizar Alertas IA en vivo de NicoAgent
+      this.renderNicoAgentAlerts();
 
       // Renderizar el Táctico de Canchas 3D en Vivo
       await this.renderTacticalPitch(sucursal, turnos);
@@ -350,6 +356,81 @@ const DashboardView = {
           </div>
         </div>`;
     }
+  },
+
+  renderNicoAgentAlerts() {
+    const container = document.getElementById('nicoAlertsContainer');
+    if (!container) return;
+
+    const alerts = (typeof NicoAgent !== 'undefined') ? NicoAgent._alerts : [];
+    if (!alerts.length) {
+      container.innerHTML = '';
+      return;
+    }
+
+    const alertsHtml = alerts.slice(0, 3).map(a => {
+      let borderCol = 'border-slate-800';
+      let bgCol = 'bg-[#111319]/70';
+      let ledCol = 'bg-lime-400';
+      let labelCol = 'text-slate-400';
+      let btnBg = 'bg-slate-900 border-slate-800 text-slate-300';
+      
+      if (a.prioridad === 'critical') {
+        borderCol = 'border-red-500/30';
+        bgCol = 'bg-red-950/10';
+        ledCol = 'bg-red-500 shadow-[0_0_8px_#ef4444]';
+        labelCol = 'text-red-400';
+        btnBg = 'bg-red-500 hover:bg-red-600 text-white border-none';
+      } else if (a.prioridad === 'high') {
+        borderCol = 'border-amber-500/30';
+        bgCol = 'bg-amber-950/10';
+        ledCol = 'bg-amber-500 shadow-[0_0_8px_#f59e0b]';
+        labelCol = 'text-amber-400';
+        btnBg = 'bg-amber-500 hover:bg-amber-600 text-slate-950 border-none';
+      }
+
+      let actionBtn = '';
+      if (a.accion) {
+        actionBtn = `
+          <button onclick="App.navigate('${a.accion.vista}');" 
+            class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer hover:scale-105 active:scale-95 flex items-center gap-1.5 border ${btnBg}">
+            ${a.accion.label} <span class="material-symbols-outlined text-[10px] font-bold">arrow_forward</span>
+          </button>
+        `;
+      }
+
+      return `
+        <!-- Live AI Alert Card -->
+        <div class="flex items-center justify-between p-4 rounded-2xl border ${borderCol} ${bgCol} shadow-xl relative overflow-hidden group">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center justify-center text-lg shrink-0">
+              ${a.icono}
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <h4 class="font-bold text-xs text-white truncate">${a.titulo}</h4>
+                <span class="w-1.5 h-1.5 rounded-full ${ledCol} cancha-led-ping"></span>
+              </div>
+              <p class="text-[10px] ${labelCol} mt-0.5 font-medium leading-relaxed truncate max-w-[180px] md:max-w-xs" title="${a.detalle}">${a.detalle}</p>
+            </div>
+          </div>
+          ${actionBtn}
+        </div>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <!-- LIVE AI NOTIFICATIONS PANEL -->
+      <section class="mb-8 space-y-3">
+        <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#c3f400] text-[16px] animate-pulse">radar</span>
+          Alertas de Inteligencia Comercial Activas (${alerts.length})
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          ${alertsHtml}
+        </div>
+      </section>
+    `;
   },
 
   async renderTacticalPitch(sucursal, turnos) {

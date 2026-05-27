@@ -387,17 +387,129 @@ const AgendaView = {
         </div>
 
         <div class="flex flex-col gap-2">
-            <button onclick="AgendaView.generarLink('${canchaNombre}', '${hora}', ${precio})" class="w-full bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 font-bold py-3 rounded-xl hover:bg-cyan-500 hover:text-dark transition-all flex justify-center items-center gap-2 text-sm">
+            <button onclick="AgendaView.generarLink('${canchaNombre}', '${hora}', ${precio})" class="w-full bg-cyan-500/10 border border-cyan-500/40 text-cyan-400 font-bold py-3 rounded-xl hover:bg-cyan-500 hover:text-dark transition-all flex justify-center items-center gap-2 text-sm border-none cursor-pointer font-h3">
               <span class="material-symbols-outlined text-md">link</span>
               GENERAR LINK MP
             </button>
-            <button onclick="AgendaView.cancelar(${turnoId})" class="w-full bg-red-500/10 border border-red-500/40 text-red-500 font-bold py-3 rounded-xl hover:bg-red-500 hover:text-white transition-all flex justify-center items-center gap-2 text-sm">
+            <button onclick="AgendaView.abrirModalAbono('${canchaNombre.replace(/'/g, "\\'")}', '${hora}', '${clienteNombre.replace(/'/g, "\\'")}', ${precio})" class="w-full bg-[#c3f400]/10 border border-[#c3f400]/40 text-[#c3f400] font-bold py-3 rounded-xl hover:bg-[#c3f400] hover:text-[#161e00] transition-all flex justify-center items-center gap-2 text-sm border-none cursor-pointer font-h3">
+              <span class="material-symbols-outlined text-md">workspace_premium</span>
+              REGISTRAR ABONO 🏅
+            </button>
+            <button onclick="AgendaView.cancelar(${turnoId})" class="w-full bg-red-500/10 border border-red-500/40 text-red-500 font-bold py-3 rounded-xl hover:bg-red-500 hover:text-white transition-all flex justify-center items-center gap-2 text-sm border-none cursor-pointer font-h3">
               <span class="material-symbols-outlined text-md">cancel</span>
               CANCELAR TURNO
             </button>
         </div>
       </div>
     `;
+  },
+
+  abrirModalAbono(canchaNombre, hora, clienteNombre, precio) {
+    const overlay = document.getElementById('modalOverlay');
+    const body = document.getElementById('modalBody');
+    if (!overlay || !body) return;
+
+    document.querySelector('#modalReserva h2').innerHTML = '<span class="material-symbols-outlined text-[#c3f400]">workspace_premium</span> Cobrar Abono Mensual';
+    
+    const steps = document.querySelector('#modalReserva .step')?.parentElement;
+    if (steps) steps.style.display = 'none';
+
+    body.innerHTML = `
+      <div class="bg-surface-container rounded-2xl text-left space-y-5">
+        <p class="text-slate-400 text-xs leading-relaxed">Registrá el abono mensual fijo de este cliente. Se generará un solo link de Mercado Pago agrupando todas las fechas.</p>
+        
+        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-xl space-y-2 font-body-sm">
+          <div class="flex justify-between text-xs text-slate-400"><span>Cliente:</span> <strong class="text-white">${clienteNombre}</strong></div>
+          <div class="flex justify-between text-xs text-slate-400"><span>Cancha:</span> <strong class="text-white">${canchaNombre}</strong></div>
+          <div class="flex justify-between text-xs text-slate-400"><span>Horario:</span> <strong class="text-white">${hora} hs</strong></div>
+          <div class="flex justify-between text-xs text-slate-400"><span>Valor Unitario:</span> <strong class="text-[#c3f400] font-bold">${fmt.money(precio)}</strong></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Fechas del Mes</label>
+            <select id="abonoFechas" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-[#c3f400] cursor-pointer" onchange="AgendaView.calcularTotalAbono(${precio})">
+              <option value="4">4 Fechas (Mensual)</option>
+              <option value="5">5 Fechas (Mensual Largo)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Total del Abono</label>
+            <div id="abonoTotalDisplay" class="text-2xl font-black text-white font-mono h-10 flex items-center">${fmt.money(precio * 4)}</div>
+          </div>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button onclick="document.getElementById('modalOverlay').classList.remove('open')" class="flex-1 py-3.5 rounded-xl font-bold bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-all cursor-pointer border border-slate-800 font-body-md">
+            Volver
+          </button>
+          <button onclick="AgendaView.ejecutarRegistroAbono('${cliente.replace(/'/g, "\\'")}', '${canchaNombre.replace(/'/g, "\\'")}', '${hora}', ${precio})" class="flex-1 py-3.5 rounded-xl font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] transition-all flex items-center justify-center gap-2 border-none cursor-pointer font-h3">
+            <span class="material-symbols-outlined text-[18px] font-bold">payments</span>
+            Confirmar y Cobrar
+          </button>
+        </div>
+      </div>
+    `;
+    overlay.classList.add('open');
+  },
+
+  calcularTotalAbono(precioUnitario) {
+    const select = document.getElementById('abonoFechas');
+    const display = document.getElementById('abonoTotalDisplay');
+    if (!select || !display) return;
+    const fechas = parseInt(select.value, 10);
+    display.textContent = fmt.money(precioUnitario * fechas);
+  },
+
+  async ejecutarRegistroAbono(cliente, cancha, hora, precioUnitario) {
+    const select = document.getElementById('abonoFechas');
+    if (!select) return;
+    const fechas = parseInt(select.value, 10);
+    const total = precioUnitario * fechas;
+    const sucursal = App?.state?.sucursal || 'lanus';
+
+    try {
+      App.toast('Registrando abono en Supabase... 🏆', 'info');
+      
+      // 1. Guardar en Supabase
+      await DB.registrarAbono({
+        cliente,
+        cancha,
+        hora,
+        fechas,
+        precio_unitario: precioUnitario,
+        cumpleanios: null,
+        sucursal
+      });
+
+      // 2. Generar link MP
+      const response = await fetch('/create-preference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: `Abono Mensual: ${cancha} (${hora} HS) — ${fechas} fechas`,
+          price: total,
+          quantity: 1
+        })
+      });
+      const data = await response.json();
+      
+      document.getElementById('modalOverlay').classList.remove('open');
+      App.toast('¡Abono registrado con éxito! 🏆⚽', 'success');
+
+      if (data.init_point) {
+        const link = data.init_point;
+        navigator.clipboard.writeText(link).then(() => {
+          App.toast('📋 ¡Link copiado al portapapeles!', 'success');
+        });
+        window.open(link, '_blank');
+      } else {
+        throw new Error('Error al generar link de Mercado Pago');
+      }
+    } catch (err) {
+      console.error(err);
+      App.toast('Error: ' + err.message, 'error');
+    }
   },
 
   async cancelar(turnoId) {

@@ -390,6 +390,7 @@ const CajaView = {
       }
     });
 
+    const gananciaNeta = totalIngresos - totalEgresos;
     const cajaEsperada = inicial + totalIngresos - totalEgresos;
 
     // Calcular porcentajes para el gráfico circular SVG
@@ -426,11 +427,17 @@ const CajaView = {
               <span class="text-slate-400 text-sm">Total de Egresos</span>
               <span class="font-bold text-red-400 font-mono">-$${totalEgresos.toLocaleString()}</span>
             </div>
-            <div class="flex flex-col gap-1 pt-3">
-              <span class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Saldo Esperado en Mostrador</span>
+            <div class="flex flex-col gap-1 pt-3 border-t border-slate-800/60">
+              <span class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Ganancia Neta del Turno 🏆</span>
               <div class="flex items-baseline justify-between">
-                <span class="text-3xl font-black text-[#c3f400] tracking-tight font-mono">$${cajaEsperada.toLocaleString()}</span>
+                <span class="text-3xl font-black ${gananciaNeta >= 0 ? 'text-[#c3f400] drop-shadow-[0_0_10px_rgba(195,244,0,0.25)]' : 'text-red-400'} tracking-tight font-mono">
+                  ${gananciaNeta >= 0 ? '+' : ''}$${gananciaNeta.toLocaleString()}
+                </span>
               </div>
+            </div>
+            <div class="flex flex-col gap-1 pt-3.5 border-t border-slate-800/60 border-dashed">
+              <span class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Saldo Esperado en Mostrador</span>
+              <span class="text-xl font-bold text-slate-300 font-mono">$${cajaEsperada.toLocaleString()}</span>
             </div>
           </div>
 
@@ -624,6 +631,7 @@ const CajaView = {
     }
 
     try {
+      // 1. Guardar en movimientos_caja para el arqueo local
       const { error } = await db
         .from('movimientos_caja')
         .insert([{
@@ -635,6 +643,16 @@ const CajaView = {
         }]);
       
       if(error) throw error;
+
+      // 2. Si es un egreso, guardarlo también en la tabla global de gastos para reportes y dashboard
+      if (tipo === 'egreso') {
+        try {
+          const sucursal = this.sesionActiva.sucursal;
+          await DB.addGasto(sucursal, `[Caja] ${cat} - ${desc}`, parseFloat(monto));
+        } catch (errGasto) {
+          console.warn("Fallo no crítico al sincronizar con gastos:", errGasto.message);
+        }
+      }
 
       App.toast('¡Movimiento asentado en el Libro Diario! 🚀', 'success');
       this.loadCajaState(this.sesionActiva.sucursal);
