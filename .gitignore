@@ -5,3 +5,6 @@ scratch/
 .vscode/
 *.sql
 dist/
+
+.vercel
+.env*

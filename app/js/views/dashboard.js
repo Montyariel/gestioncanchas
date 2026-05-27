@@ -1,4 +1,4 @@
-// ===== VISTA: DASHBOARD — Dark Theme Stitch Premium v3.0 =====
+// ===== VISTA: DASHBOARD — Dark Theme Stitch Premium v4.0 =====
 function getSlotPrice(precioBase, hora) {
   const base = Number(precioBase) || 15000;
   if (!hora) return base;
@@ -64,6 +64,24 @@ const DashboardView = {
         .radial-circle {
             transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        
+        /* 3D Pitch Styles */
+        .pitch-3d {
+          position: relative;
+          background: radial-gradient(circle, #2d6b38 20%, #1e4d26 90%);
+          border: 2px solid rgba(255,255,255,0.3);
+          border-radius: 12px;
+          transform: perspective(700px) rotateX(28deg);
+          transform-style: preserve-3d;
+          box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+        .pitch-3d-center-line {
+          position: absolute;
+          top: 0; bottom: 0; left: 50%;
+          width: 2px;
+          background: rgba(255,255,255,0.2);
+          transform: translateX(-50%);
+        }
       `;
       document.head.appendChild(style);
     }
@@ -81,12 +99,15 @@ const DashboardView = {
             <p class="text-slate-400 text-xs md:text-sm font-medium">El estadio de ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'} está listo. Hoy es <strong class="text-white">${dayName}</strong></p>
           </div>
           <div class="hidden lg:block absolute right-0 top-0 bottom-0 w-1/4 bg-gradient-to-l from-[#c3f400]/5 to-transparent pointer-events-none"></div>
-          <button onclick="App.navigate('agenda')" class="relative z-10 py-3.5 px-6 rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 active:scale-95 flex items-center gap-2 shrink-0 shadow-lg shadow-[#c3f400]/10 cursor-pointer" style="background:#c3f400;color:#161e00">
+          <button onclick="App.navigate('agenda')" class="relative z-10 py-3.5 px-6 rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 active:scale-95 flex items-center gap-2 shrink-0 shadow-lg shadow-[#c3f400]/10 cursor-pointer border-none" style="background:#c3f400;color:#161e00">
             <span class="material-symbols-outlined text-sm font-bold">calendar_month</span>
             Abrir Agenda Semanal
           </button>
         </div>
       </section>
+
+      <!-- Weather Impact & Nico automated suggestions -->
+      <div id="weatherAlertContainer" class="animate-in fade-in duration-500"></div>
 
       <!-- Grid de Métricas Principales (Stats Cards) con efecto Glow en Hover -->
       <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="metricsGrid">
@@ -95,6 +116,9 @@ const DashboardView = {
             <div class="skeleton" style="height:76px"></div>
           </div>`).join('')}
       </section>
+
+      <!-- LIVE TACTICAL 3D PITCH (stadium complex representation) -->
+      <div id="tacticalPitchContainer" class="animate-in fade-in duration-500"></div>
 
       <!-- Dashboard Bento Grid con Widgets Destacados y Modernos -->
       <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8" id="dashBottom">
@@ -171,7 +195,12 @@ const DashboardView = {
       // Cargar Turnos
       const turnos = await DB.getTurnos(sucursal, fecha);
       const proximos = turnos.filter(t => !t.reservado).slice(0, 5);
-      const ocupados = turnos.filter(t => t.reservado).slice(0, 5);
+      
+      // Renderizar Alertas del Clima de Nico
+      this.renderWeatherAlertBanner(sucursal);
+
+      // Renderizar el Táctico de Canchas 3D en Vivo
+      await this.renderTacticalPitch(sucursal, turnos);
 
       // Bento Layout inferior
       document.getElementById('dashBottom').innerHTML = `
@@ -182,7 +211,7 @@ const DashboardView = {
               <h2 class="text-lg font-black text-white italic flex items-center gap-2 uppercase tracking-tight">🟢 Turnos Disponibles hoy</h2>
               <p class="text-xs text-slate-500 mt-0.5">Asigná reservas en un click o cargá combos especiales de buffet</p>
             </div>
-            <button onclick="App.navigate('agenda')" class="text-[10px] font-black uppercase px-3 py-2 bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded-xl hover:border-slate-700 transition-all cursor-pointer">
+            <button onclick="App.navigate('agenda')" class="text-[10px] font-black uppercase px-3 py-2 bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded-xl hover:border-slate-700 transition-all cursor-pointer border-none">
               Ver Grilla Completa
             </button>
           </div>
@@ -207,7 +236,7 @@ const DashboardView = {
                   </div>
                 </div>
                 <button onclick="App.openReservaModal(${t.id}, '${(t.canchas?.nombre||'Cancha').replace(/'/g,"\\'")}', '${t.hora}', ${precioSlot})"
-                  class="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-fixed text-[10px] font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-md shadow-[#c3f400]/5 flex items-center gap-1">
+                  class="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-fixed text-[10px] font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-md shadow-[#c3f400]/5 flex items-center gap-1 border-none font-body-md">
                   Reservar <span class="material-symbols-outlined text-[10px] font-bold">add</span>
                 </button>
               </div>`;
@@ -278,6 +307,125 @@ const DashboardView = {
     }
   },
 
+  renderWeatherAlertBanner(sucursal) {
+    const alertBox = document.getElementById('weatherAlertContainer');
+    if (!alertBox) return;
+
+    const alert = window.currentWeatherAlert || (typeof WeatherService !== 'undefined' ? WeatherService.alertState : null);
+    
+    if (alert === 'roja') {
+      alertBox.innerHTML = `
+        <div class="bg-gradient-to-br from-red-950/40 to-slate-900/60 border border-red-500/30 rounded-3xl p-6 shadow-xl mb-8 flex flex-col md:flex-row items-center gap-5 relative overflow-hidden">
+          <div class="absolute top-0 right-0 p-4 opacity-5"><span class="material-symbols-outlined text-[100px]">thunderstorm</span></div>
+          <div class="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-4xl shadow-xl shrink-0">⛈️</div>
+          <div class="text-left space-y-1.5">
+            <h4 class="text-xs font-black text-red-400 uppercase tracking-widest flex items-center gap-1.5 font-h3 italic">
+              <span class="material-symbols-outlined text-sm animate-pulse">dangerous</span> ALERTA METEOROLÓGICA CRÍTICA
+            </h4>
+            <p class="text-slate-300 text-xs md:text-sm font-medium">Nico dice: <span class="italic text-red-300 font-bold">"🚨 ¡ATENCIÓN ARIEL CRACK! Tormenta eléctrica inminente en Lanús. Usemos el WhatsApp Link preventivamente para suspender o mudar turnos al aire libre. ¡Seguridad ante todo, campeón! 🏟️🌩️"</span></p>
+          </div>
+        </div>`;
+    } else if (alert === 'amarilla') {
+      alertBox.innerHTML = `
+        <div class="bg-gradient-to-br from-amber-950/40 to-slate-900/60 border border-amber-500/30 rounded-3xl p-6 shadow-xl mb-8 flex flex-col md:flex-row items-center gap-5 relative overflow-hidden">
+          <div class="absolute top-0 right-0 p-4 opacity-5"><span class="material-symbols-outlined text-[100px]">rainy</span></div>
+          <div class="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-4xl shadow-xl shrink-0">🌧️</div>
+          <div class="text-left space-y-1.5">
+            <h4 class="text-xs font-black text-amber-500 uppercase tracking-widest flex items-center gap-1.5 font-h3 italic">
+              <span class="material-symbols-outlined text-sm">warning</span> ALERTA DE CLIMA LLUVIA
+            </h4>
+            <p class="text-slate-300 text-xs md:text-sm font-medium">Nico dice: <span class="italic text-amber-300 font-bold">"⚠️ ¡Ojo al dato Ariel crack! Se detectaron lluvias leves/moderadas en Lanús. ¿Por qué no mandás un WhatsApp rápido ofreciendo la Cancha Techada a los del turno siguiente o les regalamos unas Gatorades si se mojan jugando? ¡Que no decaiga el picado! 🌧️⚽"</span></p>
+          </div>
+        </div>`;
+    } else {
+      alertBox.innerHTML = `
+        <div class="bg-gradient-to-br from-slate-900/60 to-slate-950/80 border border-slate-800 rounded-3xl p-6 shadow-xl mb-8 flex flex-col md:flex-row items-center gap-5 relative overflow-hidden">
+          <div class="absolute top-0 right-0 p-4 opacity-5"><span class="material-symbols-outlined text-[100px]">sunny</span></div>
+          <div class="w-14 h-14 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-center text-4xl shadow-xl shrink-0">☀️</div>
+          <div class="text-left space-y-1.5">
+            <h4 class="text-xs font-black text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 font-h3 italic">
+              <span class="material-symbols-outlined text-sm">check_circle</span> CONDICIÓN CLIMÁTICA EXCELENTE
+            </h4>
+            <p class="text-slate-300 text-xs md:text-sm font-medium">Nico dice: <span class="italic text-emerald-300 font-bold">"☀️ ¡Clima impecable en la zona, Ariel! Temperatura ideal para el picado. Las canchas al aire libre van a volar de reservas hoy. ¡A romperla crack! 🏟️🏆"</span></p>
+          </div>
+        </div>`;
+    }
+  },
+
+  async renderTacticalPitch(sucursal, turnos) {
+    const pitchBox = document.getElementById('tacticalPitchContainer');
+    if (!pitchBox) return;
+
+    const canchas = await DB.getCanchas(sucursal);
+    const currentHour = new Date().getHours();
+
+    const canchasStatusHtml = canchas.map((c, idx) => {
+      // Buscar turno de esta cancha en el bloque horario actual
+      const turnoActual = turnos.find(t => t.cancha_id === c.id && parseInt(t.hora.split(':')[0]) === currentHour);
+      const reservado = turnoActual ? turnoActual.reservado : false;
+
+      let position = '';
+      if (idx === 0) position = 'top: 15%; left: 15%;';
+      else if (idx === 1) position = 'top: 15%; left: 60%;';
+      else if (idx === 2) position = 'top: 52%; left: 15%;';
+      else if (idx === 3) position = 'top: 52%; left: 60%;';
+      else position = 'top: 33%; left: 38%;'; // Center position for index 4+
+
+      const statusColor = reservado ? 'bg-red-500 shadow-[0_0_12px_#ef4444]' : 'bg-[#c3f400] shadow-[0_0_12px_#c3f400]';
+      const statusLabel = reservado ? 'OCUPADA 🔴' : 'LIBRE 🟢';
+      
+      let actionBtn = '';
+      if (!reservado && turnoActual) {
+        const price = getSlotPrice(c.precio || 15000, turnoActual.hora);
+        actionBtn = `
+          <button onclick="App.openReservaModal(${turnoActual.id}, '${c.nombre.replace(/'/g, "\\'")}', '${turnoActual.hora}', ${price}); event.stopPropagation();" 
+            class="mt-1.5 px-3 py-1 bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] rounded-lg text-[9px] font-black uppercase tracking-wider transition-all border-none cursor-pointer">
+            Reservar
+          </button>`;
+      }
+
+      return `
+      <!-- Cancha 3D Marker -->
+      <div class="absolute p-3 rounded-2xl bg-slate-950/95 border border-slate-800 shadow-2xl flex flex-col items-center justify-center text-center z-20 hover:scale-105 hover:border-[#c3f400]/40 transition-all" style="width: 120px; ${position}">
+        <div class="flex items-center gap-1.5 mb-1.5">
+          <span class="w-2.5 h-2.5 rounded-full ${statusColor} ${!reservado ? 'cancha-led-ping' : ''}"></span>
+          <span class="text-[9px] font-black text-slate-300 uppercase truncate max-w-[85px]">${c.nombre}</span>
+        </div>
+        <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest">${statusLabel}</span>
+        ${actionBtn}
+      </div>
+      `;
+    }).join('');
+
+    pitchBox.innerHTML = `
+      <!-- LIVE TACTICAL 3D PITCH -->
+      <section class="bg-gradient-to-br from-slate-900/60 to-slate-950/80 border border-slate-800 rounded-[32px] p-6 shadow-2xl mb-8 relative overflow-hidden">
+        <div class="absolute top-0 right-0 bg-[#c3f400]/5 px-3 py-1 rounded-bl text-[8px] text-[#c3f400] font-mono uppercase tracking-widest border-l border-b border-[#c3f400]/10 z-10">LIVE STADIUM RADAR ACTIVE</div>
+        <div class="mb-6">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#c3f400]">stadium</span>
+            Táctico de Canchas en Vivo — Complejo ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}
+          </h3>
+          <p class="text-xs text-slate-500 mt-1">Monitoreo tridimensional de disponibilidad para el bloque horario de las ${currentHour}:00 hs.</p>
+        </div>
+
+        <!-- 3D Stadium Field Container -->
+        <div class="relative w-full h-[280px] bg-gradient-to-b from-[#0c0e14] to-slate-950 rounded-2xl border border-slate-800/80 overflow-hidden flex items-center justify-center p-4">
+          <!-- 3D Grass Pitch -->
+          <div class="pitch-3d relative w-full max-w-[580px] h-[200px]">
+            <div class="pitch-3d-center-line"></div>
+            <!-- Goal Areas -->
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-8 border-b border-l border-r border-white/20"></div>
+            <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-40 h-8 border-t border-l border-r border-white/20"></div>
+            
+            <!-- Canchas Markers placed dynamically -->
+            ${canchasStatusHtml}
+          </div>
+        </div>
+      </section>
+    `;
+  },
+
   renderHappyHour(sucursal, turnos) {
     const section = document.getElementById('happyHourSection');
     if (!section || !turnos.length) return;
@@ -321,7 +469,7 @@ const DashboardView = {
             ${flojos.length} bache${flojos.length > 1 ? 's' : ''} crítico${flojos.length > 1 ? 's' : ''} hoy
           </span>
         </div>
-
+ 
         <!-- Bento de tarjetas de baches -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           ${flojos.map(h => `
@@ -336,7 +484,7 @@ const DashboardView = {
               <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">${h.libre} cancha${h.libre > 1 ? 's' : ''} libre${h.libre > 1 ? 's' : ''}</p>
             </div>`).join('')}
         </div>
-
+ 
         <!-- Estrategia de Happy Hour Premium de Nico -->
         <div class="bg-amber-500/5 rounded-2xl p-5 border border-dashed border-amber-500/25 space-y-4">
           <div class="flex items-center gap-2">
@@ -355,7 +503,7 @@ const DashboardView = {
           </div>
           
           <div class="flex flex-col sm:flex-row gap-3 pt-1">
-            <button onclick="App.navigate('whatsapp')" class="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-amber-500/10 flex items-center gap-1.5">
+            <button onclick="App.navigate('whatsapp')" class="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-amber-500/10 flex items-center gap-1.5 border-none">
               <span class="material-symbols-outlined text-sm font-bold">chat</span>
               Mandar Promo por WhatsApp Link
             </button>

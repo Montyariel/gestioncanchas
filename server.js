@@ -196,7 +196,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { data: res } = await supabase.from('reservas').insert([{ cancha_id: t.canchas.id, cliente_nombre: args.cliente_nombre, notas: args.cumpleanos ? `Cumple: ${args.cumpleanos}` : "" }]).select().single();
       
       const pref = new Preference(client);
-      const items = [{ title: `Turno ${t.hora} - ${t.canchas.nombre}`, quantity: 1, unit_price: Number(t.canchas.precio), currency_id: 'ARS' }];
+      let precioCancha = Number(t.canchas.precio);
+      const horaNum = parseInt(t.hora.split(':')[0], 10);
+      if (horaNum >= 19 && horaNum <= 23) {
+        precioCancha = Math.round(precioCancha * 1.20);
+      }
+      
+      const items = [{ title: `Turno ${t.hora} - ${t.canchas.nombre}`, quantity: 1, unit_price: precioCancha, currency_id: 'ARS' }];
       if (args.item_buffet) items.push({ title: args.item_buffet, quantity: args.cantidad_buffet || 1, unit_price: args.precio_item || 0, currency_id: 'ARS' });
       
       const resp = await pref.create({ body: { items, external_reference: res.id.toString(), back_urls: { success: "https://www.mercadopago.com.ar" }, auto_return: "approved" } });

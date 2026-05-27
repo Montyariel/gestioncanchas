@@ -10,6 +10,28 @@ const AgendaView = {
     return basePrecio;
   },
 
+  getWeatherIconForHour(horaStr) {
+    const h = parseInt(horaStr.split(':')[0], 10);
+    const alert = window.currentWeatherAlert || (typeof WeatherService !== 'undefined' ? WeatherService.alertState : null);
+    
+    if (alert === 'roja') return '⛈️';
+    if (alert === 'amarilla') return '🌧️';
+
+    if (typeof WeatherService !== 'undefined' && WeatherService.currentData) {
+      const code = WeatherService.currentData.weather_code;
+      const meta = WeatherService.getWeatherMeta(code);
+      if (h >= 19 || h <= 6) {
+        if (meta.emoji === '☀️') return '🌙';
+        if (meta.emoji === '🌤️' || meta.emoji === '⛅') return '☁️';
+      }
+      return meta.emoji;
+    }
+
+    if (h >= 19 || h <= 6) return '🌙';
+    if (h >= 12 && h <= 17) return '☀️';
+    return '⛅';
+  },
+
   async render(sucursal) {
     const container = document.getElementById('viewContainer');
     
@@ -59,6 +81,39 @@ const AgendaView = {
         }
         .animate-slide-in {
           animation: slideIn 0.3s ease-out forwards;
+        }
+        .slot-morning {
+            background: linear-gradient(135deg, rgba(14, 116, 144, 0.12) 0%, rgba(3, 105, 120, 0.04) 100%);
+            border: 1px solid rgba(14, 116, 144, 0.22) !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .slot-morning:hover {
+            background: linear-gradient(135deg, rgba(14, 116, 144, 0.22) 0%, rgba(3, 105, 120, 0.08) 100%) !important;
+            border-color: #06b6d4 !important;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+            transform: translateY(-2px);
+        }
+        .slot-afternoon {
+            background: linear-gradient(135deg, rgba(194, 65, 12, 0.12) 0%, rgba(180, 83, 9, 0.04) 100%);
+            border: 1px solid rgba(194, 65, 12, 0.22) !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .slot-afternoon:hover {
+            background: linear-gradient(135deg, rgba(194, 65, 12, 0.22) 0%, rgba(180, 83, 9, 0.08) 100%) !important;
+            border-color: #f97316 !important;
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.25);
+            transform: translateY(-2px);
+        }
+        .slot-night {
+            background: linear-gradient(135deg, rgba(109, 40, 217, 0.12) 0%, rgba(76, 29, 149, 0.04) 100%);
+            border: 1px solid rgba(109, 40, 217, 0.22) !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .slot-night:hover {
+            background: linear-gradient(135deg, rgba(109, 40, 217, 0.22) 0%, rgba(76, 29, 149, 0.08) 100%) !important;
+            border-color: #c3f400 !important;
+            box-shadow: 0 0 15px rgba(195, 244, 0, 0.3);
+            transform: translateY(-2px);
         }
       `;
       document.head.appendChild(style);
@@ -200,9 +255,14 @@ const AgendaView = {
             
             <!-- Timeline Column -->
             <div class="flex flex-col gap-sm">
-              ${horas.map(hora => `
-                <div class="h-24 flex items-start justify-end pr-sm text-on-surface-variant font-label-caps text-label-caps">${hora}</div>
-              `).join('')}
+              ${horas.map(hora => {
+                const icon = AgendaView.getWeatherIconForHour(hora);
+                return `
+                <div class="h-24 flex flex-col items-end justify-start pr-sm text-on-surface-variant font-label-caps text-[10px] relative">
+                  <span class="font-bold">${hora}</span>
+                  <span class="text-xs mt-1.5 opacity-80 cursor-help" title="Pronóstico del clima para las ${hora}">${icon}</span>
+                </div>`;
+              }).join('')}
             </div>
 
             <!-- Court Columns -->
@@ -229,11 +289,32 @@ const AgendaView = {
                       </div>
                     `;
                   } else {
+                    const hNum = parseInt(hora.split(':')[0], 10);
+                    let slotClass = '';
+                    let accentColor = '';
+                    let accentLabel = '';
+                    if (hNum >= 8 && hNum <= 12) {
+                      slotClass = 'slot-morning';
+                      accentColor = 'text-cyan-400';
+                      accentLabel = 'Matutino 🌅';
+                    } else if (hNum >= 13 && hNum <= 18) {
+                      slotClass = 'slot-afternoon';
+                      accentColor = 'text-amber-500';
+                      accentLabel = 'Soleado ☀️';
+                    } else {
+                      slotClass = 'slot-night';
+                      accentColor = 'text-[#c3f400]';
+                      accentLabel = 'Premium 🌙';
+                    }
+
                     return `
-                      <div onclick="App.openReservaModal(${turno.id}, '${c.nombre}', '${hora}', ${finalPrecio})" class="h-24 rounded-lg border border-surface-container-highest bg-surface hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-colors flex items-center justify-center group shadow-sm">
-                        <div class="flex flex-col items-center">
-                          <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-2xl">add</span>
-                          <span class="text-[9px] font-bold text-slate-500 mt-1">${fmt.money(finalPrecio)}</span>
+                      <div onclick="App.openReservaModal(${turno.id}, '${c.nombre.replace(/'/g, "\\'")}', '${hora}', ${finalPrecio})" 
+                        class="h-24 rounded-xl cursor-pointer ${slotClass} flex items-center justify-center group shadow-sm relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out"></div>
+                        <div class="flex flex-col items-center z-10">
+                          <span class="material-symbols-outlined ${accentColor} text-xl group-hover:scale-110 transition-transform duration-300">add_circle</span>
+                          <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-1 group-hover:text-slate-300 transition-colors">${accentLabel}</span>
+                          <span class="text-[10px] font-black text-white mt-0.5">${fmt.money(finalPrecio)}</span>
                         </div>
                       </div>
                     `;
