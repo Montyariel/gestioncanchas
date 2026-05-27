@@ -277,7 +277,11 @@ const AgendaView = {
                   const finalPrecio = AgendaView.getSlotPrice(c.precio, hora);
                   if (turno.reservado) {
                     return `
-                      <div class="h-24 rounded-lg grass-texture border-l-4 border-primary p-sm flex flex-col cursor-pointer hover:brightness-110 transition-all relative overflow-hidden group shadow-lg" onclick="AgendaView.showBookingDetails(${turno.id}, '${c.nombre}', '${hora}', '${turno.cliente_nombre || 'Sin Nombre'}', ${finalPrecio})">
+                      <div class="h-24 rounded-lg grass-texture border-l-4 border-primary p-sm flex flex-col cursor-pointer hover:brightness-110 transition-all relative overflow-hidden group shadow-lg" 
+                        draggable="true"
+                        ondragstart="AgendaView.handleDragStart(event, ${turno.id}, '${(turno.cliente_nombre || 'Sin Nombre').replace(/'/g, "\\'")}')"
+                        ondragend="AgendaView.handleDragEnd(event)"
+                        onclick="AgendaView.showBookingDetails(${turno.id}, '${c.nombre}', '${hora}', '${turno.cliente_nombre || 'Sin Nombre'}', ${finalPrecio})">
                         <div class="flex justify-between items-start mb-xs relative z-10">
                           <span class="reserved-badge">RESERVADO</span>
                           <span class="text-[10px] font-black text-white/50">${hora}</span>
@@ -309,7 +313,11 @@ const AgendaView = {
 
                     return `
                       <div onclick="App.openReservaModal(${turno.id}, '${c.nombre.replace(/'/g, "\\'")}', '${hora}', ${finalPrecio})" 
-                        class="h-24 rounded-xl cursor-pointer ${slotClass} flex items-center justify-center group shadow-sm relative overflow-hidden">
+                        ondragover="event.preventDefault()" 
+                        ondragenter="AgendaView.handleDragEnter(event)" 
+                        ondragleave="AgendaView.handleDragLeave(event)" 
+                        ondrop="AgendaView.handleDrop(event, ${turno.id}, '${c.nombre.replace(/'/g, "\\'")}', '${hora}', ${finalPrecio})"
+                        class="h-24 rounded-xl cursor-pointer ${slotClass} flex items-center justify-center group shadow-sm relative overflow-hidden transition-all duration-300">
                         <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out"></div>
                         <div class="flex flex-col items-center z-10">
                           <span class="material-symbols-outlined ${accentColor} text-xl group-hover:scale-110 transition-transform duration-300">add_circle</span>
@@ -550,6 +558,68 @@ const AgendaView = {
       }
     } catch (err) {
       App.toast('Error: ' + err.message, 'error');
+    }
+  },
+
+  handleDragStart(event, turnoId, clienteNombre) {
+    event.dataTransfer.setData('text/plain', JSON.stringify({ turnoId, clienteNombre }));
+    event.dataTransfer.effectAllowed = 'move';
+    
+    const dragCard = event.currentTarget;
+    dragCard.style.opacity = '0.5';
+    dragCard.style.border = '2px dashed #c3f400';
+    dragCard.style.transform = 'scale(0.98)';
+  },
+
+  handleDragEnd(event) {
+    const dragCard = event.currentTarget;
+    dragCard.style.opacity = '1';
+    dragCard.style.border = '';
+    dragCard.style.transform = 'scale(1)';
+  },
+
+  handleDragEnter(event) {
+    event.preventDefault();
+    const el = event.currentTarget;
+    el.classList.add('bg-lime-400/20', 'border-2', 'border-dashed', 'border-[#c3f400]');
+    el.style.transform = 'scale(1.03)';
+  },
+
+  handleDragLeave(event) {
+    const el = event.currentTarget;
+    el.classList.remove('bg-lime-400/20', 'border-2', 'border-dashed', 'border-[#c3f400]');
+    el.style.transform = 'scale(1)';
+  },
+
+  async handleDrop(event, targetTurnoId, targetCanchaNombre, targetHora, targetPrecio) {
+    event.preventDefault();
+    const el = event.currentTarget;
+    el.classList.remove('bg-lime-400/20', 'border-2', 'border-dashed', 'border-[#c3f400]');
+    el.style.transform = 'scale(1)';
+
+    try {
+      const dataStr = event.dataTransfer.getData('text/plain');
+      if (!dataStr) return;
+      const { turnoId: origenId, clienteNombre } = JSON.parse(dataStr);
+
+      if (origenId === targetTurnoId) return;
+
+      const confirmMove = confirm(`🏟️ Nico: "¡Che crack! ¿Seguro que querés mover la reserva de *\${clienteNombre}* a la cancha *\${targetCanchaNombre}* a las *\${targetHora}* hs?\\n\\n(Se cancelará el turno anterior y se agendará el nuevo automáticamente en el sistema)".`);
+      
+      if (!confirmMove) return;
+
+      App.toast('Reasignando reserva... 🔄', 'info');
+
+      await DB.cancelarTurno(origenId);
+      await DB.reservarTurno(targetTurnoId, clienteNombre);
+
+      App.toast('🏟️ ¡Golazo de reasignación! El turno se movió al toque. ⚽🔥', 'success');
+      
+      await AgendaView.loadAgenda(App.state.sucursal);
+
+    } catch (e) {
+      console.error(e);
+      App.toast('Error al reasignar el turno: ' + e.message, 'error');
     }
   }
 };

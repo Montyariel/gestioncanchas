@@ -817,8 +817,23 @@ DESGLOSE EGRESOS:
 ${desgloseEgresos}
 --------------------------------
       ¡GRACIAS POR EL TURNO!
-      canchaOS Blindaje Fintech
+       canchaOS Blindaje Fintech
 ================================`;
+
+    // Si hay un faltante y el gateway está configurado, mandar alerta de WhatsApp automatizada
+    if (diferencia < 0 && window.WhatsappGateway) {
+      const settings = window.WhatsappGateway.getSettings();
+      const alertMsg = `🚨 *ALERTA CANCHAOS: FALTANTE DE CAJA* 🚨\n\n` +
+        `Hola Ariel, Nico al habla. Se cerró la caja en la sede *${this.sesionActiva.sucursal.toUpperCase()}* con una diferencia negativa de *-$${Math.abs(diferencia).toLocaleString()}*.\n\n` +
+        `Te comparto el ticket contable completo:\n\n\`\`\`\n${ticketTexto}\n\`\`\``;
+      
+      window.WhatsappGateway.sendAutomatedMessage(settings.ownerPhone, alertMsg)
+        .then(res => {
+          if (res.success) {
+            App.toast('🚨 Alerta de faltante enviada al dueño por WhatsApp.', 'warning');
+          }
+        });
+    }
 
     const encodedText = encodeURIComponent(`🏟️ *CIERRE DE CAJA — CANCHAOS ${this.sesionActiva.sucursal.toUpperCase()}* 🏟️\n\n` + ticketTexto);
     const waLink = `https://wa.me/?text=${encodedText}`;

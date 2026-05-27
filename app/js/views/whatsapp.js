@@ -1,3 +1,60 @@
+// ===== WHATSAPP GATEWAY API HELPER (SEGURIDAD LOCALSTORAGE) =====
+window.WhatsappGateway = {
+  getSettings() {
+    try {
+      const stored = localStorage.getItem('canchaos_wa_gateway_settings');
+      return stored ? JSON.parse(stored) : {
+        active: false,
+        endpoint: '',
+        token: '',
+        ownerPhone: '5491122334455'
+      };
+    } catch (e) {
+      return {
+        active: false,
+        endpoint: '',
+        token: '',
+        ownerPhone: '5491122334455'
+      };
+    }
+  },
+
+  saveSettings(settings) {
+    localStorage.setItem('canchaos_wa_gateway_settings', JSON.stringify(settings));
+  },
+
+  async sendAutomatedMessage(phone, text) {
+    const settings = this.getSettings();
+    if (!settings.active) {
+      console.log(`[WhatsappGateway] (SIMULATION) Message to ${phone}: ${text}`);
+      return { success: true, simulated: true };
+    }
+    if (!settings.endpoint) {
+      console.warn('[WhatsappGateway] API Active but no endpoint set.');
+      return { success: false, error: 'Endpoint no configurado' };
+    }
+    try {
+      const response = await fetch(settings.endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': settings.token ? `Bearer ${settings.token}` : ''
+        },
+        body: JSON.stringify({ phone: phone, message: text })
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP Error ${response.status}`);
+      }
+      const data = await response.json().catch(() => ({}));
+      console.log(`[WhatsappGateway] Message sent to ${phone}:`, data);
+      return { success: true, data };
+    } catch (e) {
+      console.error('[WhatsappGateway] API send error:', e);
+      return { success: false, error: e.message };
+    }
+  }
+};
+
 // ===== VISTA: WHATSAPP (Vincular y enviar mensajes directos) =====
 const WhatsappView = {
   state: {
@@ -166,9 +223,14 @@ const WhatsappView = {
             <h1 class="text-2xl font-black text-white tracking-tight flex items-center gap-2">💬 WhatsApp Link <span class="text-xs bg-[#c3f400]/15 text-[#c3f400] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider">Business Central</span></h1>
             <p class="text-slate-500 text-xs mt-0.5">Comunicate de forma directa con tus clientes, proveedores y equipo de trabajo</p>
           </div>
-          <!-- Status Badge minimalista -->
-          <div id="waStatusBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-full font-bold text-xs border">
-            <!-- Injected Status badge -->
+          <div class="flex items-center gap-3">
+            <button onclick="WhatsappView.openGatewaySettings()" class="w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-800 hover:border-[#c3f400]/40 text-slate-400 hover:text-[#c3f400] transition-all cursor-pointer shadow-lg" title="Configurar Gateway API">
+              <span class="material-symbols-outlined" style="font-size:18px">settings</span>
+            </button>
+            <!-- Status Badge minimalista -->
+            <div id="waStatusBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-full font-bold text-xs border">
+              <!-- Injected Status badge -->
+            </div>
           </div>
         </div>
 
@@ -764,6 +826,140 @@ const WhatsappView = {
     
     this.state.searchQuery = '';
     this.renderChatsList('');
+  },
+
+  openGatewaySettings() {
+    let modal = document.getElementById('waGatewaySettingsModal');
+    if (modal) modal.remove();
+
+    const settings = window.WhatsappGateway.getSettings();
+
+    modal = document.createElement('div');
+    modal.id = 'waGatewaySettingsModal';
+    modal.className = 'modal-overlay open';
+    modal.style.cssText = 'z-index: 1000;';
+
+    modal.innerHTML = `
+      <div class="co-modal max-w-md w-full animate-in zoom-in-95 duration-200" style="border-color: rgba(195, 244, 0, 0.4);">
+        <div class="flex items-center justify-between p-5 border-b border-slate-800" style="background: linear-gradient(135deg, #1e1f26, #111319)">
+          <h2 class="text-sm font-black text-white flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#c3f400]">settings_phone</span>
+            Configuración WhatsApp Gateway API
+          </h2>
+          <button onclick="document.getElementById('waGatewaySettingsModal').remove()" class="text-slate-500 hover:text-white p-1 rounded-lg">
+            <span class="material-symbols-outlined text-sm">close</span>
+          </button>
+        </div>
+        
+        <div class="p-6 space-y-4 overflow-y-auto" style="max-height: 70vh;">
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Vinculá una API externa o webhook (ej: Twilio, Chatwoot o un script local) para automatizar el envío de mensajes desde CanchaOS. Si está inactivo, Nico operará en <strong>Modo Simulación</strong>.
+          </p>
+
+          <!-- Active Toggle -->
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800">
+            <div>
+              <span class="text-xs font-bold text-white block">Estado del Gateway</span>
+              <span class="text-[10px] text-slate-500">¿Habilitar envíos de API reales?</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="waGatewayActive" class="sr-only peer" \${settings.active ? 'checked' : ''}>
+              <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#c3f400]"></div>
+            </label>
+          </div>
+
+          <!-- Endpoint Input -->
+          <div class="space-y-1">
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">API Endpoint URL</label>
+            <input type="url" id="waGatewayEndpoint" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#c3f400]" placeholder="https://api.tuservidor.com/v1/messages" value="\${settings.endpoint || ''}">
+          </div>
+
+          <!-- Token Input -->
+          <div class="space-y-1">
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">API Bearer Token / Secret</label>
+            <input type="password" id="waGatewayToken" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#c3f400]" placeholder="Bearer o API Token de autenticación" value="\${settings.token || ''}">
+          </div>
+
+          <!-- Owner Phone -->
+          <div class="space-y-1">
+            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">WhatsApp del Dueño (Alertas de Caja)</label>
+            <input type="text" id="waGatewayOwnerPhone" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#c3f400]" placeholder="5491122334455" value="\${settings.ownerPhone || '5491122334455'}">
+            <span class="text-[9px] text-slate-500 block">Número de Ariel para recibir alertas inmediatas de faltantes de caja.</span>
+          </div>
+        </div>
+
+        <div class="p-4 border-t border-slate-800 bg-[#111319] flex gap-2">
+          <button onclick="WhatsappView.testGatewayConnection()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl transition-all border border-slate-700 cursor-pointer">
+            🧪 Probar Conexión
+          </button>
+          <button onclick="WhatsappView.saveGatewaySettings()" class="flex-1 py-2.5 bg-[#c3f400] text-[#161e00] hover:opacity-90 font-bold text-xs rounded-xl transition-all cursor-pointer">
+            💾 Guardar Cambios
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  },
+
+  async testGatewayConnection() {
+    const active = document.getElementById('waGatewayActive').checked;
+    const endpoint = document.getElementById('waGatewayEndpoint').value.trim();
+    const token = document.getElementById('waGatewayToken').value.trim();
+    const ownerPhone = document.getElementById('waGatewayOwnerPhone').value.trim();
+
+    if (!ownerPhone) {
+      App.toast('Ingresá el WhatsApp del dueño para probar, crack!', 'error');
+      return;
+    }
+
+    App.toast('Enviando mensaje piloto... 🚀', 'info');
+
+    const text = \`🏟️ *¡GOLAZO! CANCHAOS CONEXIÓN VERIFICADA* 🏟️\\n\\nHola Ariel, Nico al habla. Te confirmo que enlazamos el Gateway API a tu WhatsApp con éxito. El agente 24/7 de CanchaOS está listo para mantenerte alerta ante cualquier discrepancia. ⚽🔥\`;
+
+    if (!active) {
+      setTimeout(() => {
+        App.toast('🧪 Simulación: Mensaje piloto exitoso (ver consola).', 'success');
+        console.log(\`[WhatsappGateway TEST SIMULATED] To \${ownerPhone}: \${text}\`);
+      }, 800);
+      return;
+    }
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? \`Bearer \${token}\` : ''
+        },
+        body: JSON.stringify({ phone: ownerPhone, message: text })
+      });
+      if (response.ok) {
+        App.toast('🚀 ¡Mensaje piloto enviado con éxito al WhatsApp del dueño!', 'success');
+      } else {
+        App.toast(\`⚠️ Error de API: Código HTTP \${response.status}\`, 'error');
+      }
+    } catch (e) {
+      App.toast('❌ Falló la conexión: ' + e.message, 'error');
+    }
+  },
+
+  saveGatewaySettings() {
+    const active = document.getElementById('waGatewayActive').checked;
+    const endpoint = document.getElementById('waGatewayEndpoint').value.trim();
+    const token = document.getElementById('waGatewayToken').value.trim();
+    const ownerPhone = document.getElementById('waGatewayOwnerPhone').value.trim();
+
+    if (!ownerPhone) {
+      App.toast('El número del dueño es obligatorio crack.', 'error');
+      return;
+    }
+
+    window.WhatsappGateway.saveSettings({ active, endpoint, token, ownerPhone });
+    App.toast('💾 Configuración de Gateway guardada correctamente.', 'success');
+    
+    const modal = document.getElementById('waGatewaySettingsModal');
+    if (modal) modal.remove();
   }
 };
 

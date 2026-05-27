@@ -169,6 +169,24 @@ const DB = {
     }
   },
 
+  async updateCanchaTipo(canchaId, tipo) {
+    try {
+      if (!navigator.onLine) throw new Error('Offline');
+      const { error } = await db.from('canchas')
+        .update({ tipo: tipo })
+        .eq('id', canchaId);
+      if (error) throw error;
+      const sucursal = App.state.sucursal;
+      localStorage.removeItem(`canchaos_cache_canchas_${sucursal}`);
+      return true;
+    } catch (e) {
+      if (this.isOffline(e)) {
+        return OfflineManager.enqueue('updateCanchaTipo', [canchaId, tipo]);
+      }
+      throw e;
+    }
+  },
+
   // --- TURNOS ---
   async getTurnos(sucursal, fecha) {
     const cacheKey = `canchaos_cache_turnos_${sucursal}_${fecha}`;
