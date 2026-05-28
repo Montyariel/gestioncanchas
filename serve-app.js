@@ -776,7 +776,8 @@ app.post('/api/gasto', authMiddleware, requireRole('dueño', 'encargado'), async
 // Middleware: valida API key del agente
 function agentAuth(req, res, next) {
   const key = req.query.key || req.headers['x-agent-key'];
-  if (!key || key !== process.env.AGENT_API_KEY) {
+  const expectedKey = process.env.AGENT_API_KEY || 'mi-clave-secreta-2026';
+  if (!key || key !== expectedKey) {
     return res.status(401).json({ error: 'API key inválida' });
   }
   next();
@@ -898,6 +899,143 @@ app.get('/api/agent/run-all', agentAuth, async (req, res) => {
     resultados.sesiones_abiertas = (abiertas || []).length;
   } catch (e) { resultados.sesiones_error = e.message; }
   res.json({ ok: true, timestamp: new Date().toISOString(), resultados });
+});
+
+// GET /api/agent/simulate-stress — Simula operaciones reales para pruebas de estrés y datos realistas
+app.get('/api/agent/simulate-stress', agentAuth, async (req, res) => {
+  const db = getAdminSupabase();
+  const sucursales = ['lanus', 'belgrano'];
+  const acciones = ['reserva', 'buffet', 'cancelacion', 'gasto'];
+  const accion = acciones[Math.floor(Math.random() * acciones.length)];
+
+  try {
+    if (accion === 'reserva') {
+      // 1. Reservar un turno al azar
+      const { data: turnosLibres, error: errTurnos } = await db
+        .from('turnos')
+        .select('*, canchas(*)')
+        .eq('reservado', false)
+        .limit(50);
+
+      if (errTurnos || !turnosLibres || turnosLibres.length === 0) {
+        return res.json({ ok: true, msg: 'Simulación de Reserva: No hay turnos libres disponibles.' });
+      }
+
+      const turno = turnosLibres[Math.floor(Math.random() * turnosLibres.length)];
+      const nombres = ['Messi', 'Maradona', 'Riquelme', 'Neymar', 'Mbappe', 'Haaland', 'Bochini', 'Palermo', 'Francescoli', 'Ortega'];
+      const cliente = 'Simulado ' + nombres[Math.floor(Math.random() * nombres.length)];
+
+      const basePrecio = Number(turno.canchas.precio || 15000);
+      let total = basePrecio;
+      const horaNum = parseInt(turno.hora.split(':')[0], 10);
+      if (horaNum >= 19 && horaNum <= 23) {
+        total = Math.round(total * 1.20); // Recargo nocturno
+      }
+
+      // Marcar turno
+      await db.from('turnos').update({ reservado: true, cliente_nombre: cliente }).eq('id', turno.id);
+
+      // Movimiento
+      await db.from('movimientos').insert([{
+        sucursal: turno.canchas.sucursal_id || 'lanus',
+        tipo: 'ingreso',
+        categoria: 'Alquiler Cancha',
+        concepto: `Reserva Simulada: ${cliente} - ${turno.canchas.nombre} ${turno.hora.substring(0, 5)} ${turno.fecha}`,
+        monto: total
+      }]);
+
+      // Reserva
+      await db.from('reservas').insert([{
+        cancha_id: turno.canchas.id,
+        cliente_nombre: cliente,
+        cumpleanios: '1995-05-28',
+        estado_pago: 'pendiente',
+        notas: 'Reserva automática de estrés',
+        sucursal: turno.canchas.sucursal_id || 'lanus',
+        turno_id: turno.id,
+        monto_total: total
+      }]);
+
+      return res.json({ ok: true, accion: 'reserva', msg: `Se reservó el turno ID ${turno.id} para ${cliente} por $${total}.` });
+    }
+
+    if (accion === 'buffet') {
+      // 2. Vender buffet al azar
+      const { data: stockItems, error: errStock } = await db
+        .from('stock')
+        .select('*')
+        .gt('cantidad', 2);
+
+      if (errStock || !stockItems || stockItems.length === 0) {
+        return res.json({ ok: true, msg: 'Simulación de Buffet: No hay stock suficiente para vender.' });
+      }
+
+      const item = stockItems[Math.floor(Math.random() * stockItems.length)];
+      const cantidad = Math.floor(Math.random() * 2) + 1; // 1 o 2 unidades
+      const total = Number(item.precio_venta || 1500) * cantidad;
+
+      // Descontar
+      await db.from('stock').update({ cantidad: item.cantidad - cantidad }).eq('id', item.id);
+
+      // Registrar venta en movimientos
+      await db.from('movimientos').insert([{
+        sucursal: item.sucursal || 'lanus',
+        tipo: 'ingreso',
+        categoria: 'Venta Buffet',
+        concepto: `Venta Buffet Simulada: ${item.item} x${cantidad}`,
+        monto: total
+      }]);
+
+      return res.json({ ok: true, accion: 'buffet', msg: `Se vendieron ${cantidad} unidades de '${item.item}' por un total de $${total}.` });
+    }
+
+    if (accion === 'cancelacion') {
+      // 3. Cancelar un turno simulado al azar
+      const { data: turnosSimulados, error: errSim } = await db
+        .from('turnos')
+        .select('*, canchas(*)')
+        .eq('reservado', true)
+        .like('cliente_nombre', 'Simulado %')
+        .limit(20);
+
+      if (errSim || !turnosSimulados || turnosSimulados.length === 0) {
+        return res.json({ ok: true, msg: 'Simulación de Cancelación: No hay turnos simulados para cancelar.' });
+      }
+
+      const turno = turnosSimulados[Math.floor(Math.random() * turnosSimulados.length)];
+
+      // Cancelar
+      await db.from('turnos').update({ reservado: false, cliente_nombre: null }).eq('id', turno.id);
+      
+      // Borrar la reserva asociada
+      await db.from('reservas').delete().eq('turno_id', turno.id);
+
+      return res.json({ ok: true, accion: 'cancelacion', msg: `Se canceló el turno simulado ID ${turno.id} (${turno.cliente_nombre}) en ${turno.canchas.sucursal_id.toUpperCase()}.` });
+    }
+
+    if (accion === 'gasto') {
+      // 4. Registrar un gasto al azar
+      const conceptos = ['Luz del mes', 'Compra de pelotas', 'Limpieza', 'Mantenimiento red', 'Sueldo canchero'];
+      const concepto = conceptos[Math.floor(Math.random() * conceptos.length)];
+      const monto = Math.floor(Math.random() * 50) * 1000 + 5000; // Entre $5.000 y $54.000
+      const sucursal = sucursales[Math.floor(Math.random() * sucursales.length)];
+
+      await db.from('movimientos').insert([{
+        sucursal,
+        tipo: 'egreso',
+        categoria: 'General',
+        concepto: `Gasto Simulado: ${concepto}`,
+        monto
+      }]);
+
+      return res.json({ ok: true, accion: 'gasto', msg: `Se registró un gasto de $${monto} en la sede ${sucursal.toUpperCase()} por '${concepto}'.` });
+    }
+
+    res.json({ ok: false, msg: 'Acción desconocida.' });
+  } catch (error) {
+    console.error('Error en simulación de estrés:', error);
+    res.status(500).json({ ok: false, error: error.message });
+  }
 });
 
 
