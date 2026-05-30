@@ -10,11 +10,11 @@ const ReservasView = {
             <p class="text-on-surface-variant">Registro completo de reservas confirmadas y abonos · ${sucursal.charAt(0).toUpperCase()+sucursal.slice(1)}</p>
           </div>
           <div class="flex gap-3">
-            <button onclick="ReservasView.showAbonoModal()" class="px-5 py-2.5 rounded-lg text-sm font-bold border border-slate-700 text-slate-300 hover:border-[#c3f400] hover:text-[#c3f400] transition-all flex items-center gap-2">
+            <button onclick="ReservasView.showAbonoModal()" class="px-5 py-2.5 rounded-lg text-sm font-bold border border-slate-700 text-slate-300 hover:border-[#10B981] hover:text-[#10B981] transition-all flex items-center gap-2">
               <span class="material-symbols-outlined" style="font-size:18px">calendar_month</span>
               Abono Mensual
             </button>
-            <button onclick="App.navigate('agenda')" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] transition-all flex items-center gap-2 shadow-lg shadow-[#c3f400]/20">
+            <button onclick="App.navigate('agenda')" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-[#10B981] text-[#0B0F19] hover:bg-[#34d399] transition-all flex items-center gap-2 shadow-lg shadow-[#10B981]/20">
               <span class="material-symbols-outlined" style="font-size:18px">add</span>
               Nueva Reserva
             </button>
@@ -26,28 +26,28 @@ const ReservasView = {
       <section class="bg-surface-container rounded-xl p-4 border border-surface-container-highest mb-6 flex flex-wrap gap-4 items-center">
         <div class="relative flex-1 min-w-[200px] max-w-[300px]">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="font-size:18px">search</span>
-          <input id="filterCliente" oninput="ReservasView.filterTable()" placeholder="Buscar por cliente..." class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg pl-10 pr-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
+          <input id="filterCliente" oninput="ReservasView.filterTable()" placeholder="Buscar por cliente..." class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg pl-10 pr-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#10B981] transition-colors" />
         </div>
-        <select id="filterEstado" onchange="ReservasView.filterTable()" class="bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors cursor-pointer outline-none">
+        <select id="filterEstado" onchange="ReservasView.filterTable()" class="bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#10B981] transition-colors cursor-pointer outline-none">
           <option value="">Todos los estados</option>
           <option value="pagado">✅ Pagado</option>
           <option value="pendiente">⏳ Pendiente</option>
           <option value="cancelado">❌ Cancelado</option>
         </select>
         <div class="ml-auto">
-          <span id="reservasCount" class="text-sm font-bold text-[#c3f400] bg-[#c3f400]/10 px-3 py-1.5 rounded-lg border border-[#c3f400]/20">Cargando...</span>
+          <span id="reservasCount" class="text-sm font-bold text-[#10B981] bg-[#10B981]/10 px-3 py-1.5 rounded-lg border border-[#10B981]/20">Cargando...</span>
         </div>
       </section>
 
       <section class="bg-surface-container rounded-xl border border-surface-container-highest overflow-hidden">
-        <div id="reservasTable"><div class="p-12 text-center flex flex-col items-center justify-center"><div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#c3f400] mb-4"></div><p class="text-slate-400 text-sm">Cargando reservas...</p></div></div>
+        <div id="reservasTable"><div class="p-12 text-center flex flex-col items-center justify-center"><div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#10B981] mb-4"></div><p class="text-slate-400 text-sm">Cargando reservas...</p></div></div>
       </section>
 
       <!-- MODAL ABONO MENSUAL -->
       <div id="abonoModalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 transition-opacity" onclick="if(event.target===this)ReservasView.closeAbonoModal()" style="display: none;">
         <div class="bg-surface-container rounded-2xl w-full max-w-lg border border-surface-container-highest shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
           <div class="p-6 border-b border-surface-container-highest flex justify-between items-center bg-surface-container-low">
-            <h2 class="text-xl font-bold text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[#c3f400]">calendar_month</span> Abono Mensual</h2>
+            <h2 class="text-xl font-bold text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[#10B981]">calendar_month</span> Abono Mensual</h2>
             <button onclick="ReservasView.closeAbonoModal()" class="text-slate-400 hover:text-white transition-colors"><span class="material-symbols-outlined">close</span></button>
           </div>
           <div class="p-6 overflow-y-auto" id="abonoModalBody">
@@ -108,12 +108,12 @@ const ReservasView = {
                   <div class="text-sm text-slate-300">${r.turno_fecha ? fmt.date(r.turno_fecha) : fmt.date(r.created_at)}</div>
                   <div class="text-xs font-bold text-cyan-400 mt-0.5">${r.turno_hora || '—'}</div>
                 </td>
-                <td class="py-4 px-6 font-bold text-[#c3f400] text-sm">${r.precio ? fmt.money(r.precio) : '—'}</td>
+                <td class="py-4 px-6 font-bold text-[#10B981] text-sm">${r.precio ? fmt.money(r.precio) : '—'}</td>
                 <td class="py-4 px-6">${this.estadoBadge(r.estado_pago)}</td>
                 <td class="py-4 px-6 text-right">
                   <div class="flex gap-2 justify-end">
                     ${r.estado_pago !== 'pagado' ? `
-                      <button onclick="ReservasView.marcarPagado(${r.id})" class="px-3 py-1.5 rounded-lg text-xs font-bold border border-[#c3f400] text-[#c3f400] hover:bg-[#c3f400] hover:text-[#161e00] transition-colors shadow-sm">✅ Pago</button>
+                      <button onclick="ReservasView.marcarPagado(${r.id})" class="px-3 py-1.5 rounded-lg text-xs font-bold border border-[#10B981] text-[#10B981] hover:bg-[#10B981] hover:text-[#0B0F19] transition-colors shadow-sm">✅ Pago</button>
                       <button onclick="ReservasView.generarLink(${r.id})" class="px-3 py-1.5 rounded-lg text-xs font-bold border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-dark transition-colors shadow-sm flex items-center gap-1">
                         <span class="material-symbols-outlined text-[14px]">link</span> Link
                       </button>
@@ -129,7 +129,7 @@ const ReservasView = {
 
   estadoBadge(estado) {
     const map = {
-      pagado:   `<span class="bg-[#c3f400]/10 text-[#c3f400] px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider inline-flex items-center gap-1 border border-[#c3f400]/20"><span class="material-symbols-outlined" style="font-size:12px">check_circle</span> Pagado</span>`,
+      pagado:   `<span class="bg-[#10B981]/10 text-[#10B981] px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider inline-flex items-center gap-1 border border-[#10B981]/20"><span class="material-symbols-outlined" style="font-size:12px">check_circle</span> Pagado</span>`,
       pendiente:`<span class="bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider inline-flex items-center gap-1 border border-amber-500/20"><span class="material-symbols-outlined" style="font-size:12px">schedule</span> Pendiente</span>`,
       cancelado:`<span class="bg-[#ffb4ab]/10 text-[#ffb4ab] px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider inline-flex items-center gap-1 border border-[#ffb4ab]/20"><span class="material-symbols-outlined" style="font-size:12px">cancel</span> Cancelado</span>`
     };
@@ -240,46 +240,46 @@ const ReservasView = {
       <div class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">👤 Nombre del cliente</label>
-          <input id="abonoCliente" placeholder="Ej: Martín García" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" autofocus />
+          <input id="abonoCliente" placeholder="Ej: Martín García" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#10B981] transition-colors" autofocus />
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">🏟️ Cancha</label>
-            <input id="abonoCancha" placeholder="Ej: Cancha 1" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
+            <input id="abonoCancha" placeholder="Ej: Cancha 1" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#10B981] transition-colors" />
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">🕐 Horario fijo</label>
-            <input id="abonoHora" placeholder="Ej: 20:00" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
+            <input id="abonoHora" placeholder="Ej: 20:00" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#10B981] transition-colors" />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">📆 Fechas del mes</label>
-            <select id="abonoFechas" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors cursor-pointer outline-none">
+            <select id="abonoFechas" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#10B981] transition-colors cursor-pointer outline-none">
               <option value="4">4 fechas</option>
               <option value="5">5 fechas</option>
             </select>
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">💰 Precio por fecha ($)</label>
-            <input id="abonoPrecio" type="number" placeholder="0" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
+            <input id="abonoPrecio" type="number" placeholder="0" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#10B981] transition-colors" />
           </div>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">🎂 Cumpleaños (opcional)</label>
-          <input id="abonoCumple" type="date" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
+          <input id="abonoCumple" type="date" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-[#10B981] transition-colors" />
         </div>
       </div>
       
-      <div id="abonoResumen" class="mt-6 p-4 bg-[#c3f400]/5 border border-[#c3f400]/20 rounded-xl hidden">
-        <div class="font-bold text-[#c3f400] text-sm mb-2">📊 Resumen del abono</div>
+      <div id="abonoResumen" class="mt-6 p-4 bg-[#10B981]/5 border border-[#10B981]/20 rounded-xl hidden">
+        <div class="font-bold text-[#10B981] text-sm mb-2">📊 Resumen del abono</div>
         <div id="abonoResumenTexto" class="text-sm space-y-1 text-slate-300"></div>
       </div>
       
       <div class="mt-8 pt-6 border-t border-surface-container-highest flex justify-end gap-3">
         <button onclick="ReservasView.closeAbonoModal()" class="px-5 py-2.5 rounded-lg text-sm font-bold border border-slate-700 text-slate-300 hover:bg-slate-800 transition-colors">Cancelar</button>
-        <button onclick="ReservasView.calcularAbono()" class="px-5 py-2.5 rounded-lg text-sm font-bold border border-[#c3f400] text-[#c3f400] hover:bg-[#c3f400]/10 transition-colors">Calcular 🔢</button>
-        <button onclick="ReservasView.confirmarAbono()" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] transition-colors shadow-lg shadow-[#c3f400]/20">Confirmar Abono ⚽</button>
+        <button onclick="ReservasView.calcularAbono()" class="px-5 py-2.5 rounded-lg text-sm font-bold border border-[#10B981] text-[#10B981] hover:bg-[#10B981]/10 transition-colors">Calcular 🔢</button>
+        <button onclick="ReservasView.confirmarAbono()" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-[#10B981] text-[#0B0F19] hover:bg-[#34d399] transition-colors shadow-lg shadow-[#10B981]/20">Confirmar Abono ⚽</button>
       </div>`;
     const overlay = document.getElementById('abonoModalOverlay');
     overlay.style.display = 'flex';
@@ -298,7 +298,7 @@ const ReservasView = {
     document.getElementById('abonoResumenTexto').innerHTML = `
       <div>👤 <strong>${cliente}</strong> · ⏰ ${hora || '—'}</div>
       <div>📆 ${fechas} fechas × ${fmt.money(precio)} = <strong>${fmt.money(total)}</strong></div>
-      <div class="text-[#c3f400] mt-1 font-bold">🎁 Con descuento 10%: ${fmt.money(total - desc)}</div>`;
+      <div class="text-[#10B981] mt-1 font-bold">🎁 Con descuento 10%: ${fmt.money(total - desc)}</div>`;
   },
 
   async confirmarAbono() {

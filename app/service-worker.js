@@ -1,4 +1,4 @@
-const CACHE_NAME = 'canchaos-admin-v1';
+const CACHE_NAME = 'canchacontrol-admin-v2';
 const ASSETS = [
   './',
   './index.html',

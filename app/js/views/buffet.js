@@ -64,7 +64,7 @@ const BuffetView = {
         position: absolute;
         bottom: -70%; left: -50%;
         width: 200%; height: 200%;
-        background: rgba(195, 244, 0, 0.08);
+        background: rgba(16, 185, 129, 0.08);
         border-radius: 38%;
         animation: waveRise 7s infinite linear;
       }
@@ -76,9 +76,9 @@ const BuffetView = {
         border-radius: 42%;
         animation: waveRise 11s infinite linear;
       }
-      .bubble-1 { position: absolute; bottom: 0; left: 20%; width: 6px; height: 6px; background: rgba(195,244,0,0.3); border-radius: 50%; animation: bubbleFloat 4s infinite ease-in; }
+      .bubble-1 { position: absolute; bottom: 0; left: 20%; width: 6px; height: 6px; background: rgba(16,185,129,0.3); border-radius: 50%; animation: bubbleFloat 4s infinite ease-in; }
       .bubble-2 { position: absolute; bottom: 0; left: 50%; width: 4px; height: 4px; background: rgba(0,227,253,0.3); border-radius: 50%; animation: bubbleFloat 3s infinite ease-in; animation-delay: 1.5s; }
-      .bubble-3 { position: absolute; bottom: 0; left: 75%; width: 8px; height: 8px; background: rgba(195,244,0,0.25); border-radius: 50%; animation: bubbleFloat 5s infinite ease-in; animation-delay: 0.8s; }
+      .bubble-3 { position: absolute; bottom: 0; left: 75%; width: 8px; height: 8px; background: rgba(16,185,129,0.25); border-radius: 50%; animation: bubbleFloat 5s infinite ease-in; animation-delay: 0.8s; }
 
       /* Spring Easing Elastic Cart Sidebar */
       .spring-cart {
@@ -98,11 +98,11 @@ const BuffetView = {
       .bento-glow-lime {
         background: linear-gradient(135deg, rgba(29, 32, 26, 0.95), rgba(17, 19, 25, 0.98));
         box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05);
-        border: 1px solid rgba(195, 244, 0, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.1);
       }
       .bento-glow-lime:hover {
-        border-color: #c3f400;
-        box-shadow: 0 20px 45px rgba(195, 244, 0, 0.15);
+        border-color: #10B981;
+        box-shadow: 0 20px 45px rgba(16, 185, 129, 0.15);
       }
     </style>
 
@@ -112,12 +112,12 @@ const BuffetView = {
         <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h2 class="font-h1 text-h1 text-on-surface mb-1 flex items-center gap-2">
-              <span class="material-symbols-outlined text-[#c3f400] text-4xl">local_pizza</span>
+              <span class="material-symbols-outlined text-[#10B981] text-4xl">local_pizza</span>
               Buffet &amp; Bar
             </h2>
             <p class="text-on-surface-variant text-sm font-medium">Despacho táctil exprés de bebidas, minutas y combos. Sincronización inmutable.</p>
           </div>
-          <button onclick="BuffetView.openAdminModal()" class="flex items-center gap-2 bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] px-5 py-2.5 rounded-xl font-bold transition-all shadow-md cursor-pointer border-none font-body-md active:scale-95">
+          <button onclick="BuffetView.openAdminModal()" class="flex items-center gap-2 bg-[#10B981] text-[#0B0F19] hover:bg-emerald-400 px-5 py-2.5 rounded-xl font-bold transition-all shadow-md cursor-pointer border-none font-body-md active:scale-95">
             <span class="material-symbols-outlined" style="font-size: 20px;">inventory_2</span>
             Auditar Inventario
           </button>
@@ -132,7 +132,7 @@ const BuffetView = {
         <!-- Quick Order Presets (Futuristic Bento Grid) -->
         <section class="mb-12">
           <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[#c3f400] text-[18px]">bolt</span>
+            <span class="material-symbols-outlined text-[#10B981] text-[18px]">bolt</span>
             Combos Promocionales Nico
           </h3>
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -143,11 +143,11 @@ const BuffetView = {
               
               <div class="relative z-20 p-6 w-full flex flex-col md:flex-row justify-between md:items-end gap-4">
                 <div>
-                  <span class="text-[9px] font-bold text-[#c3f400] bg-[#c3f400]/10 px-2.5 py-1 rounded-full mb-2 inline-block border border-[#c3f400]/20 tracking-wider">EL PREFERIDO DE BELGRANO/LANUS</span>
+                  <span class="text-[9px] font-bold text-[#10B981] bg-[#10B981]/10 px-2.5 py-1 rounded-full mb-2 inline-block border border-[#10B981]/20 tracking-wider">EL PREFERIDO DE BELGRANO/LANUS</span>
                   <h4 class="text-2xl font-black text-on-surface leading-tight mb-1">Combo 3er Tiempo 🍻🍕</h4>
                   <p class="text-xs text-on-surface-variant font-medium">6 Cervezas heladas Quilmes/Brahma + 1 Pizza Grande de Muzzarella al horno.</p>
                 </div>
-                <button class="bg-[#c3f400] text-[#161e00] px-5 py-2.5 rounded-xl font-bold text-sm whitespace-nowrap hover:bg-[#d4ff1a] active:scale-95 transition-all shadow-lg shadow-[#c3f400]/10">
+                <button class="bg-[#10B981] text-[#0B0F19] px-5 py-2.5 rounded-xl font-bold text-sm whitespace-nowrap hover:bg-emerald-400 active:scale-95 transition-all shadow-lg shadow-[#10B981]/10">
                   Agregar combo
                 </button>
               </div>
@@ -174,10 +174,10 @@ const BuffetView = {
 
         <!-- Category Nav -->
         <div class="flex gap-2 md:gap-4 mb-8 border-b border-slate-800/80 pb-3 overflow-x-auto">
-          <button onclick="BuffetView.setCategory('all')" class="pb-2 px-3 transition-all cursor-pointer border-none bg-transparent ${this._activeCategory === 'all' ? 'font-bold text-[#c3f400] border-b-2 border-[#c3f400]' : 'text-slate-500 hover:text-slate-200'}">Todos</button>
-          <button onclick="BuffetView.setCategory('drinks')" class="pb-2 px-3 transition-all cursor-pointer border-none bg-transparent ${this._activeCategory === 'drinks' ? 'font-bold text-[#c3f400] border-b-2 border-[#c3f400]' : 'text-slate-500 hover:text-slate-200'}">Bebidas y Cervezas 🥤🍻</button>
-          <button onclick="BuffetView.setCategory('snacks')" class="pb-2 px-3 transition-all cursor-pointer border-none bg-transparent ${this._activeCategory === 'snacks' ? 'font-bold text-[#c3f400] border-b-2 border-[#c3f400]' : 'text-slate-500 hover:text-slate-200'}">Minutas y Snacks 🍔🍫</button>
-          <button onclick="BuffetView.setCategory('pizzas')" class="pb-2 px-3 transition-all cursor-pointer border-none bg-transparent ${this._activeCategory === 'pizzas' ? 'font-bold text-[#c3f400] border-b-2 border-[#c3f400]' : 'text-slate-500 hover:text-slate-200'}">Pizzas 🍕</button>
+          <button onclick="BuffetView.setCategory('all')" class="pb-2 px-3 transition-all cursor-pointer border-none bg-transparent ${this._activeCategory === 'all' ? 'font-bold text-[#10B981] border-b-2 border-[#10B981]' : 'text-slate-500 hover:text-slate-200'}">Todos</button>
+          <button onclick="BuffetView.setCategory('drinks')" class="pb-2 px-3 transition-all cursor-pointer border-none bg-transparent ${this._activeCategory === 'drinks' ? 'font-bold text-[#10B981] border-b-2 border-[#10B981]' : 'text-slate-500 hover:text-slate-200'}">Bebidas y Cervezas 🥤🍻</button>
+          <button onclick="BuffetView.setCategory('snacks')" class="pb-2 px-3 transition-all cursor-pointer border-none bg-transparent ${this._activeCategory === 'snacks' ? 'font-bold text-[#10B981] border-b-2 border-[#10B981]' : 'text-slate-500 hover:text-slate-200'}">Minutas y Snacks 🍔🍫</button>
+          <button onclick="BuffetView.setCategory('pizzas')" class="pb-2 px-3 transition-all cursor-pointer border-none bg-transparent ${this._activeCategory === 'pizzas' ? 'font-bold text-[#10B981] border-b-2 border-[#10B981]' : 'text-slate-500 hover:text-slate-200'}">Pizzas 🍕</button>
         </div>
 
         <!-- Catalog Grid (Tactile POS Style) -->
@@ -267,7 +267,7 @@ const BuffetView = {
       const isDrink = s.item.toLowerCase().includes('coke') || s.item.toLowerCase().includes('coca') || s.item.toLowerCase().includes('cola') || s.item.toLowerCase().includes('gatorade') || s.item.toLowerCase().includes('cerveza') || s.item.toLowerCase().includes('beer') || s.item.toLowerCase().includes('agua') || s.item.toLowerCase().includes('powerade') || s.item.toLowerCase().includes('sprite') || s.item.toLowerCase().includes('fanta');
 
       return `
-      <div class="relative bg-slate-900/60 rounded-3xl overflow-hidden border border-slate-800/80 hover:border-[#c3f400]/40 flex flex-col group cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-[#c3f400]/5 hover:translate-y-[-4px] active:scale-[0.98]" onclick="BuffetView.addToCart(${s.id})">
+      <div class="relative bg-slate-900/60 rounded-3xl overflow-hidden border border-slate-800/80 hover:border-[#10B981]/40 flex flex-col group cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-[#10B981]/5 hover:translate-y-[-4px] active:scale-[0.98]" onclick="BuffetView.addToCart(${s.id})">
         
         <!-- Liquid Sloshing Container (only for drinks) -->
         ${isDrink ? `
@@ -289,12 +289,12 @@ const BuffetView = {
         <!-- Info -->
         <div class="p-5 flex-1 flex flex-col relative z-10 bg-slate-900/40">
           <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">${s.categoria.toUpperCase()}</span>
-          <h4 class="text-md font-black text-slate-100 leading-tight mb-2 group-hover:text-[#c3f400] transition-colors line-clamp-1" title="${s.item}">${s.item}</h4>
+          <h4 class="text-md font-black text-slate-100 leading-tight mb-2 group-hover:text-[#10B981] transition-colors line-clamp-1" title="${s.item}">${s.item}</h4>
           
           <div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-800/60">
             <span class="text-lg font-black text-slate-100 font-mono">${fmt.money(s.precio_venta)}</span>
             
-            <button ${isOut ? 'disabled' : ''} class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700/80 flex items-center justify-center text-slate-300 group-hover:bg-[#c3f400] group-hover:text-[#161e00] group-hover:border-[#c3f400] transition-all cursor-pointer">
+            <button ${isOut ? 'disabled' : ''} class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700/80 flex items-center justify-center text-slate-300 group-hover:bg-[#10B981] group-hover:text-[#0B0F19] group-hover:border-[#10B981] transition-all cursor-pointer">
               <span class="material-symbols-outlined text-[18px]">add</span>
             </button>
           </div>
@@ -315,7 +315,7 @@ const BuffetView = {
     if (this.cart.length === 0) {
       itemsHtml = `
         <div class="flex-1 flex flex-col items-center justify-center text-slate-500 p-6 text-center">
-          <span class="material-symbols-outlined text-[54px] mb-4 text-[#c3f400]/40">shopping_cart</span>
+          <span class="material-symbols-outlined text-[54px] mb-4 text-[#10B981]/40">shopping_cart</span>
           <p class="font-bold text-sm text-slate-400">El mostrador está vacío</p>
           <p class="text-xs mt-1.5 opacity-70">Tocá los productos del catálogo a la izquierda para cargarlos.</p>
         </div>
@@ -331,7 +331,7 @@ const BuffetView = {
           </div>
           <div class="flex-1 min-w-0">
             <h5 class="text-xs font-bold text-slate-200 leading-snug truncate">${item.item}</h5>
-            <span class="text-xs font-mono font-bold text-[#c3f400] mt-0.5 block">${fmt.money(item.precio_venta)}</span>
+            <span class="text-xs font-mono font-bold text-[#10B981] mt-0.5 block">${fmt.money(item.precio_venta)}</span>
           </div>
           <div class="flex items-center gap-1.5 bg-slate-950/80 rounded-xl border border-slate-800 p-1">
             <button onclick="BuffetView.updateQty(${index}, -1); event.stopPropagation();" class="w-6 h-6 rounded-lg flex items-center justify-center hover:bg-slate-800 text-slate-400 cursor-pointer border-none bg-transparent">
@@ -350,10 +350,10 @@ const BuffetView = {
     sidebar.innerHTML = `
       <div class="p-6 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/60">
         <h2 class="text-md font-bold text-slate-200 flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#c3f400]">shopping_cart</span>
+          <span class="material-symbols-outlined text-[#10B981]">shopping_cart</span>
           Pedido en Marcha
         </h2>
-        <span class="bg-[#c3f400]/10 text-[#c3f400] font-bold text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#c3f400]/20">${totalItems} items</span>
+        <span class="bg-[#10B981]/10 text-[#10B981] font-bold text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#10B981]/20">${totalItems} items</span>
       </div>
       
       ${itemsHtml}
@@ -362,7 +362,7 @@ const BuffetView = {
         <div class="mb-4">
           <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Destino de Entrega</label>
           <div class="relative mb-3">
-            <select id="buffetDeliveryTarget" class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 outline-none focus:border-[#c3f400] cursor-pointer">
+            <select id="buffetDeliveryTarget" class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 outline-none focus:border-[#10B981] cursor-pointer">
               <option value="bar">Recoge en Mostrador del Bar 🏟️</option>
               <option value="cancha1">Enviar a Cancha 1 ⚽</option>
               <option value="cancha2">Enviar a Cancha 2 ⚽</option>
@@ -372,7 +372,7 @@ const BuffetView = {
           
           <label class="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Medio de Pago</label>
           <div class="relative">
-            <select id="buffetMetodoPago" class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 outline-none focus:border-[#c3f400] cursor-pointer">
+            <select id="buffetMetodoPago" class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 outline-none focus:border-[#10B981] cursor-pointer">
               <option value="Efectivo">💵 Efectivo Físico</option>
               <option value="Mercado Pago">📱 Mercado Pago</option>
               <option value="Transferencia">⚡ Transferencia Bancaria</option>
@@ -386,7 +386,7 @@ const BuffetView = {
           <span class="text-2xl font-black text-slate-100 font-mono leading-none">${fmt.money(total)}</span>
         </div>
 
-        <button onclick="BuffetView.checkout()" ${totalItems === 0 ? 'disabled' : ''} class="w-full bg-[#c3f400] text-[#161e00] font-bold py-3.5 rounded-xl hover:bg-[#d4ff1a] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer border-none shadow-lg shadow-[#c3f400]/10 disabled:opacity-30 disabled:pointer-events-none font-h3 text-sm">
+        <button onclick="BuffetView.checkout()" ${totalItems === 0 ? 'disabled' : ''} class="w-full bg-[#10B981] text-[#0B0F19] font-bold py-3.5 rounded-xl hover:bg-emerald-400 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer border-none shadow-lg shadow-[#10B981]/10 disabled:opacity-30 disabled:pointer-events-none font-h3 text-sm">
           <span class="material-symbols-outlined text-[18px] font-bold">check_circle</span>
           Confirmar Venta y Despachar
         </button>
@@ -688,10 +688,10 @@ const BuffetView = {
                         ${s.cantidad}
                       </span>
                     </td>
-                    <td class="p-4 text-right font-bold text-[#c3f400] font-mono">${fmt.money(s.precio_venta)}</td>
+                    <td class="p-4 text-right font-bold text-[#10B981] font-mono">${fmt.money(s.precio_venta)}</td>
                     <td class="p-4">
                       <div class="flex gap-2 justify-center">
-                        <button onclick="BuffetView.reponerStockPrompt(${s.id})" class="px-3 py-1.5 rounded-lg bg-[#c3f400] text-[#161e00] font-bold text-xs hover:bg-[#d4ff1a] active:scale-95 transition-all border-none cursor-pointer flex items-center gap-1">
+                        <button onclick="BuffetView.reponerStockPrompt(${s.id})" class="px-3 py-1.5 rounded-lg bg-[#10B981] text-[#0B0F19] font-bold text-xs hover:bg-[#34D399] active:scale-95 transition-all border-none cursor-pointer flex items-center gap-1">
                           <span class="material-symbols-outlined text-[14px]">add</span> Reponer
                         </button>
                         <button onclick="BuffetView.ajustarStockPrompt(${s.id})" class="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 font-bold text-xs hover:bg-red-500/30 active:scale-95 transition-all cursor-pointer flex items-center gap-1">
@@ -717,12 +717,12 @@ const BuffetView = {
           <div class="grid grid-cols-2 gap-4">
             <div class="col-span-2">
               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Nombre del Producto</label>
-              <input type="text" id="newProdName" placeholder="Gaseosa Coca-Cola 500ml, Panes de hamburguesa, etc." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-lime-400 transition-colors" />
+              <input type="text" id="newProdName" placeholder="Gaseosa Coca-Cola 500ml, Panes de hamburguesa, etc." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors" />
             </div>
             
             <div>
               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Categoría</label>
-              <select id="newProdCategory" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-lime-400 transition-colors outline-none cursor-pointer">
+              <select id="newProdCategory" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors outline-none cursor-pointer">
                 <option value="Drinks">Drinks (Bebidas)</option>
                 <option value="Snacks">Snacks (Minutas)</option>
                 <option value="Pizzas">Pizzas</option>
@@ -731,42 +731,42 @@ const BuffetView = {
             
             <div>
               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Precio de Venta ($)</label>
-              <input type="number" id="newProdPrice" placeholder="Precio venta en ARS" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-lime-400 transition-colors" />
+              <input type="number" id="newProdPrice" placeholder="Precio venta en ARS" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors" />
             </div>
 
             <div>
               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Stock Inicial</label>
-              <input type="number" id="newProdStock" value="10" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-lime-400 transition-colors" />
+              <input type="number" id="newProdStock" value="10" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors" />
             </div>
 
             <div>
               <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Alerta Stock Mínimo</label>
-              <input type="number" id="newProdAlert" value="5" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-lime-400 transition-colors" />
+              <input type="number" id="newProdAlert" value="5" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors" />
             </div>
 
             <!-- Costeo Inteligente por Pack -->
             <div class="col-span-2 p-4 bg-slate-950/60 rounded-xl border border-slate-800 flex flex-col gap-3">
-              <h5 class="text-xs font-bold text-lime-400 uppercase tracking-wider flex items-center gap-1.5">
+              <h5 class="text-xs font-bold text-[#10B981] uppercase tracking-wider flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-[16px]">inventory_2</span> 
                 Costeo Inteligente por Pack (Wholesale)
               </h5>
               <div class="grid grid-cols-2 gap-4">
                 <div>
                   <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">Precio de Compra del Pack ($)</label>
-                  <input type="number" id="newProdPackPrice" placeholder="Ej: 2400" min="0" step="any" oninput="BuffetView.updateUnitPricePreview()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-lime-400 transition-colors" />
+                  <input type="number" id="newProdPackPrice" placeholder="Ej: 2400" min="0" step="any" oninput="BuffetView.updateUnitPricePreview()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors" />
                 </div>
                 <div>
                   <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">Unidades por Pack</label>
-                  <input type="number" id="newProdPackUnits" value="1" min="1" oninput="BuffetView.updateUnitPricePreview()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-lime-400 transition-colors" />
+                  <input type="number" id="newProdPackUnits" value="1" min="1" oninput="BuffetView.updateUnitPricePreview()" class="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors" />
                 </div>
               </div>
-              <p id="unitPriceFeedback" class="text-xs text-lime-400 font-bold mt-1">
+              <p id="unitPriceFeedback" class="text-xs text-[#10B981] font-bold mt-1">
                 Costo unitario calculado: $0.00
               </p>
             </div>
           </div>
 
-          <button onclick="BuffetView.addNewProduct()" class="w-full py-3.5 mt-4 rounded-xl font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer border-none font-body-md shadow-lg shadow-lime-400/10">
+          <button onclick="BuffetView.addNewProduct()" class="w-full py-3.5 mt-4 rounded-xl font-bold bg-[#10B981] text-[#0B0F19] hover:bg-emerald-400 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer border-none font-body-md shadow-lg shadow-[#10B981]/10">
             <span class="material-symbols-outlined">save</span>
             Registrar Producto en Inventario
           </button>
@@ -780,7 +780,7 @@ const BuffetView = {
         <div class="flex flex-col gap-6">
           <div class="flex justify-between items-center">
             <h4 class="text-md font-bold text-slate-200">Historial Seguro de Auditoría - Sede ${this.sucursal.toUpperCase()}</h4>
-            <span class="flex items-center gap-1.5 text-xs text-lime-400 bg-lime-400/10 px-3 py-1.5 rounded-full border border-lime-400/20">
+            <span class="flex items-center gap-1.5 text-xs text-[#10B981] bg-[#10B981]/10 px-3 py-1.5 rounded-full border border-[#10B981]/20">
               <span class="material-symbols-outlined text-[14px]">lock</span> Inalterable
             </span>
           </div>
@@ -800,7 +800,7 @@ const BuffetView = {
               <tbody class="divide-y divide-slate-800/50 text-sm text-slate-300" id="auditLogsBody">
                 <tr>
                   <td colspan="6" class="p-8 text-center text-slate-400">
-                    <span class="material-symbols-outlined animate-spin text-[#c3f400] mb-2">refresh</span><br>
+                    <span class="material-symbols-outlined animate-spin text-[#10B981] mb-2">refresh</span><br>
                     Cargando logs del historial seguro...
                   </td>
                 </tr>
@@ -817,9 +817,9 @@ const BuffetView = {
         <style>
           .insumo-chip { transition: all 0.15s ease; }
           .insumo-chip:hover { transform: scale(1.02); }
-          .receta-canvas-empty { border: 2px dashed rgba(195,244,0,0.2); }
-          #recetaSearchInsumo:focus { border-color: #c3f400; }
-          #recetaSearchProducto:focus { border-color: #c3f400; }
+          .receta-canvas-empty { border: 2px dashed rgba(16,185,129,0.2); }
+          #recetaSearchInsumo:focus { border-color: #10B981; }
+          #recetaSearchProducto:focus { border-color: #10B981; }
         </style>
         <div class="flex flex-col gap-4">
           <div class="flex items-center justify-between">
@@ -840,13 +840,13 @@ const BuffetView = {
                   <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[18px]">search</span>
                   <input id="recetaSearchInsumo" type="text" placeholder="Buscar insumo..." 
                     oninput="BuffetView._filterInsumos(this.value)"
-                    class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-200 outline-none focus:border-lime-400 transition-colors" />
+                    class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-200 outline-none focus:border-[#10B981] transition-colors" />
                 </div>
               </div>
               <div id="insumoCatalog" class="flex-1 overflow-y-auto p-3 flex flex-col gap-1.5">
                 ${this.stockItems.map(s => `
                   <button 
-                    class="insumo-chip w-full flex items-center gap-3 px-3 py-2 rounded bg-slate-900 border border-slate-800 hover:border-[#c3f400]/50 hover:bg-[#c3f400]/5 text-left cursor-pointer"
+                    class="insumo-chip w-full flex items-center gap-3 px-3 py-2 rounded bg-slate-900 border border-slate-800 hover:border-[#10B981]/50 hover:bg-[#10B981]/5 text-left cursor-pointer"
                     data-item="${s.item.replace(/"/g,'&quot;')}"
                     onclick="BuffetView._addChip('${s.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')"
                   >
@@ -869,7 +869,7 @@ const BuffetView = {
                   <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[18px]">restaurant</span>
                   <input id="recetaSearchProducto" type="text" placeholder="Escribí el producto terminado..." 
                     oninput="BuffetView._filterProductoFinal(this.value)"
-                    class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-200 outline-none focus:border-lime-400 transition-colors" />
+                    class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-200 outline-none focus:border-[#10B981] transition-colors" />
                 </div>
                 <div id="recetaProductoSuggestions" class="mt-1 flex flex-col gap-1 hidden"></div>
                 <input type="hidden" id="recetaProductoValor" value="" />
@@ -890,7 +890,7 @@ const BuffetView = {
               <div id="recetaCostoBar" class="px-4 pb-3 hidden">
                 <div class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 flex items-center justify-between text-xs">
                   <span class="text-slate-400">Costo insumos: <span id="rcCosto" class="text-slate-200 font-bold">$0</span></span>
-                  <span class="text-slate-400">Venta: <span id="rcVenta" class="text-[#c3f400] font-bold">$0</span></span>
+                  <span class="text-slate-400">Venta: <span id="rcVenta" class="text-[#10B981] font-bold">$0</span></span>
                   <span id="rcMargenBadge" class="px-2 py-0.5 rounded text-xs font-bold">Margen: -</span>
                 </div>
               </div>
@@ -898,7 +898,7 @@ const BuffetView = {
               <!-- Botón guardar -->
               <div class="p-4 pt-0">
                 <button onclick="BuffetView.saveReceta()" 
-                  class="w-full py-3 rounded-xl font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer border-none shadow-lg shadow-lime-400/10">
+                  class="w-full py-3 rounded-xl font-bold bg-[#10B981] text-[#0B0F19] hover:bg-emerald-400 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer border-none shadow-lg shadow-[#10B981]/10">
                   <span class="material-symbols-outlined">save</span>
                   Guardar Receta
                 </button>
@@ -910,7 +910,7 @@ const BuffetView = {
           <div>
             <h5 class="text-sm font-bold text-slate-300 mb-3">Recetas activas en base</h5>
             <div id="recetasGuardadasList" class="text-slate-500 text-sm">
-              <span class="material-symbols-outlined animate-spin text-[#c3f400] text-[16px]">refresh</span> Cargando...
+              <span class="material-symbols-outlined animate-spin text-[#10B981] text-[16px]">refresh</span> Cargando...
             </div>
           </div>
         </div>
@@ -922,7 +922,7 @@ const BuffetView = {
       
       <!-- Modal Footer -->
       <div class="px-8 py-4 border-t border-slate-800 bg-slate-950/30 flex justify-end gap-3 text-xs text-slate-400">
-        🛡️ canchaOS Security v2.0 • Las alteraciones de stock no autorizadas se notifican automáticamente.
+        🛡️ CanchaControl Security v2.0 • Las alteraciones de stock no autorizadas se notifican automáticamente.
       </div>
     </div>
     `;
@@ -953,8 +953,8 @@ const BuffetView = {
     box.classList.remove('hidden');
     box.innerHTML = matches.slice(0, 6).map(s => `
       <button onclick="BuffetView._selectProductoFinal('${s.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')" 
-        class="w-full text-left px-3 py-2 rounded bg-slate-900 border border-slate-800 hover:border-lime-400/50 text-xs text-slate-200 cursor-pointer flex items-center gap-2">
-        <span class="material-symbols-outlined text-[#c3f400] text-[14px]">check_circle</span>
+        class="w-full text-left px-3 py-2 rounded bg-slate-900 border border-slate-800 hover:border-[#10B981]/50 text-xs text-slate-200 cursor-pointer flex items-center gap-2">
+        <span class="material-symbols-outlined text-[#10B981] text-[14px]">check_circle</span>
         ${s.item}
       </button>`).join('');
   },
@@ -1002,11 +1002,11 @@ const BuffetView = {
     }
     container.innerHTML = this._recetaChips.map(c => `
       <div class="flex items-center gap-3 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 group mb-2">
-        <span class="material-symbols-outlined text-[#c3f400] text-[16px]">restaurant</span>
+        <span class="material-symbols-outlined text-[#10B981] text-[16px]">restaurant</span>
         <span class="flex-1 text-xs text-slate-200 font-semibold truncate">${c.item}</span>
         <div class="flex items-center gap-1">
           <button onclick="BuffetView._changeChipQty('${c.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', -0.5)" class="w-6 h-6 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 flex items-center justify-center cursor-pointer border border-slate-700 text-[12px] font-bold border-none">-</button>
-          <span class="text-[#c3f400] font-bold text-xs w-6 text-center">${c.qty}</span>
+          <span class="text-[#10B981] font-bold text-xs w-6 text-center">${c.qty}</span>
           <button onclick="BuffetView._changeChipQty('${c.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', 0.5)" class="w-6 h-6 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-400 flex items-center justify-center cursor-pointer border border-slate-700 text-[12px] font-bold border-none">+</button>
         </div>
         <button onclick="BuffetView._removeChip('${c.item.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')" class="w-6 h-6 rounded-md bg-red-500/10 hover:bg-red-500/30 text-red-400 flex items-center justify-center cursor-pointer border border-red-500/20 border-none"><span class="material-symbols-outlined text-[13px]">close</span></button>

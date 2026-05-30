@@ -30,42 +30,42 @@ const LoginView = {
       <div class="min-h-screen w-full flex items-center justify-center p-4" style="background-color: var(--surface);">
         <div class="bg-surface-container rounded-2xl border border-surface-container-highest p-8 max-w-md w-full shadow-2xl relative overflow-hidden">
           
-          <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#c3f400]/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#10B981]/10 rounded-full blur-3xl pointer-events-none"></div>
           <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
+ 
           <div class="text-center mb-8 relative z-10">
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-surface-container-high border border-surface-container-highest mb-4 shadow-lg">
-              <span class="material-symbols-outlined text-4xl text-[#c3f400]">sports_tennis</span>
+              <span class="material-symbols-outlined text-4xl text-[#10B981]">sports_tennis</span>
             </div>
-            <h1 class="text-3xl font-black text-on-surface tracking-tight">Cancha<span class="text-[#c3f400]">OS</span></h1>
+            <h1 class="text-3xl font-black text-on-surface tracking-tight">Cancha<span class="text-[#10B981]">Control</span></h1>
             <p class="text-on-surface-variant mt-2 text-sm font-medium">Acceso seguro al sistema</p>
           </div>
-
+ 
           <div id="loginError" class="hidden mb-4 p-3 rounded-lg text-sm font-medium" style="background:rgba(255,180,171,.15);color:#ffb4ab;border:1px solid rgba(255,180,171,.3)"></div>
-
+ 
           <div class="space-y-5 relative z-10">
             <div>
               <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Correo Electrónico</label>
               <div class="relative">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" style="font-size: 20px;">mail</span>
-                <input id="loginEmail" type="email" placeholder="admin@canchaos.com" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg pl-10 pr-4 py-3 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
+                <input id="loginEmail" type="email" placeholder="admin@canchacontrol.com" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg pl-10 pr-4 py-3 text-sm text-on-surface focus:outline-none focus:border-[#10B981] transition-colors" />
               </div>
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Contraseña</label>
               <div class="relative">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" style="font-size: 20px;">lock</span>
-                <input id="loginPassword" type="password" placeholder="••••••••" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg pl-10 pr-4 py-3 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors" />
+                <input id="loginPassword" type="password" placeholder="••••••••" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg pl-10 pr-4 py-3 text-sm text-on-surface focus:outline-none focus:border-[#10B981] transition-colors" />
               </div>
             </div>
-
+ 
             ${isLocalhost ? `
             <div class="pt-2 border-t border-surface-container-highest mt-6">
-              <label class="block text-xs font-bold text-[#c3f400] uppercase tracking-wider mb-2 flex items-center gap-1">
+              <label class="block text-xs font-bold text-[#10B981] uppercase tracking-wider mb-2 flex items-center gap-1">
                 <span class="material-symbols-outlined" style="font-size: 14px;">developer_mode</span>
                 Modo desarrollo (sin auth real) — SOLO LOCAL
               </label>
-              <select id="loginRoleMock" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-[#c3f400] transition-colors cursor-pointer outline-none">
+              <select id="loginRoleMock" class="w-full bg-surface-container-high border border-surface-container-highest rounded-lg px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-[#10B981] transition-colors cursor-pointer outline-none">
                 <option value="dueño">👑 Dueño (Acceso Total)</option>
                 <option value="encargado">💼 Encargado</option>
                 <option value="empleado">👨‍💻 Empleado</option>
@@ -76,8 +76,8 @@ const LoginView = {
               </button>
             </div>
             ` : ''}
-
-            <button onclick="LoginView.loginReal()" class="w-full mt-4 py-3 rounded-lg font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] transition-all shadow-lg shadow-[#c3f400]/20 flex items-center justify-center gap-2">
+ 
+            <button onclick="LoginView.loginReal()" class="w-full mt-4 py-3 rounded-lg font-bold bg-[#10B981] text-[#0B0F19] hover:bg-[#34d399] transition-all shadow-lg shadow-[#10B981]/20 flex items-center justify-center gap-2">
               Ingresar al Sistema
               <span class="material-symbols-outlined" style="font-size: 20px;">login</span>
             </button>

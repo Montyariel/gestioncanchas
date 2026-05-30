@@ -704,15 +704,16 @@ const DB = {
     }
   },
 
-  async confirmarAsistenciaPartido({ turnoId, nombre, telefono, equipo }) {
+  async confirmarAsistenciaPartido({ turnoId, nombre, apellido, telefono, equipo }) {
     try {
       if (!navigator.onLine) throw new Error('Offline');
       const telFormateado = fmt.phone(telefono);
+      const nombreCompleto = `${nombre} ${apellido || ''}`.trim();
       
       // 1. Insertar en partido_asistentes
       const { error } = await db.from('partido_asistentes').insert([{
         turno_id: turnoId,
-        nombre,
+        nombre: nombreCompleto,
         telefono: telFormateado,
         equipo
       }]);
@@ -721,13 +722,14 @@ const DB = {
       // 2. Registrar/actualizar jugador en CRM general
       await this.registrarJugador({
         nombre,
+        apellido: apellido || null,
         telefono: telFormateado
       });
 
       return true;
     } catch (e) {
       if (this.isOffline(e)) {
-        return OfflineManager.enqueue('confirmarAsistenciaPartido', [{ turnoId, nombre, telefono, equipo }]);
+        return OfflineManager.enqueue('confirmarAsistenciaPartido', [{ turnoId, nombre, apellido, telefono, equipo }]);
       }
       throw e;
     }

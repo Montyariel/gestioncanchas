@@ -410,7 +410,7 @@ const NicoAgent = {
       const ganador = reporte.financiero.comparativa?.ganadorSemana || '—';
       const totalSistema = reporte.financiero.comparativa?.totalSistema || 0;
 
-      const resumen = `📊 RESUMEN SEMANAL — CanchaOS\n${'═'.repeat(28)}\n` +
+      const resumen = `📊 RESUMEN SEMANAL — CanchaControl\n${'═'.repeat(28)}\n` +
         `🏆 Ganador de la semana: ${ganador}\n` +
         `💵 Total sistema: ${fmt.money(totalSistema)}\n\n` +
         `🏟️ LANÚS: ${fmt.money(lanus?.netoTotal || 0)}\n` +
@@ -557,9 +557,9 @@ const NicoPanel = {
 
     if (!alerts.length) {
       container.innerHTML = `
-        <div style="text-align:center;padding:32px 16px;color:#8e9379">
+        <div style="text-align:center;padding:32px 16px;color:#6b7280">
           <div style="font-size:36px;margin-bottom:10px">✅</div>
-          <div style="font-size:14px;font-weight:600;color:#c4c9ac">Todo bajo control</div>
+          <div style="font-size:14px;font-weight:600;color:#d1d5db">Todo bajo control</div>
           <div style="font-size:12px;margin-top:4px">Nico está monitoreando en tiempo real</div>
         </div>`;
       return;
@@ -568,7 +568,7 @@ const NicoPanel = {
     const prioColors = {
       critical: { bg: 'rgba(255,180,171,.1)', border: '#ffb4ab', text: '#ffb4ab' },
       warning: { bg: 'rgba(245,158,11,.1)', border: '#f59e0b', text: '#f59e0b' },
-      festivo: { bg: 'rgba(195,244,0,.08)', border: '#c3f400', text: '#c3f400' },
+      festivo: { bg: 'rgba(16,185,129,.08)', border: '#10B981', text: '#10B981' },
       info: { bg: 'rgba(189,244,255,.08)', border: '#bdf4ff', text: '#bdf4ff' },
     };
 
@@ -580,7 +580,7 @@ const NicoPanel = {
       let accionBtn = '';
       if (a.accion) {
         accionBtn = `<button onclick="App.navigate('${a.accion.vista}'); NicoPanel.toggle();"
-          style="margin-top:8px;padding:5px 12px;border-radius:6px;background:${c.text};color:#161e00;font-size:11px;font-weight:700;cursor:pointer;border:none">
+          style="margin-top:8px;padding:5px 12px;border-radius:6px;background:${c.text};color:#0B0F19;font-size:11px;font-weight:700;cursor:pointer;border:none">
           ${a.accion.label} →
         </button>`;
       }
@@ -589,9 +589,9 @@ const NicoPanel = {
       let cumpleLinks = '';
       if (a.tipo === 'cumpleanios' && a.cumpleaneros?.length) {
         cumpleLinks = a.cumpleaneros.slice(0, 3).map(c =>
-          `<a href="https://wa.me/?text=${encodeURIComponent(`¡Hola ${c.cliente_nombre}! ⚽ Acá Nico de CanchaOS. ¡Muy feliz cumpleaños crack! 🎂 Tenés un Gatorade gratis o un 10% OFF en tu próxima reserva. ¡Avisame cuándo venís!`)}"
+          `<a href="https://wa.me/?text=${encodeURIComponent(`¡Hola ${c.cliente_nombre}! ⚽ Acá Nico de CanchaControl. ¡Muy feliz cumpleaños crack! 🎂 Tenés un Gatorade gratis o un 10% OFF en tu próxima reserva. ¡Avisame cuándo venís!`)}"
             target="_blank"
-            style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:4px 10px;border-radius:6px;background:rgba(195,244,0,.15);color:#c3f400;font-size:11px;font-weight:700;text-decoration:none">
+            style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:4px 10px;border-radius:6px;background:rgba(16,185,129,.15);color:#10B981;font-size:11px;font-weight:700;text-decoration:none">
             📱 WA ${c.cliente_nombre}
           </a>`
         ).join(' ');
@@ -601,9 +601,9 @@ const NicoPanel = {
         <div style="background:${c.bg};border:1px solid ${c.border};border-radius:10px;padding:12px 14px;margin-bottom:8px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
             <span style="font-size:13px;font-weight:700;color:${c.text}">${a.icono} ${a.titulo}</span>
-            <span style="font-size:10px;color:#8e9379">${time}</span>
+            <span style="font-size:10px;color:#6b7280">${time}</span>
           </div>
-          <div style="font-size:12px;color:#c4c9ac;line-height:1.6">${detailSafe}</div>
+          <div style="font-size:12px;color:#cbd5e1;line-height:1.6">${detailSafe}</div>
           ${cumpleLinks}
           ${accionBtn}
         </div>`;

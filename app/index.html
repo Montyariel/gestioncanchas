@@ -22,16 +22,16 @@
     };
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CanchaOS — Sistema de Gestión Deportiva</title>
-  <meta name="description" content="CanchaOS: gestión de canchas de fútbol y pádel. Reservas, stock y finanzas en tiempo real."/>
+  <title>CanchaControl — Sistema de Gestión Deportiva</title>
+  <meta name="description" content="CanchaControl: gestión de canchas de fútbol y pádel. Reservas, stock y finanzas en tiempo real."/>
   
   <!-- PWA & Mobile Optimization -->
   <link rel="manifest" href="./manifest.json"/>
-  <meta name="theme-color" content="#111319"/>
+  <meta name="theme-color" content="#0B0F19"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="CanchaOS"/>
+  <meta name="apple-mobile-web-app-title" content="CanchaControl"/>
   <link rel="apple-touch-icon" href="./img/pwa-icon-192.png"/>
 
   <!-- Material Symbols -->
@@ -50,41 +50,41 @@
           colors: {
             "on-tertiary": "#2b303d",
             "surface-container-lowest": "#0c0e14",
-            "surface-container-low": "#191b22",
+            "surface-container-low": "#111625",
             "primary": "#ffffff",
-            "surface-tint": "#abd600",
-            "surface-dim": "#111319",
-            "surface-container": "#1e1f26",
-            "primary-fixed-dim": "#abd600",
+            "surface-tint": "#059669",
+            "surface-dim": "#0B0F19",
+            "surface-container": "#111827",
+            "primary-fixed-dim": "#059669",
             "secondary-container": "#00e3fd",
             "on-error-container": "#ffdad6",
             "inverse-surface": "#e2e2eb",
-            "surface-bright": "#373940",
-            "surface": "#111319",
-            "surface-container-highest": "#33343b",
+            "surface-bright": "#1f2937",
+            "surface": "#0B0F19",
+            "surface-container-highest": "#1f2937",
             "on-background": "#e2e2eb",
-            "outline": "#8e9379",
-            "on-surface-variant": "#c4c9ac",
+            "outline": "#6b7280",
+            "on-surface-variant": "#d1d5db",
             "error-container": "#93000a",
             "on-secondary-container": "#00616d",
             "secondary-fixed-dim": "#00daf3",
-            "background": "#111319",
+            "background": "#0B0F19",
             "error": "#ffb4ab",
-            "on-primary-container": "#556d00",
-            "outline-variant": "#444933",
-            "primary-container": "#c3f400",
-            "inverse-primary": "#506600",
+            "on-primary-container": "#ffffff",
+            "outline-variant": "#1e293b",
+            "primary-container": "#10B981",
+            "inverse-primary": "#064e3b",
             "secondary-fixed": "#9cf0ff",
-            "primary-fixed": "#c3f400",
+            "primary-fixed": "#10B981",
             "on-secondary": "#00363d",
             "secondary": "#bdf4ff",
-            "surface-container-high": "#282a30",
+            "surface-container-high": "#111827",
             "on-surface": "#e2e2eb",
-            "surface-variant": "#33343b",
+            "surface-variant": "#1f2937",
             "tertiary-fixed": "#dee2f3",
-            "on-primary-fixed": "#161e00",
+            "on-primary-fixed": "#0B0F19",
             "tertiary": "#ffffff",
-            "on-primary": "#283500"
+            "on-primary": "#064e3b"
           },
           borderRadius: {
             DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"
@@ -111,31 +111,31 @@
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     .icon-fill { font-variation-settings: 'FILL' 1; }
     /* Loader */
-    .co-loader { position:fixed;inset:0;background:#111319;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s,visibility .5s; }
+    .co-loader { position:fixed;inset:0;background:#0B0F19;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s,visibility .5s; }
     .co-loader.hidden { opacity:0;visibility:hidden;pointer-events:none; }
     @keyframes spin { to { stroke-dashoffset: -176; } }
     .loader-ring { animation: spin 1.2s linear infinite; transform-origin: center; }
     /* Toast */
     .toast-container { position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px; }
-    .toast { background:#1e1f26;border:1px solid #444933;border-radius:14px;padding:14px 18px;min-width:280px;max-width:360px;display:flex;align-items:center;gap:12px;font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:slideIn .3s ease;color:#e2e2eb; }
-    .toast--success { border-left:4px solid #c3f400; }
+    .toast { background:#111827;border:1px solid #1e293b;border-radius:14px;padding:14px 18px;min-width:280px;max-width:360px;display:flex;align-items:center;gap:12px;font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:slideIn .3s ease;color:#e2e2eb; }
+    .toast--success { border-left:4px solid #10B981; }
     .toast--error   { border-left:4px solid #ffb4ab; }
     .toast--info    { border-left:4px solid #bdf4ff; }
     @keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:none;opacity:1} }
     /* Modal overlay */
     .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:all .2s cubic-bezier(.4,0,.2,1); }
     .modal-overlay.open { opacity:1;visibility:visible; }
-    .co-modal { background:#1e1f26;border:1px solid #444933;border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,0.5);transform:translateY(16px) scale(.97);transition:transform .2s cubic-bezier(.4,0,.2,1); }
+    .co-modal { background:#111827;border:1px solid #1e293b;border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,0.5);transform:translateY(16px) scale(.97);transition:transform .2s cubic-bezier(.4,0,.2,1); }
     .modal-overlay.open .co-modal { transform:none; }
     /* Skeleton */
-    .skeleton { background:linear-gradient(90deg,#1e1f26 25%,#282a30 50%,#1e1f26 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:10px; }
+    .skeleton { background:linear-gradient(90deg,#111827 25%,#1f2937 50%,#111827 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:10px; }
     @keyframes shimmer { 0%{background-position:200% 0}100%{background-position:-200% 0} }
     /* Scrollbar */
     ::-webkit-scrollbar { width:5px;height:5px; }
     ::-webkit-scrollbar-track { background:transparent; }
-    ::-webkit-scrollbar-thumb { background:#444933;border-radius:10px; }
+    ::-webkit-scrollbar-thumb { background:#1e293b;border-radius:10px; }
     /* Nav active */
-    .nav-active { background:rgba(195,244,0,.1);color:#c3f400;border-right:4px solid #c3f400;font-weight:700; }
+    .nav-active { background:rgba(16,185,129,.1);color:#10B981;border-right:4px solid #10B981;font-weight:700; }
     /* Sidebar mobile */
     #sidebar { transition: transform .3s cubic-bezier(.4,0,.2,1); }
     #sidebar.open { transform: translateX(0) !important; }
@@ -147,28 +147,28 @@
 
   <!-- LOADER -->
   <div class="co-loader" id="loader">
-    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;color:#c3f400">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;color:#10B981">
       <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-        <circle cx="30" cy="30" r="28" stroke="#c3f400" stroke-width="2" stroke-dasharray="88 88" class="loader-ring"/>
-        <text x="50%" y="54%" text-anchor="middle" fill="#c3f400" font-size="16" font-family="Lexend" font-weight="700">CO</text>
+        <circle cx="30" cy="30" r="28" stroke="#10B981" stroke-width="2" stroke-dasharray="88 88" class="loader-ring"/>
+        <text x="50%" y="54%" text-anchor="middle" fill="#10B981" font-size="16" font-family="Lexend" font-weight="700">CC</text>
       </svg>
-      <span style="font-size:13px;font-weight:600;letter-spacing:1px">CanchaOS cargando...</span>
+      <span style="font-size:13px;font-weight:600;letter-spacing:1px">CanchaControl cargando...</span>
     </div>
   </div>
 
   <!-- ===== SIDEBAR ===== -->
-  <nav id="sidebar" class="bg-slate-900 text-lime-400 h-screen w-64 fixed left-0 top-0 border-r border-slate-800 shadow-[4px_0_24px_rgba(0,0,0,0.3)] flex flex-col py-6 z-50 -translate-x-full md:translate-x-0">
+  <nav id="sidebar" class="bg-slate-900 text-[#10B981] h-screen w-64 fixed left-0 top-0 border-r border-slate-800 shadow-[4px_0_24px_rgba(0,0,0,0.3)] flex flex-col py-6 z-50 -translate-x-full md:translate-x-0">
 
     <!-- Header / Brand -->
     <div class="px-6 mb-8 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div style="width:40px;height:40px;background:#c3f400;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">⚽</div>
+        <div style="width:40px;height:40px;background:#10B981;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">⚽</div>
         <div>
-          <h2 class="text-lime-400 font-bold leading-none" style="font-size:19px">CanchaOS</h2>
+          <h2 class="text-[#10B981] font-bold leading-none" style="font-size:19px">CanchaControl</h2>
           <p class="text-slate-400 mt-1" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">Sistema Deportivo</p>
         </div>
       </div>
-      <button id="sidebarClose" class="md:hidden text-slate-400 hover:text-lime-300">
+      <button id="sidebarClose" class="md:hidden text-slate-400 hover:text-emerald-400">
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
@@ -177,14 +177,14 @@
     <div class="px-6 mb-6">
       <p class="text-slate-500 mb-2" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">Sede activa</p>
       <div class="flex gap-2">
-        <button id="btnLanus" data-sucursal="lanus" class="flex-1 py-2 rounded-lg text-xs font-bold border transition-all" style="background:rgba(195,244,0,.1);color:#c3f400;border-color:#c3f400">🏟️ Lanús</button>
+        <button id="btnLanus" data-sucursal="lanus" class="flex-1 py-2 rounded-lg text-xs font-bold border transition-all" style="background:rgba(16,185,129,.1);color:#10B981;border-color:#10B981">🏟️ Lanús</button>
         <button id="btnBelgrano" data-sucursal="belgrano" style="display: none;">🏟️ Belgrano</button>
       </div>
     </div>
 
     <!-- CTA -->
     <div class="px-6 mb-6">
-      <button id="nuevaReservaBtn" class="w-full py-3 rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm" style="background:#c3f400;color:#161e00">
+      <button id="nuevaReservaBtn" class="w-full py-3 rounded-lg font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm" style="background:#10B981;color:#0B0F19">
         <span class="material-symbols-outlined icon-fill" style="font-size:20px">add_circle</span>
         Nueva Reserva
       </button>
@@ -195,7 +195,7 @@
       <p class="text-slate-600 px-4 mb-2" style="font-size:10px;letter-spacing:.15em;text-transform:uppercase">Principal</p>
       <ul class="space-y-1 mb-4">
         <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="dashboard" id="nav-dashboard"><span class="material-symbols-outlined" style="font-size:20px">dashboard</span><span>Dashboard</span></a></li>
-        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="canchas" id="nav-canchas"><span class="material-symbols-outlined" style="font-size:20px">sports_soccer</span><span>Canchas</span><span id="badge-canchas" class="ml-auto text-xs bg-lime-400/20 text-lime-400 px-2 py-0.5 rounded-full" style="display:none">0</span></a></li>
+        <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="canchas" id="nav-canchas"><span class="material-symbols-outlined" style="font-size:20px">sports_soccer</span><span>Canchas</span><span id="badge-canchas" class="ml-auto text-xs bg-[#10B981]/20 text-[#10B981] px-2 py-0.5 rounded-full" style="display:none">0</span></a></li>
         <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="agenda" id="nav-agenda"><span class="material-symbols-outlined" style="font-size:20px">calendar_month</span><span>Agenda</span></a></li>
         <li><a href="#" class="nav-item flex items-center gap-4 px-4 py-3 rounded-l-lg transition-all duration-200 text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-view="reservas" id="nav-reservas"><span class="material-symbols-outlined" style="font-size:20px">bookmark_added</span><span>Reservas</span></a></li>
       </ul>
@@ -221,7 +221,7 @@
     <!-- Footer -->
     <div class="px-4 mt-4 border-t border-slate-800 pt-4">
       <div class="flex items-center gap-2 px-4 py-2">
-        <div class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></div>
+        <div class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></div>
         <span class="text-slate-500 text-xs">Conectado a Supabase</span>
       </div>
     </div>
@@ -233,27 +233,27 @@
     <!-- TOP BAR -->
     <header class="bg-slate-950/80 backdrop-blur-md border-b border-slate-800 shadow-2xl shadow-slate-950/50 sticky top-0 z-40 flex justify-between items-center px-6 h-16 w-full">
       <div class="flex items-center gap-4">
-        <button id="menuBtn" class="md:hidden text-slate-400 hover:text-lime-300 transition-colors">
+        <button id="menuBtn" class="md:hidden text-slate-400 hover:text-[#10B981] transition-colors">
           <span class="material-symbols-outlined">menu</span>
         </button>
         <!-- Breadcrumb -->
         <div class="flex items-center gap-2 text-sm text-slate-400">
-          <span id="currentSucursalLabel" class="text-lime-400 font-bold">🏟️ Lanús</span>
+          <span id="currentSucursalLabel" class="text-[#10B981] font-bold">🏟️ Lanús</span>
           <span class="material-symbols-outlined text-slate-600" style="font-size:16px">chevron_right</span>
           <span id="currentViewLabel" class="text-slate-200 font-semibold">Dashboard</span>
         </div>
       </div>
       <div class="flex items-center gap-3">
         <!-- Weather Widget (Tiempo real Lanús) -->
-        <div id="weatherWidget" class="hidden items-center gap-2 bg-slate-900/60 border border-slate-800 rounded-xl px-3 py-1.5 shadow-lg text-slate-300 transition-all hover:border-lime-500/50 cursor-pointer relative animate-in fade-in zoom-in-95 duration-500" title="Clima en Lanús"></div>
+        <div id="weatherWidget" class="hidden items-center gap-2 bg-slate-900/60 border border-slate-800 rounded-xl px-3 py-1.5 shadow-lg text-slate-300 transition-all hover:border-[#10B981]/50 cursor-pointer relative animate-in fade-in zoom-in-95 duration-500" title="Clima en Lanús"></div>
         <div id="topbarTime" class="text-slate-400 text-sm font-semibold hidden sm:block"></div>
-        <button id="refreshBtn" class="text-slate-400 hover:text-lime-300 transition-colors w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-800">
+        <button id="refreshBtn" class="text-slate-400 hover:text-[#10B981] transition-colors w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-800">
           <span class="material-symbols-outlined" style="font-size:20px">refresh</span>
         </button>
-        <button class="text-slate-400 hover:text-lime-300 transition-colors w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-800" onclick="if(typeof LoginView!=='undefined') LoginView.logout()" title="Cerrar Sesión">
+        <button class="text-slate-400 hover:text-[#10B981] transition-colors w-9 h-9 rounded-full flex items-center justify-center hover:bg-slate-800" onclick="if(typeof LoginView!=='undefined') LoginView.logout()" title="Cerrar Sesión">
           <span class="material-symbols-outlined" style="font-size:20px">logout</span>
         </button>
-        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background:#c3f400;color:#161e00" id="userNameDisplay">A</div>
+        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background:#10B981;color:#0B0F19" id="userNameDisplay">A</div>
       </div>
     </header>
 
@@ -266,23 +266,23 @@
   <!-- ===== MODAL RESERVA ===== -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="co-modal" id="modalReserva">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #444933">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid #1e293b">
         <h2 style="font-size:18px;font-weight:800;color:#e2e2eb">Nueva Reserva</h2>
-        <button id="modalClose" style="color:#8e9379;padding:6px;border-radius:8px;transition:.2s" onmouseenter="this.style.color='#e2e2eb'" onmouseleave="this.style.color='#8e9379'">
+        <button id="modalClose" style="color:#6b7280;padding:6px;border-radius:8px;transition:.2s" onmouseenter="this.style.color='#e2e2eb'" onmouseleave="this.style.color='#6b7280'">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>
-      <div style="display:flex;align-items:center;padding:14px 24px;gap:8px;border-bottom:1px solid #444933">
-        <div class="step active" id="step1-indicator" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#c3f400">
-          <span style="width:26px;height:26px;border-radius:50%;border:2px solid #c3f400;background:rgba(195,244,0,.1);display:flex;align-items:center;justify-content:center;font-size:12px">1</span>Turno
+      <div style="display:flex;align-items:center;padding:14px 24px;gap:8px;border-bottom:1px solid #1e293b">
+        <div class="step active" id="step1-indicator" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#10B981">
+          <span style="width:26px;height:26px;border-radius:50%;border:2px solid #10B981;background:rgba(16,185,129,.1);display:flex;align-items:center;justify-content:center;font-size:12px">1</span>Turno
         </div>
-        <div style="flex:1;height:2px;background:#444933;border-radius:2px"></div>
-        <div class="step" id="step2-indicator" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#8e9379">
-          <span style="width:26px;height:26px;border-radius:50%;border:2px solid #444933;display:flex;align-items:center;justify-content:center;font-size:12px">2</span>Cliente
+        <div style="flex:1;height:2px;background:#1e293b;border-radius:2px"></div>
+        <div class="step" id="step2-indicator" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#6b7280">
+          <span style="width:26px;height:26px;border-radius:50%;border:2px solid #1e293b;display:flex;align-items:center;justify-content:center;font-size:12px">2</span>Cliente
         </div>
-        <div style="flex:1;height:2px;background:#444933;border-radius:2px"></div>
-        <div class="step" id="step3-indicator" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#8e9379">
-          <span style="width:26px;height:26px;border-radius:50%;border:2px solid #444933;display:flex;align-items:center;justify-content:center;font-size:12px">3</span>Pago
+        <div style="flex:1;height:2px;background:#1e293b;border-radius:2px"></div>
+        <div class="step" id="step3-indicator" style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#6b7280">
+          <span style="width:26px;height:26px;border-radius:50%;border:2px solid #1e293b;display:flex;align-items:center;justify-content:center;font-size:12px">3</span>Pago
         </div>
       </div>
       <div id="modalBody" style="padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:16px"></div>
@@ -296,28 +296,28 @@
   <div id="nico-panel" class="fixed bottom-28 right-6 w-80 md:w-96 hidden opacity-0 translate-y-4 z-50 transition-all duration-300">
     <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
       <!-- Header -->
-      <div class="px-4 py-3 border-b border-slate-800 flex items-center justify-between" style="background:linear-gradient(135deg,#1e1f26,#111319)">
+      <div class="px-4 py-3 border-b border-slate-800 flex items-center justify-between" style="background:linear-gradient(135deg,#111827,#0B0F19)">
         <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background:#c3f400;color:#161e00">N</div>
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm" style="background:#10B981;color:#0B0F19">N</div>
           <div>
-            <div class="text-lime-400 font-bold text-sm">Nico — Panel de Control</div>
+            <div class="text-[#10B981] font-bold text-sm">Nico — Panel de Control</div>
             <div class="text-slate-500 text-xs">Alertas y monitoreo 24/7</div>
           </div>
         </div>
         <div class="flex items-center gap-2">
           <button id="nico-run-checks" onclick="NicoAgent._runStartupChecks().then(()=>NicoPanel.refresh())" title="Actualizar"
-            class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-lime-400 hover:bg-slate-800 transition-all">
+            class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-[#10B981] hover:bg-slate-800 transition-all">
             <span class="material-symbols-outlined" style="font-size:16px">refresh</span>
           </button>
-          <button onclick="NicoPanel.toggle()" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-lime-400 hover:bg-slate-800 transition-all">
+          <button onclick="NicoPanel.toggle()" class="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-[#10B981] hover:bg-slate-800 transition-all">
             <span class="material-symbols-outlined" style="font-size:16px">close</span>
           </button>
         </div>
       </div>
       <!-- Status Bar -->
-      <div class="px-4 py-2 flex items-center gap-3" style="background:#111319;border-bottom:1px solid #1e1f26">
+      <div class="px-4 py-2 flex items-center gap-3" style="background:#0B0F19;border-bottom:1px solid #111827">
         <div class="flex items-center gap-1.5">
-          <div class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></div>
+          <div class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></div>
           <span class="text-slate-400" style="font-size:11px">Agente activo</span>
         </div>
         <div class="flex-1"></div>
@@ -325,17 +325,17 @@
       </div>
       <!-- Alerts Body -->
       <div id="nico-panel-body" class="p-3 overflow-y-auto" style="max-height:340px">
-        <div style="text-align:center;padding:32px 16px;color:#8e9379">
+        <div style="text-align:center;padding:32px 16px;color:#6b7280">
           <div style="font-size:30px;margin-bottom:8px">🤖</div>
-          <div style="font-size:13px;font-weight:600;color:#c4c9ac">Iniciando Nico Agent...</div>
+          <div style="font-size:13px;font-weight:600;color:#d1d5db">Iniciando Nico Agent...</div>
         </div>
       </div>
       <!-- Footer -->
-      <div class="px-4 py-3 border-t border-slate-800 flex gap-2" style="background:#111319">
-        <button onclick="NicoAgent.checkCumpleanios(); NicoPanel.refresh();" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-lime-400 hover:text-lime-400 transition-all">🎂 Cumples</button>
-        <button onclick="NicoAgent.checkStockCritico(); NicoPanel.refresh();" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-lime-400 hover:text-lime-400 transition-all">📦 Stock</button>
-        <button onclick="NicoAgent.checkPagosPendientes(); NicoPanel.refresh();" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-lime-400 hover:text-lime-400 transition-all">💳 Pagos</button>
-        <button onclick="NicoAgent.cierreCaja(); NicoPanel.refresh();" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-lime-400 hover:text-lime-400 transition-all">📊 Cierre</button>
+      <div class="px-4 py-3 border-t border-slate-800 flex gap-2" style="background:#0B0F19">
+        <button onclick="NicoAgent.checkCumpleanios(); NicoPanel.refresh();" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-[#10B981] hover:text-[#10B981] transition-all">🎂 Cumples</button>
+        <button onclick="NicoAgent.checkStockCritico(); NicoPanel.refresh();" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-[#10B981] hover:text-[#10B981] transition-all">📦 Stock</button>
+        <button onclick="NicoAgent.checkPagosPendientes(); NicoPanel.refresh();" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-[#10B981] hover:text-[#10B981] transition-all">💳 Pagos</button>
+        <button onclick="NicoAgent.cierreCaja(); NicoPanel.refresh();" class="flex-1 py-2 rounded-lg text-xs font-bold border border-slate-700 text-slate-400 hover:border-[#10B981] hover:text-[#10B981] transition-all">📊 Cierre</button>
       </div>
     </div>
   </div>
@@ -343,12 +343,12 @@
   <!-- ===== NICO AI CHAT ===== -->
   <div class="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-50">
     <!-- Botón Panel Alertas -->
-    <button id="nico-panel-toggle" onclick="NicoPanel.toggle()" class="w-11 h-11 rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-transform relative" style="background:#1e1f26;border:1.5px solid #444933;color:#c3f400" title="Panel Nico 24/7">
+    <button id="nico-panel-toggle" onclick="NicoPanel.toggle()" class="w-11 h-11 rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-transform relative" style="background:#111827;border:1.5px solid #1e293b;color:#10B981" title="Panel Nico 24/7">
       <span class="material-symbols-outlined" style="font-size:20px">notifications_active</span>
-      <span id="nico-alert-badge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs font-bold items-center justify-content-center" style="display:none;background:#ffb4ab;color:#161e00;font-size:10px;display:flex;align-items:center;justify-content:center">0</span>
+      <span id="nico-alert-badge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs font-bold items-center justify-content-center" style="display:none;background:#ffb4ab;color:#0B0F19;font-size:10px;display:flex;align-items:center;justify-content:center">0</span>
     </button>
     <!-- Botón Chat -->
-    <button id="nicoChatBtn" class="w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform" style="background:#c3f400;color:#161e00">
+    <button id="nicoChatBtn" class="w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform" style="background:#10B981;color:#0B0F19">
       <span class="material-symbols-outlined" style="font-size:28px">smart_toy</span>
     </button>
   </div>
@@ -356,26 +356,26 @@
   <div id="nicoChatWindow" class="fixed bottom-24 right-6 w-80 md:w-96 bg-surface-container-low border border-outline-variant rounded-2xl shadow-2xl z-50 flex flex-col hidden overflow-hidden transition-all duration-300 transform translate-y-4 opacity-0 h-[500px] max-h-[80vh]">
     <div class="bg-slate-900 border-b border-slate-800 p-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl" style="background:#c3f400;color:#161e00">N</div>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl" style="background:#10B981;color:#0B0F19">N</div>
         <div>
-          <h3 class="font-bold text-lime-400 text-sm">Nico AI</h3>
-          <p class="text-xs text-slate-400">Asistente de CanchaOS</p>
+          <h3 class="font-bold text-[#10B981] text-sm">Nico AI</h3>
+          <p class="text-xs text-slate-400">Asistente de CanchaControl</p>
         </div>
       </div>
-      <button id="nicoChatCloseBtn" class="text-slate-400 hover:text-lime-300 transition-colors">
+      <button id="nicoChatCloseBtn" class="text-slate-400 hover:text-emerald-400 transition-colors">
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
     <div id="nicoChatMessages" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3 scroll-smooth">
       <div class="flex flex-col gap-1 items-start">
         <div class="bg-slate-800 text-slate-200 px-4 py-2 rounded-2xl rounded-tl-sm text-sm max-w-[85%] leading-relaxed">
-          ¡Hola crack! ⚽ Soy Nico, tu asistente inteligente. ¿En qué te ayudo hoy? Probá preguntarme por los <strong class="text-lime-400">cumpleañeros</strong>.
+          ¡Hola crack! ⚽ Soy Nico, tu asistente inteligente. ¿En qué te ayudo hoy? Probá preguntarme por los <strong class="text-[#10B981]">cumpleañeros</strong>.
         </div>
       </div>
     </div>
     <div class="p-3 bg-surface border-t border-slate-800 flex gap-2">
-      <input type="text" id="nicoChatInput" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-lime-400 transition-colors" placeholder="Escribile a Nico..." autocomplete="off" onkeypress="if(event.key === 'Enter') document.getElementById('nicoChatSendBtn').click()">
-      <button id="nicoChatSendBtn" class="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-lime-300 transition-colors" style="background:#c3f400;color:#161e00">
+      <input type="text" id="nicoChatInput" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors" placeholder="Escribile a Nico..." autocomplete="off" onkeypress="if(event.key === 'Enter') document.getElementById('nicoChatSendBtn').click()">
+      <button id="nicoChatSendBtn" class="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-emerald-400 transition-colors" style="background:#10B981;color:#0B0F19">
         <span class="material-symbols-outlined" style="font-size:20px">send</span>
       </button>
     </div>

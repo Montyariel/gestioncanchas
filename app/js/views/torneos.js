@@ -30,8 +30,8 @@ const TorneosView = {
         }
         .match-card-3d:hover {
           transform: translateY(-4px) scale(1.02);
-          border-color: #c3f400;
-          box-shadow: 0 15px 30px rgba(195, 244, 0, 0.15), 0 0 15px rgba(195, 244, 0, 0.05);
+          border-color: #10B981;
+          box-shadow: 0 15px 30px rgba(16, 185, 129, 0.15), 0 0 15px rgba(16, 185, 129, 0.05);
         }
         
         /* Active Bracket Connectors */
@@ -43,8 +43,8 @@ const TorneosView = {
           transition: all 0.4s ease;
         }
         .match-card-3d:hover + .bracket-connector-r {
-          border-color: #c3f400;
-          filter: drop-shadow(0 0 4px #c3f400);
+          border-color: #10B981;
+          filter: drop-shadow(0 0 4px #10B981);
         }
         
         /* Trophy Spinning Animation */
@@ -79,12 +79,12 @@ const TorneosView = {
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 class="text-3xl font-black text-slate-100 tracking-tight flex items-center gap-3">
-              <span class="material-symbols-outlined text-[#c3f400]" style="font-size: 32px;">emoji_events</span>
-              Torneos &amp; Ligas CanchaOS
+              <span class="material-symbols-outlined text-[#10B981]" style="font-size: 32px;">emoji_events</span>
+              Torneos &amp; Ligas CanchaControl
             </h1>
             <p class="text-on-surface-variant font-medium mt-1">Gestiona fixture eliminatorios, ligas fijas y el podio de campeones.</p>
           </div>
-          <button class="bg-[#c3f400] text-[#161e00] px-5 py-2.5 rounded-xl font-bold hover:bg-[#d4ff1a] active:scale-95 transition-all flex items-center gap-2 border-none shadow-lg shadow-[#c3f400]/10 cursor-pointer" onclick="App.toast('Módulo de creación próximamente disponible', 'info')">
+          <button class="bg-[#10B981] text-[#0B0F19] px-5 py-2.5 rounded-xl font-bold hover:bg-emerald-400 active:scale-95 transition-all flex items-center gap-2 border-none shadow-lg shadow-[#10B981]/10 cursor-pointer" onclick="App.toast('Módulo de creación próximamente disponible', 'info')">
             <span class="material-symbols-outlined icon-fill">add_circle</span>
             Crear Nuevo Torneo
           </button>
@@ -99,8 +99,8 @@ const TorneosView = {
                 <span class="material-symbols-outlined text-[#ffd700]">trophy</span>
                 Copa de Verano Premium 2026
               </h2>
-              <span class="bg-[#c3f400]/10 text-[#c3f400] border border-[#c3f400]/20 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 led-active">
-                <span class="w-1.5 h-1.5 rounded-full bg-[#c3f400] animate-pulse"></span> Fase Final
+              <span class="bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 led-active">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span> Fase Final
               </span>
             </div>
             
@@ -116,8 +116,8 @@ const TorneosView = {
                   <div class="relative">
                     <div class="match-card-3d rounded-2xl overflow-hidden">
                       <div class="p-3 border-b border-slate-850 flex justify-between items-center bg-slate-950/30">
-                        <span class="font-bold text-slate-200 text-xs flex items-center gap-1.5">Los Pibes FC <span class="text-[#c3f400] font-black">🥇</span></span>
-                        <span class="font-mono text-sm font-black text-[#c3f400]">3</span>
+                        <span class="font-bold text-slate-200 text-xs flex items-center gap-1.5">Los Pibes FC <span class="text-[#10B981] font-black">🥇</span></span>
+                        <span class="font-mono text-sm font-black text-[#10B981]">3</span>
                       </div>
                       <div class="p-3 flex justify-between items-center bg-slate-900/40 opacity-40">
                         <span class="font-medium text-slate-400 text-xs">Real Suciedad</span>
@@ -137,7 +137,7 @@ const TorneosView = {
                       </div>
                       <div class="p-3 flex justify-between items-center bg-slate-950/30">
                         <span class="font-bold text-slate-200 text-xs flex items-center gap-1.5">Deportivo Tapita <span class="text-slate-400 font-bold">🥈</span></span>
-                        <span class="font-mono text-sm font-black text-[#c3f400]">2</span>
+                        <span class="font-mono text-sm font-black text-[#10B981]">2</span>
                       </div>
                     </div>
                     <!-- Connector line to Semis Match 1 -->
@@ -150,22 +150,22 @@ const TorneosView = {
                 <div class="flex flex-col justify-center gap-16 w-60 relative z-10">
                   
                   <!-- Semis Match (Match 3) -->
-                  <div class="match-card-3d rounded-2xl overflow-hidden border border-[#c3f400]/20 shadow-[0_0_20px_rgba(195,244,0,0.08)]">
+                  <div class="match-card-3d rounded-2xl overflow-hidden border border-[#10B981]/20 shadow-[0_0_20px_rgba(16,185,129,0.08)]">
                     <div class="p-3 border-b border-slate-850 flex justify-between items-center bg-slate-950/40">
                       <span class="font-bold text-slate-200 text-xs flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-[#c3f400] animate-pulse"></span>
+                        <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
                         Los Pibes FC
                       </span>
                       <span class="font-mono text-xs text-slate-500">-</span>
                     </div>
                     <div class="p-3 flex justify-between items-center bg-slate-950/40">
                       <span class="font-bold text-slate-200 text-xs flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-[#c3f400] animate-pulse"></span>
+                        <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
                         Deportivo Tapita
                       </span>
                       <span class="font-mono text-xs text-slate-500">-</span>
                     </div>
-                    <div class="bg-[#c3f400]/10 border-t border-slate-800 text-[#c3f400] text-center py-1.5 text-[9px] font-black uppercase tracking-widest font-mono">
+                    <div class="bg-[#10B981]/10 border-t border-slate-800 text-[#10B981] text-center py-1.5 text-[9px] font-black uppercase tracking-widest font-mono">
                       Hoy 21:00 hs · Cancha 1 🏟️
                     </div>
                   </div>
@@ -221,7 +221,7 @@ const TorneosView = {
               </div>
 
               <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest font-mono text-center">
-                🏆 COPA DE VERANO CANCHAOS LEYENDAS
+                🏆 COPA DE VERANO CANCHACONTROL LEYENDAS
               </div>
             </div>
 
@@ -229,7 +229,7 @@ const TorneosView = {
             <div class="bg-slate-900/40 rounded-3xl border border-slate-800 flex flex-col overflow-hidden shadow-xl flex-1 max-h-[300px]">
               <div class="p-5 border-b border-slate-800 bg-slate-950/20">
                 <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[#c3f400]" style="font-size:18px;">format_list_numbered</span>
+                  <span class="material-symbols-outlined text-[#10B981]" style="font-size:18px;">format_list_numbered</span>
                   Tabla General de Posiciones
                 </h3>
               </div>
@@ -243,10 +243,10 @@ const TorneosView = {
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-slate-850 text-slate-300">
-                    <tr class="bg-[#c3f400]/5 font-semibold text-slate-200">
-                      <td class="py-3 px-4 text-center font-black text-[#c3f400] font-mono text-sm">1</td>
+                    <tr class="bg-[#10B981]/5 font-semibold text-slate-200">
+                      <td class="py-3 px-4 text-center font-black text-[#10B981] font-mono text-sm">1</td>
                       <td class="py-3 px-4 font-bold flex items-center gap-1.5">Los Pibes FC <span class="text-[10px]" title="Clasificado a playoffs">🔥</span></td>
-                      <td class="py-3 px-4 text-center font-black text-[#c3f400] font-mono text-sm">15</td>
+                      <td class="py-3 px-4 text-center font-black text-[#10B981] font-mono text-sm">15</td>
                     </tr>
                     <tr class="hover:bg-slate-800/10 transition-colors">
                       <td class="py-3 px-4 text-center font-bold text-slate-400 font-mono text-xs">2</td>

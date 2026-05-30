@@ -27,7 +27,7 @@ const DashboardView = {
             100% { background-position: 0% 50%; }
         }
         .glow-banner {
-            background: linear-gradient(135deg, #161a24, #262e3d, #111319);
+            background: linear-gradient(135deg, #0B0F19, #1f2937, #111827);
             background-size: 200% 200%;
             animation: gradientMove 8s ease infinite;
         }
@@ -36,8 +36,8 @@ const DashboardView = {
         }
         .glow-card:hover {
             transform: translateY(-5px);
-            border-color: rgba(195, 244, 0, 0.3) !important;
-            box-shadow: 0 16px 36px -12px rgba(195, 244, 0, 0.18);
+            border-color: rgba(16, 185, 129, 0.3) !important;
+            box-shadow: 0 16px 36px -12px rgba(16, 185, 129, 0.18);
         }
         .glow-card-blue:hover {
             transform: translateY(-5px);
@@ -92,14 +92,14 @@ const DashboardView = {
         <div class="glow-banner rounded-3xl p-8 relative overflow-hidden border border-slate-800/80 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div class="relative z-10 space-y-1.5">
             <div class="flex items-center gap-2">
-              <span class="text-xs bg-[#c3f400]/15 text-[#c3f400] px-2.5 py-1 rounded-full font-black uppercase tracking-wider">MODO GURÚ ACTIVO 🧠</span>
-              <span class="w-1.5 h-1.5 rounded-full bg-[#c3f400] animate-pulse"></span>
+              <span class="text-xs bg-[#10B981]/15 text-[#10B981] px-2.5 py-1 rounded-full font-black uppercase tracking-wider">MODO GURÚ ACTIVO 🧠</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></span>
             </div>
             <h1 class="font-h1 text-3xl md:text-4xl font-black text-white tracking-tight flex items-center gap-2">¡Qué hacés, Ariel crack! 👋</h1>
             <p class="text-slate-400 text-xs md:text-sm font-medium">El estadio de ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'} está listo. Hoy es <strong class="text-white">${dayName}</strong></p>
           </div>
-          <div class="hidden lg:block absolute right-0 top-0 bottom-0 w-1/4 bg-gradient-to-l from-[#c3f400]/5 to-transparent pointer-events-none"></div>
-          <button onclick="App.navigate('agenda')" class="relative z-10 py-3.5 px-6 rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 active:scale-95 flex items-center gap-2 shrink-0 shadow-lg shadow-[#c3f400]/10 cursor-pointer border-none" style="background:#c3f400;color:#161e00">
+          <div class="hidden lg:block absolute right-0 top-0 bottom-0 w-1/4 bg-gradient-to-l from-[#10B981]/5 to-transparent pointer-events-none"></div>
+          <button onclick="App.navigate('agenda')" class="relative z-10 py-3.5 px-6 rounded-2xl font-black text-xs uppercase tracking-wider transition-all hover:scale-105 active:scale-95 flex items-center gap-2 shrink-0 shadow-lg shadow-[#10B981]/10 cursor-pointer border-none" style="background:#10B981;color:#0B0F19">
             <span class="material-symbols-outlined text-sm font-bold">calendar_month</span>
             Abrir Agenda Semanal
           </button>
@@ -144,19 +144,19 @@ const DashboardView = {
       // Inyectar Métricas Principales con efectos hover
       document.getElementById('metricsGrid').innerHTML = `
         <!-- Card Canchas -->
-        <div class="glow-card bg-[#111319]/70 rounded-2xl p-5 border border-slate-800/80 shadow-lg">
+        <div class="glow-card bg-[#0B0F19]/70 rounded-2xl p-5 border border-slate-800/80 shadow-lg">
           <div class="flex items-center gap-2.5 mb-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#c3f400]/10 border border-[#c3f400]/20">
-              <span class="material-symbols-outlined text-md font-bold text-[#c3f400]">sports_soccer</span>
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#10B981]/10 border border-[#10B981]/20">
+              <span class="material-symbols-outlined text-md font-bold text-[#10B981]">sports_soccer</span>
             </div>
             <span class="text-[9px] font-black tracking-widest text-slate-500 uppercase">Canchas</span>
           </div>
-          <div class="text-3xl font-black text-[#c3f400] font-stat-number tracking-tighter">${m.canchas}</div>
+          <div class="text-3xl font-black text-[#10B981] font-stat-number tracking-tighter">${m.canchas}</div>
           <p class="text-[10px] text-slate-500 mt-2 font-medium">Complejos en ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}</p>
         </div>
 
         <!-- Card Ocupación -->
-        <div class="glow-card-blue bg-[#111319]/70 rounded-2xl p-5 border border-slate-800/80 shadow-lg">
+        <div class="glow-card-blue bg-[#0B0F19]/70 rounded-2xl p-5 border border-slate-800/80 shadow-lg">
           <div class="flex items-center gap-2.5 mb-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#00daf3]/10 border border-[#00daf3]/20">
               <span class="material-symbols-outlined text-md font-bold text-[#00daf3]">bolt</span>
@@ -170,10 +170,10 @@ const DashboardView = {
         </div>
 
         <!-- Card Ingresos -->
-        <div class="glow-card bg-[#111319]/70 rounded-2xl p-5 border border-slate-800/80 shadow-lg">
+        <div class="glow-card bg-[#0B0F19]/70 rounded-2xl p-5 border border-slate-800/80 shadow-lg">
           <div class="flex items-center gap-2.5 mb-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#c3f400]/10 border border-[#c3f400]/20">
-              <span class="material-symbols-outlined text-md font-bold text-[#c3f400]">payments</span>
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-[#10B981]/10 border border-[#10B981]/20">
+              <span class="material-symbols-outlined text-md font-bold text-[#10B981]">payments</span>
             </div>
             <span class="text-[9px] font-black tracking-widest text-slate-500 uppercase">Ingresos Neto</span>
           </div>
@@ -182,7 +182,7 @@ const DashboardView = {
         </div>
 
         <!-- Card Stock Bajo -->
-        <div class="glow-card-red bg-[#111319]/70 rounded-2xl p-5 border border-slate-800/80 shadow-lg">
+        <div class="glow-card-red bg-[#0B0F19]/70 rounded-2xl p-5 border border-slate-800/80 shadow-lg">
           <div class="flex items-center gap-2.5 mb-3">
             <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-red-500/10 border border-red-500/20">
               <span class="material-symbols-outlined text-md font-bold text-red-400">inventory_2</span>
@@ -211,7 +211,7 @@ const DashboardView = {
       // Bento Layout inferior
       document.getElementById('dashBottom').innerHTML = `
         <!-- WIDGET 1: Canchas Libres & Ocupación en Vivo (8 columnas) -->
-        <div class="col-span-1 lg:col-span-8 bg-[#111319]/65 rounded-3xl p-6 border border-slate-800/80 shadow-xl flex flex-col min-h-0 justify-between">
+        <div class="col-span-1 lg:col-span-8 bg-[#0B0F19]/65 rounded-3xl p-6 border border-slate-800/80 shadow-xl flex flex-col min-h-0 justify-between">
           <div class="flex items-start justify-between mb-4 flex-shrink-0">
             <div>
               <h2 class="text-lg font-black text-white italic flex items-center gap-2 uppercase tracking-tight">🟢 Turnos Disponibles hoy</h2>
@@ -230,7 +230,7 @@ const DashboardView = {
               return `
               <div class="flex items-center justify-between p-3.5 bg-slate-950/30 rounded-2xl border border-slate-800 hover:border-slate-700/80 transition-all duration-300 group">
                 <div class="flex items-center gap-3.5 min-w-0">
-                  <div class="w-11 h-11 rounded-xl bg-[#c3f400]/10 border border-[#c3f400]/20 flex items-center justify-center font-black text-xs text-[#c3f400] shrink-0 group-hover:scale-105 transition-transform duration-300">
+                  <div class="w-11 h-11 rounded-xl bg-[#10B981]/10 border border-[#10B981]/20 flex items-center justify-center font-black text-xs text-[#10B981] shrink-0 group-hover:scale-105 transition-transform duration-300">
                     ${t.hora?.substring(0,5)||'—'}
                   </div>
                   <div class="min-w-0">
@@ -242,7 +242,7 @@ const DashboardView = {
                   </div>
                 </div>
                 <button onclick="App.openReservaModal(${t.id}, '${(t.canchas?.nombre||'Cancha').replace(/'/g,"\\'")}', '${t.hora}', ${precioSlot})"
-                  class="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-fixed text-[10px] font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-md shadow-[#c3f400]/5 flex items-center gap-1 border-none font-body-md">
+                  class="px-4 py-2.5 rounded-xl bg-primary-container text-on-primary-fixed text-[10px] font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-md shadow-[#10B981]/5 flex items-center gap-1 border-none font-body-md">
                   Reservar <span class="material-symbols-outlined text-[10px] font-bold">add</span>
                 </button>
               </div>`;
@@ -256,7 +256,7 @@ const DashboardView = {
         </div>
 
         <!-- WIDGET 2: El Termómetro de Nico (Progreso Circular Animado - 4 columnas) -->
-        <div class="col-span-1 lg:col-span-4 bg-[#111319]/65 rounded-3xl p-6 border border-slate-800/80 shadow-xl flex flex-col items-center justify-between min-h-[360px]">
+        <div class="col-span-1 lg:col-span-4 bg-[#0B0F19]/65 rounded-3xl p-6 border border-slate-800/80 shadow-xl flex flex-col items-center justify-between min-h-[360px]">
           <div class="w-full text-left shrink-0">
             <h3 class="text-sm font-black text-white italic uppercase tracking-wider">🌡️ Termómetro Reservas</h3>
             <p class="text-[10px] text-slate-500 mt-0.5">Estado térmico del complejo hoy</p>
@@ -267,7 +267,7 @@ const DashboardView = {
             <svg class="radial-progress-svg" width="140" height="140" viewBox="0 0 140 140">
               <circle cx="70" cy="70" r="56" fill="transparent" stroke="#1e2029" stroke-width="12"></circle>
               <circle class="radial-circle" cx="70" cy="70" r="56" fill="transparent" 
-                stroke="${m.ocupacion < 40 ? '#f59e0b' : '#c3f400'}" stroke-width="12" 
+                stroke="${m.ocupacion < 40 ? '#f59e0b' : '#10B981'}" stroke-width="12" 
                 stroke-dasharray="351.8" 
                 stroke-dashoffset="${351.8 - (351.8 * m.ocupacion) / 100}"
                 stroke-linecap="round">
@@ -281,7 +281,7 @@ const DashboardView = {
 
           <!-- Nico Comentando el Termómetro -->
           <div class="w-full bg-[#0c0e14]/50 border border-slate-800 rounded-2xl p-3.5 text-center shrink-0">
-            <p class="text-[10px] font-black text-[#c3f400] uppercase tracking-wider mb-1">🤖 Estado del Complejo:</p>
+            <p class="text-[10px] font-black text-[#10B981] uppercase tracking-wider mb-1">🤖 Estado del Complejo:</p>
             <p class="text-[11px] text-slate-400 italic">
               ${m.ocupacion < 40 
                 ? `"Che Ariel crack, el termómetro está frío (${m.ocupacion}%). ¡Nos metieron en el área! Abajo te dejé un plan Happy Hour listo para levantar las canchas al toque. ¡Activalo ya!"` 
@@ -370,8 +370,8 @@ const DashboardView = {
 
     const alertsHtml = alerts.slice(0, 3).map(a => {
       let borderCol = 'border-slate-800';
-      let bgCol = 'bg-[#111319]/70';
-      let ledCol = 'bg-lime-400';
+      let bgCol = 'bg-[#0B0F19]/70';
+      let ledCol = 'bg-emerald-400';
       let labelCol = 'text-slate-400';
       let btnBg = 'bg-slate-900 border-slate-800 text-slate-300';
       
@@ -423,7 +423,7 @@ const DashboardView = {
       <!-- LIVE AI NOTIFICATIONS PANEL -->
       <section class="mb-8 space-y-3">
         <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#c3f400] text-[16px] animate-pulse">radar</span>
+          <span class="material-symbols-outlined text-[#10B981] text-[16px] animate-pulse">radar</span>
           Alertas de Inteligencia Comercial Activas (${alerts.length})
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -452,7 +452,7 @@ const DashboardView = {
       else if (idx === 3) position = 'top: 52%; left: 60%;';
       else position = 'top: 33%; left: 38%;'; // Center position for index 4+
 
-      const statusColor = reservado ? 'bg-red-500 shadow-[0_0_12px_#ef4444]' : 'bg-[#c3f400] shadow-[0_0_12px_#c3f400]';
+      const statusColor = reservado ? 'bg-red-500 shadow-[0_0_12px_#ef4444]' : 'bg-[#10B981] shadow-[0_0_12px_#10B981]';
       const statusLabel = reservado ? 'OCUPADA 🔴' : 'LIBRE 🟢';
       
       let actionBtn = '';
@@ -460,14 +460,14 @@ const DashboardView = {
         const price = getSlotPrice(c.precio || 15000, turnoActual.hora);
         actionBtn = `
           <button onclick="App.openReservaModal(${turnoActual.id}, '${c.nombre.replace(/'/g, "\\'")}', '${turnoActual.hora}', ${price}); event.stopPropagation();" 
-            class="mt-1.5 px-3 py-1 bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] rounded-lg text-[9px] font-black uppercase tracking-wider transition-all border-none cursor-pointer">
+            class="mt-1.5 px-3 py-1 bg-[#10B981] text-[#0B0F19] hover:bg-[#34d399] rounded-lg text-[9px] font-black uppercase tracking-wider transition-all border-none cursor-pointer">
             Reservar
           </button>`;
       }
 
       return `
       <!-- Cancha 3D Marker -->
-      <div class="absolute p-3 rounded-2xl bg-slate-950/95 border border-slate-800 shadow-2xl flex flex-col items-center justify-center text-center z-20 hover:scale-105 hover:border-[#c3f400]/40 transition-all" style="width: 120px; ${position}">
+      <div class="absolute p-3 rounded-2xl bg-slate-950/95 border border-slate-800 shadow-2xl flex flex-col items-center justify-center text-center z-20 hover:scale-105 hover:border-[#10B981]/40 transition-all" style="width: 120px; ${position}">
         <div class="flex items-center gap-1.5 mb-1.5">
           <span class="w-2.5 h-2.5 rounded-full ${statusColor} ${!reservado ? 'cancha-led-ping' : ''}"></span>
           <span class="text-[9px] font-black text-slate-300 uppercase truncate max-w-[85px]">${c.nombre}</span>
@@ -481,10 +481,10 @@ const DashboardView = {
     pitchBox.innerHTML = `
       <!-- LIVE TACTICAL 3D PITCH -->
       <section class="bg-gradient-to-br from-slate-900/60 to-slate-950/80 border border-slate-800 rounded-[32px] p-6 shadow-2xl mb-8 relative overflow-hidden">
-        <div class="absolute top-0 right-0 bg-[#c3f400]/5 px-3 py-1 rounded-bl text-[8px] text-[#c3f400] font-mono uppercase tracking-widest border-l border-b border-[#c3f400]/10 z-10">LIVE STADIUM RADAR ACTIVE</div>
+        <div class="absolute top-0 right-0 bg-[#10B981]/5 px-3 py-1 rounded-bl text-[8px] text-[#10B981] font-mono uppercase tracking-widest border-l border-b border-[#10B981]/10 z-10">LIVE STADIUM RADAR ACTIVE</div>
         <div class="mb-6">
           <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-            <span class="material-symbols-outlined text-[#c3f400]">stadium</span>
+            <span class="material-symbols-outlined text-[#10B981]">stadium</span>
             Táctico de Canchas en Vivo — Complejo ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}
           </h3>
           <p class="text-xs text-slate-500 mt-1">Monitoreo tridimensional de disponibilidad para el bloque horario de las ${currentHour}:00 hs.</p>
@@ -525,10 +525,10 @@ const DashboardView = {
 
     if (!flojos.length) {
       section.innerHTML = `
-        <div class="bg-[#c3f400]/5 border border-[#c3f400]/20 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-5">
-          <div class="w-14 h-14 rounded-full bg-[#c3f400]/10 flex items-center justify-center text-3xl shadow-xl shadow-[#c3f400]/5 shrink-0">🏆</div>
+        <div class="bg-[#10B981]/5 border border-[#10B981]/20 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-5">
+          <div class="w-14 h-14 rounded-full bg-[#10B981]/10 flex items-center justify-center text-3xl shadow-xl shadow-[#10B981]/5 shrink-0">🏆</div>
           <div>
-            <h4 class="font-black text-lg text-[#c3f400] italic uppercase tracking-wider">¡OCUPACIÓN PERFECTA, CRACK!</h4>
+            <h4 class="font-black text-lg text-[#10B981] italic uppercase tracking-wider">¡OCUPACIÓN PERFECTA, CRACK!</h4>
             <p class="text-slate-400 text-xs mt-1">Todos los horarios del complejo hoy superan el 40% de reservas. Seguimos a paso firme y con la rentabilidad al ángulo. ¡Seguí así, Ariel! ⚽🔥</p>
           </div>
         </div>`;

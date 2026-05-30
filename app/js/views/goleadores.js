@@ -29,7 +29,7 @@ const GoleadoresView = {
         .fut-card-inner {
           position: absolute;
           inset: 4px;
-          background: linear-gradient(135deg, #111319 0%, #1e2028 60%, #0d0f14 100%);
+          background: linear-gradient(135deg, #0B0F19 0%, #1e2028 60%, #0d0f14 100%);
           border-radius: 12px;
           border: 1.5px solid #d4af37;
           display: flex;
@@ -134,7 +134,7 @@ const GoleadoresView = {
           top: 8px;
           right: -25px;
           background: linear-gradient(135deg, #ffd700, #b8860b);
-          color: #161e00;
+          color: #0B0F19;
           font-size: 7px;
           font-weight: 900;
           padding: 2px 24px;
@@ -152,12 +152,12 @@ const GoleadoresView = {
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 class="text-3xl font-black text-primary tracking-tight flex items-center gap-3">
-              <span class="material-symbols-outlined text-[#c3f400]" style="font-size: 32px;">military_tech</span>
-              Salón de la Fama CanchaOS
+              <span class="material-symbols-outlined text-[#10B981]" style="font-size: 32px;">military_tech</span>
+              Salón de la Fama CanchaControl
             </h1>
             <p class="text-on-surface-variant font-medium mt-1">Ranking de fidelidad de clientes VIP y convocatoria directa.</p>
           </div>
-          <button class="bg-[#c3f400] text-[#161e00] px-5 py-2.5 rounded-xl font-bold hover:bg-[#d4ff1a] active:scale-95 transition-all flex items-center gap-2 border-none">
+          <button class="bg-[#10B981] text-[#0B0F19] px-5 py-2.5 rounded-xl font-bold hover:bg-[#34d399] active:scale-95 transition-all flex items-center gap-2 border-none">
             <span class="material-symbols-outlined">campaign</span>
             Notificar Promo General
           </button>
@@ -182,7 +182,7 @@ const GoleadoresView = {
         <!-- Stats Overview Cards -->
         <div class="col-span-1 lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0">
           <div class="bg-slate-900/60 rounded-2xl p-5 border border-slate-800/80 hover:border-slate-700/80 transition-all flex items-center gap-4 relative overflow-hidden group">
-            <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 group-hover:bg-[#c3f400] group-hover:text-[#161e00] transition-all">
+            <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 group-hover:bg-[#10B981] group-hover:text-[#0B0F19] transition-all">
               <span class="material-symbols-outlined">groups</span>
             </div>
             <div>
@@ -191,7 +191,7 @@ const GoleadoresView = {
             </div>
           </div>
           <div class="bg-slate-900/60 rounded-2xl p-5 border border-slate-800/80 hover:border-slate-700/80 transition-all flex items-center gap-4 relative overflow-hidden group">
-            <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 group-hover:bg-[#c3f400] group-hover:text-[#161e00] transition-all">
+            <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 group-hover:bg-[#10B981] group-hover:text-[#0B0F19] transition-all">
               <span class="material-symbols-outlined">sports_soccer</span>
             </div>
             <div>
@@ -200,7 +200,7 @@ const GoleadoresView = {
             </div>
           </div>
           <div class="bg-slate-900/60 rounded-2xl p-5 border border-slate-800/80 hover:border-slate-700/80 transition-all flex items-center gap-4 relative overflow-hidden group">
-            <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-[#ffd700]/80 group-hover:bg-[#ffd700] group-hover:text-[#161e00] transition-all">
+            <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-[#ffd700]/80 group-hover:bg-[#ffd700] group-hover:text-[#0B0F19] transition-all">
               <span class="material-symbols-outlined">workspace_premium</span>
             </div>
             <div>
@@ -209,7 +209,7 @@ const GoleadoresView = {
             </div>
           </div>
           <div class="bg-slate-900/60 rounded-2xl p-5 border border-slate-800/80 hover:border-slate-700/80 transition-all flex items-center gap-4 relative overflow-hidden group">
-            <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 group-hover:bg-[#c3f400] group-hover:text-[#161e00] transition-all">
+            <div class="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 group-hover:bg-[#10B981] group-hover:text-[#0B0F19] transition-all">
               <span class="material-symbols-outlined">database</span>
             </div>
             <div>
@@ -237,7 +237,7 @@ const GoleadoresView = {
 
               return `
               <!-- Holographic FUT Card -->
-              <div class="fut-card group" onclick="App.toast('¡Clasificado como Leyenda CanchaOS! 🏆', 'success')">
+              <div class="fut-card group" onclick="App.toast('¡Clasificado como Leyenda CanchaControl! 🏆', 'success')">
                 <div class="fut-card-sheen"></div>
                 <div class="fut-card-inner">
                   <div class="ribbon-vip">LEYENDA</div>
@@ -281,7 +281,7 @@ const GoleadoresView = {
         <div class="lg:col-span-2 bg-slate-900/40 rounded-3xl border border-slate-800/80 flex flex-col max-h-[500px] overflow-hidden">
           <div class="p-5 border-b border-slate-800/60 bg-slate-950/20 flex justify-between items-center">
             <h2 class="text-sm font-bold text-slate-300 flex items-center gap-2">
-              <span class="material-symbols-outlined text-[#c3f400]" style="font-size: 20px;">leaderboard</span>
+              <span class="material-symbols-outlined text-[#10B981]" style="font-size: 20px;">leaderboard</span>
               Ranking de Fidelidad Completo
             </h2>
           </div>
@@ -301,8 +301,8 @@ const GoleadoresView = {
                     ${crown}
                   </div>
                   <div>
-                    <h3 class="text-xs font-bold text-slate-200 group-hover:text-[#c3f400] transition-colors">${g.nombre}</h3>
-                    <p class="text-[10px] text-slate-500 mt-0.5">Ratio de fidelidad: <span class="text-[#c3f400] font-bold">${Math.min(g.partidos * 10, 100)}%</span></p>
+                    <h3 class="text-xs font-bold text-slate-200 group-hover:text-[#10B981] transition-colors">${g.nombre}</h3>
+                    <p class="text-[10px] text-slate-500 mt-0.5">Ratio de fidelidad: <span class="text-[#10B981] font-bold">${Math.min(g.partidos * 10, 100)}%</span></p>
                   </div>
                 </div>
                 <div class="text-right">
@@ -319,7 +319,7 @@ const GoleadoresView = {
         <div class="lg:col-span-1 bg-slate-900/40 rounded-3xl border border-slate-800/80 flex flex-col max-h-[500px] overflow-hidden">
           <div class="p-5 border-b border-slate-800/60 bg-slate-950/20">
             <h2 class="text-sm font-bold text-slate-300 flex items-center gap-2">
-              <span class="material-symbols-outlined text-[#c3f400]" style="font-size: 20px;">contacts</span>
+              <span class="material-symbols-outlined text-[#10B981]" style="font-size: 20px;">contacts</span>
               Base de Convocatoria Directa
             </h2>
           </div>
@@ -335,28 +335,28 @@ const GoleadoresView = {
               // Generar mensaje contextual personalizado de Nico
               let msgNico = '';
               if (partidosCount >= 10) {
-                msgNico = `¡Qué hacés crack, ${j.nombre}! Te habla Nico de CanchaOS. Sos un verdadero fenómeno del complejo y ya metiste ${partidosCount} partidazos con nosotros 🏟️⚽. Te ganaste una Gatorade helada post-partido o un 20% de descuento en el próximo turno. ¡Aprovechalo crack! 🔥⚽`;
+                msgNico = `¡Qué hacés crack, ${j.nombre}! Te habla Nico de CanchaControl. Sos un verdadero fenómeno del complejo y ya metiste ${partidosCount} partidazos con nosotros 🏟️⚽. Te ganaste una Gatorade helada post-partido o un 20% de descuento en el próximo turno. ¡Aprovechalo crack! 🔥⚽`;
               } else {
-                msgNico = `¡Hola crack, ${j.nombre}! Te habla Nico de CanchaOS. ¿Cómo venís? Quería ver si se armaba partido esta semana en el complejo de ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}. Escribime y te reservo el horario de una, ¡dale! 🏟️⚽🏆`;
+                msgNico = `¡Hola crack, ${j.nombre}! Te habla Nico de CanchaControl. ¿Cómo venís? Quería ver si se armaba partido esta semana en el complejo de ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}. Escribime y te reservo el horario de una, ¡dale! 🏟️⚽🏆`;
               }
               const waLink = `https://wa.me/${j.telefono}?text=${encodeURIComponent(msgNico)}`;
 
               return `
-              <div class="bg-slate-900/40 p-4 rounded-2xl border border-slate-800/80 group hover:border-[#c3f400]/40 transition-all text-left">
+              <div class="bg-slate-900/40 p-4 rounded-2xl border border-slate-800/80 group hover:border-[#10B981]/40 transition-all text-left">
                 <div class="flex justify-between items-start mb-2">
                   <div>
-                    <h3 class="text-xs font-bold text-slate-200 group-hover:text-[#c3f400] transition-colors">${j.nombre} ${j.apellido || ''}</h3>
+                    <h3 class="text-xs font-bold text-slate-200 group-hover:text-[#10B981] transition-colors">${j.nombre} ${j.apellido || ''}</h3>
                     <p class="text-[9px] text-slate-500 font-mono mt-0.5">${partidosCount} partidos jugados</p>
                   </div>
-                  ${cumpleStr ? `<span class="text-[9px] bg-[#c3f400]/10 text-[#c3f400] px-2 py-0.5 rounded-full border border-[#c3f400]/15 font-bold">🎂 ${cumpleStr}</span>` : ''}
+                  ${cumpleStr ? `<span class="text-[9px] bg-[#10B981]/10 text-[#10B981] px-2 py-0.5 rounded-full border border-[#10B981]/15 font-bold">🎂 ${cumpleStr}</span>` : ''}
                 </div>
                 <div class="flex items-center gap-1.5 mb-3">
-                   <span class="material-symbols-outlined text-[14px] text-[#c3f400]">call</span>
+                   <span class="material-symbols-outlined text-[14px] text-[#10B981]">call</span>
                    <span class="text-xs font-mono text-slate-400">${j.telefono || 'Sin número'}</span>
                 </div>
                 <div class="flex gap-2">
                   <a href="${waLink}" target="_blank" 
-                     class="flex-1 py-2 bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] rounded-xl text-[10px] font-bold text-center transition-all flex items-center justify-center gap-1">
+                     class="flex-1 py-2 bg-[#10B981] text-[#0B0F19] hover:bg-[#34d399] rounded-xl text-[10px] font-bold text-center transition-all flex items-center justify-center gap-1">
                     <span class="material-symbols-outlined text-[14px]">chat</span>
                     CONVOCAR ⚽
                   </a>

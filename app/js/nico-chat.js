@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bubble = document.createElement('div');
     bubble.className = `px-4 py-2.5 rounded-2xl text-sm max-w-[88%] leading-relaxed ${
       isUser
-        ? 'bg-lime-400 text-[#161e00] rounded-tr-sm font-medium'
+        ? 'bg-[#10B981] text-[#0B0F19] rounded-tr-sm font-medium'
         : 'bg-slate-800 text-slate-200 rounded-tl-sm'
     }`;
     if (isUser) {
@@ -56,9 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
     wrap.className = 'flex flex-col gap-1 items-start typing-wrap';
     wrap.innerHTML = `
       <div class="px-4 py-3 rounded-2xl rounded-tl-sm bg-slate-800 flex gap-1.5 items-center">
-        <span style="width:7px;height:7px;border-radius:50%;background:#c3f400;animation:nicoBounce .8s infinite"></span>
-        <span style="width:7px;height:7px;border-radius:50%;background:#c3f400;animation:nicoBounce .8s .15s infinite"></span>
-        <span style="width:7px;height:7px;border-radius:50%;background:#c3f400;animation:nicoBounce .8s .3s infinite"></span>
+        <span style="width:7px;height:7px;border-radius:50%;background:#10B981;animation:nicoBounce .8s infinite"></span>
+        <span style="width:7px;height:7px;border-radius:50%;background:#10B981;animation:nicoBounce .8s .15s infinite"></span>
+        <span style="width:7px;height:7px;border-radius:50%;background:#10B981;animation:nicoBounce .8s .3s infinite"></span>
       </div>`;
     messages.appendChild(wrap);
     messages.scrollTop = messages.scrollHeight;
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     quickActions.forEach(qa => {
       const btn = document.createElement('button');
       btn.className = 'text-xs font-semibold px-3 py-1.5 rounded-full border transition-all hover:scale-105';
-      btn.style.cssText = 'border-color:#c3f400;color:#c3f400;background:rgba(195,244,0,.08)';
+      btn.style.cssText = 'border-color:#10B981;color:#10B981;background:rgba(16,185,129,.08)';
       btn.textContent = qa.label;
       btn.addEventListener('click', () => {
         input.value = qa.cmd;
@@ -143,13 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (alert?.cumpleaneros?.length) {
           const links = alert.cumpleaneros.map(c => {
             const msg = encodeURIComponent(
-              `¡Hola ${c.cliente_nombre}! ⚽ Acá Nico de CanchaOS. ¡Muy feliz cumpleaños crack! 🎂 Tenés un Gatorade gratis o un 10% OFF en tu próxima reserva. ¡Avisame cuándo venís!`
+              `¡Hola ${c.cliente_nombre}! ⚽ Acá Nico de CanchaControl. ¡Muy feliz cumpleaños crack! 🎂 Tenés un Gatorade gratis o un 10% OFF en tu próxima reserva. ¡Avisame cuándo venís!`
             );
             return `🎁 <strong>${c.cliente_nombre}</strong><br>
-              <a href="https://wa.me/?text=${msg}" target="_blank" style="color:#c3f400;font-weight:700">📱 Mandar WA</a>`;
+              <a href="https://wa.me/?text=${msg}" target="_blank" style="color:#10B981;font-weight:700">📱 Mandar WA</a>`;
           }).join('<br><br>');
 
-          respuesta = `¡Revisé la base! Hoy tenemos <strong style="color:#c3f400">${alert.cumpleaneros.length} cumpleañero${alert.cumpleaneros.length > 1 ? 's' : ''}</strong>:<br><br>${links}<br><br>⚽ ¡Mandales el regalito que se lo merecen!`;
+          respuesta = `¡Revisé la base! Hoy tenemos <strong style="color:#10B981">${alert.cumpleaneros.length} cumpleañero${alert.cumpleaneros.length > 1 ? 's' : ''}</strong>:<br><br>${links}<br><br>⚽ ¡Mandales el regalito que se lo merecen!`;
         } else {
           respuesta = '¡No hay cumpleañeros registrados para hoy crack! Si querés agregar uno, usá el modal de reserva y completá la fecha de cumple. 🎂';
         }
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ¡Acá el reporte de <strong>${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}</strong> hoy! 📊<br><br>
           💰 <strong>Ingresos:</strong> ${fmt.money(m.ingresos)}<br>
           💸 <strong>Egresos:</strong> ${fmt.money(m.egresos)}<br>
-          <strong style="color:#c3f400;font-size:15px">💵 Ganancia Neta: ${fmt.money(neto)}</strong><br><br>
+          <strong style="color:#10B981;font-size:15px">💵 Ganancia Neta: ${fmt.money(neto)}</strong><br><br>
           🏟️ <strong>Ocupación:</strong> ${m.ocupacion}% (${m.ocupados} ocupados · ${m.libres} libres)<br>
           📦 <strong>Alertas stock:</strong> ${m.stockAlertas > 0 ? `<span style="color:#ffb4ab">${m.stockAlertas} productos críticos ⚠️</span>` : 'Todo OK ✅'}
         `;
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ${criticos.map(s =>
               `<span style="color:${s.cantidad < 3 ? '#ffb4ab' : '#f59e0b'}">⚠️ ${s.item}: ${s.cantidad} unidades</span>`
             ).join('<br>')}<br><br>
-            <strong style="color:#c3f400">Avisale a Ariel para reponer. ¡No podemos quedarnos sin stock en el partido! 🔥</strong>
+            <strong style="color:#10B981">Avisale a Ariel para reponer. ¡No podemos quedarnos sin stock en el partido! 🔥</strong>
           `;
         } else {
           respuesta = `✅ ¡Stock OK en ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}! Tenemos ${stock.length} productos bien abastecidos. ¡Listos para el partido! ⚽`;
@@ -204,12 +204,12 @@ document.addEventListener('DOMContentLoaded', () => {
             💡 <strong>Estrategia Happy Hour propuesta:</strong><br>
             ${slots.map(h => `• <strong>${h}</strong>: Cancha + 6 Aguas al costo`).join('<br>')}<br><br>
             <button onclick="App.navigate('agenda'); document.getElementById('nicoChatCloseBtn').click();"
-              style="margin-top:8px;padding:7px 16px;border-radius:8px;background:#c3f400;color:#161e00;font-size:12px;font-weight:700;cursor:pointer;border:none">
+              style="margin-top:8px;padding:7px 16px;border-radius:8px;background:#10B981;color:#0B0F19;font-size:12px;font-weight:700;cursor:pointer;border:none">
               📅 Ver Agenda
             </button>
           `;
         } else {
-          respuesta = `🔥 ¡Excelente crack! Estamos al <strong style="color:#c3f400">100% de ocupación hoy</strong>. Sin baches. ¡A facturar! 🚀`;
+          respuesta = `🔥 ¡Excelente crack! Estamos al <strong style="color:#10B981">100% de ocupación hoy</strong>. Sin baches. ¡A facturar! 🚀`;
         }
       }
 
@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
             💳 <strong>Pagos pendientes detectados:</strong><br><br>
             ${(alert.detalle || '').replace(/\n/g, '<br>')}<br><br>
             <button onclick="App.navigate('reservas'); document.getElementById('nicoChatCloseBtn').click();"
-              style="margin-top:8px;padding:7px 16px;border-radius:8px;background:#c3f400;color:#161e00;font-size:12px;font-weight:700;cursor:pointer;border:none">
+              style="margin-top:8px;padding:7px 16px;border-radius:8px;background:#10B981;color:#0B0F19;font-size:12px;font-weight:700;cursor:pointer;border:none">
               💳 Ver Reservas
             </button>
           `;
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
           await DB.addGasto(sucursal, `Gasto registrado por Nico: "${text}"`, amount);
           if (amount > 100000) NicoAgent.detectarAnomalia('gasto_inusual', { monto: amount, concepto: text });
           respuesta = `
-            ✅ ¡Listo! Registré el gasto de <strong style="color:#c3f400">${fmt.money(amount)}</strong> en Finanzas.<br><br>
+            ✅ ¡Listo! Registré el gasto de <strong style="color:#10B981">${fmt.money(amount)}</strong> en Finanzas.<br><br>
             ${amount > 100000
               ? '⚠️ <strong style="color:#f59e0b">Nota: Monto inusual detectado. Lo marqué para revisión.</strong>'
               : '💸 Todo bajo control, crack.'
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
           respuesta = `
             🏆 <strong>Top clientes VIP (más de 10 reservas):</strong><br><br>
             ${vips.slice(0,5).map((v, i) =>
-              `<span style="color:#c3f400">${['🥇','🥈','🥉','🏅','🏅'][i]}</span> ${v.nombre} — <strong>${v.partidos} partidos</strong> (${v.sucursal?.toUpperCase()})`
+              `<span style="color:#10B981">${['🥇','🥈','🥉','🏅','🏅'][i]}</span> ${v.nombre} — <strong>${v.partidos} partidos</strong> (${v.sucursal?.toUpperCase()})`
             ).join('<br>')}<br><br>
             💡 <strong>Propuesta:</strong> ¿Les ofrecemos un pack de aguas o 20% OFF en la próxima reserva? Son fenómenos que se lo merecen.
           `;
@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ).join('<br>');
           respuesta = `🏟️ <strong>Ranking de canchas (últimos 30 días):</strong><br><br>${rows}<br><br>
             <button onclick="App.navigate('reportes'); document.getElementById('nicoChatCloseBtn').click();"
-              style="margin-top:8px;padding:7px 16px;border-radius:8px;background:#c3f400;color:#161e00;font-size:12px;font-weight:700;cursor:pointer;border:none">
+              style="margin-top:8px;padding:7px 16px;border-radius:8px;background:#10B981;color:#0B0F19;font-size:12px;font-weight:700;cursor:pointer;border:none">
               📊 Ver Reportes completos
             </button>`;
         }
@@ -327,10 +327,10 @@ document.addEventListener('DOMContentLoaded', () => {
         respuesta = `🌭 <strong>Análisis Buffet ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}:</strong><br><br>
           ⭐ <strong>Productos estrella:</strong> ${estrellas}<br>
           🐕 <strong>Sin rotación:</strong> ${perros}<br>
-          ${margen?.margenPromedio ? `📈 <strong>Margen promedio:</strong> <span style="color:#c3f400">${margen.margenPromedio}%</span>` : ''}
+          ${margen?.margenPromedio ? `📈 <strong>Margen promedio:</strong> <span style="color:#10B981">${margen.margenPromedio}%</span>` : ''}
           <br><br>
           <button onclick="App.navigate('reportes'); document.getElementById('nicoChatCloseBtn').click();"
-            style="margin-top:8px;padding:7px 16px;border-radius:8px;background:#c3f400;color:#161e00;font-size:12px;font-weight:700;cursor:pointer;border:none">
+            style="margin-top:8px;padding:7px 16px;border-radius:8px;background:#10B981;color:#0B0F19;font-size:12px;font-weight:700;cursor:pointer;border:none">
             📊 Ver Reportes
           </button>`;
       }
@@ -344,8 +344,8 @@ document.addEventListener('DOMContentLoaded', () => {
         respuesta = `📈 <strong>Comparativa 30 días:</strong><br><br>
           🏟️ <strong>Lanús:</strong> ${fmt.money(comp?.lanus?.netoTotal||0)} (${comp?.lanus?.share||0}% del sistema)<br>
           🏟️ <strong>Belgrano:</strong> ${fmt.money(comp?.belgrano?.netoTotal||0)} (${comp?.belgrano?.share||0}%)<br>
-          🏆 <strong>Ganador:</strong> <span style="color:#c3f400">${comp?.ganadorSemana||'—'}</span><br><br>
-          💳 Ticket promedio (${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}): <strong style="color:#c3f400">${fmt.money(ticket?.ticketPromedio||0)}</strong><br>
+          🏆 <strong>Ganador:</strong> <span style="color:#10B981">${comp?.ganadorSemana||'—'}</span><br><br>
+          💳 Ticket promedio (${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}): <strong style="color:#10B981">${fmt.money(ticket?.ticketPromedio||0)}</strong><br>
           &nbsp;&nbsp;⚽ Solo cancha: ${fmt.money(ticket?.ticketSoloCancha||0)} · 🥤 Buffet extra: ${fmt.money(ticket?.ticketBuffetExtra||0)}`;
       }
 

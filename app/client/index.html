@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CanchaOS — Reserva Tu Turno ⚽</title>
+    <title>CanchaControl — Reserva Tu Turno ⚽</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#111319">
+    <meta name="theme-color" content="#0B0F19">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,10 +21,10 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#c3f400',
-                        dark: '#111319',
-                        surface: '#1e1f26',
-                        'surface-high': '#282a30',
+                        primary: '#10B981',
+                        dark: '#0B0F19',
+                        surface: '#111827',
+                        'surface-high': '#1f2937',
                         accent: '#6c63ff'
                     },
                     fontFamily: {
@@ -37,39 +37,39 @@
 
     <style>
         body { 
-            background-color: #111319 !important; 
+            background-color: #0B0F19 !important; 
             color: #cbd5e1 !important;
             -webkit-tap-highlight-color: transparent; 
         }
-        .glass { background: rgba(30, 31, 38, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .glass { background: rgba(11, 15, 25, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
         .slot-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .slot-btn:active { transform: scale(0.95); }
         .date-card { 
             min-width: 70px; 
-            background-color: #1e1f26 !important; 
+            background-color: #111827 !important; 
             color: #cbd5e1 !important; 
             border: 1px solid #334155 !important;
         }
         .date-card.active {
-            background-color: #c3f400 !important;
-            color: #111319 !important;
-            border-color: #c3f400 !important;
+            background-color: #10B981 !important;
+            color: #0B0F19 !important;
+            border-color: #10B981 !important;
         }
         .sport-btn {
-            background-color: #1e1f26 !important;
+            background-color: #111827 !important;
             color: #94a3b8 !important;
             border: 1px solid #334155 !important;
         }
         .sport-btn.active {
-            background-color: #c3f400 !important;
-            color: #111319 !important;
-            border-color: #c3f400 !important;
+            background-color: #10B981 !important;
+            color: #0B0F19 !important;
+            border-color: #10B981 !important;
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         input, select {
-            background-color: #1e1f26 !important;
+            background-color: #111827 !important;
             color: #ffffff !important;
             border: 1px solid #334155 !important;
         }
@@ -81,8 +81,8 @@
         .animate-slide-up { animation: slideUp 0.4s ease-out; }
         
         .nico-bubble {
-            background: linear-gradient(135deg, #c3f400 0%, #a8d000 100%);
-            box-shadow: 0 8px 32px rgba(195, 244, 0, 0.3);
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
         }
     </style>
 </head>
@@ -92,7 +92,7 @@
     <header class="fixed top-0 inset-x-0 z-50 p-4 glass flex justify-between items-center">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-dark font-bold">⚽</div>
-            <h1 class="text-xl font-extrabold tracking-tighter text-primary">CanchaOS</h1>
+            <h1 class="text-xl font-extrabold tracking-tighter text-primary">CanchaControl</h1>
         </div>
         <select id="sedeSelector" class="bg-surface-high border border-slate-700 rounded-full px-4 py-1.5 text-xs font-bold focus:outline-none focus:border-primary hidden">
             <option value="lanus">🏟️ Lanús</option>
@@ -181,7 +181,7 @@
             </a>
             
             <!-- Botón de Finalización (oculto hasta compartir) -->
-            <button id="successListoBtn" onclick="location.reload()" class="w-full bg-white text-dark py-4 rounded-2xl font-black mb-4 hidden active:scale-95 transition-transform">
+            <button id="successListoBtn" class="w-full bg-white text-dark py-4 rounded-2xl font-black mb-4 hidden active:scale-95 transition-transform">
                 ¡LISTO, IR AL VESTUARIO! 🏃‍♂️
             </button>
         </div>

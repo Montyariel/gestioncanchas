@@ -1,11 +1,11 @@
 {
-  "name": "CanchaOS Reservas",
-  "short_name": "CanchaOS",
+  "name": "CanchaControl Reservas",
+  "short_name": "CanchaControl",
   "description": "Reserva tu cancha de fútbol o pádel en segundos.",
   "start_url": "/client/index.html",
   "display": "standalone",
-  "background_color": "#111319",
-  "theme_color": "#c3f400",
+  "background_color": "#0B0F19",
+  "theme_color": "#10B981",
   "icons": [
     {
       "src": "/assets/icon-192.png",

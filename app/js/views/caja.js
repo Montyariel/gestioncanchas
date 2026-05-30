@@ -18,11 +18,11 @@ const CajaView = {
           background: linear-gradient(135deg, #1e293b, #0f172a);
         }
         .safe-body:hover {
-          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 20px rgba(195, 244, 0, 0.1);
+          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 20px rgba(16, 185, 129, 0.1);
         }
         /* Brushed Metal Cards */
         .metal-card {
-          background: linear-gradient(135deg, #1e1f26, #111319);
+          background: linear-gradient(135deg, #111827, #0B0F19);
           border: 1px solid rgba(255, 255, 255, 0.05);
           box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05);
           position: relative;
@@ -43,8 +43,8 @@ const CajaView = {
         }
         .metal-card:hover {
           transform: translateY(-4px);
-          border-color: rgba(195, 244, 0, 0.3);
-          box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 15px rgba(195, 244, 0, 0.05);
+          border-color: rgba(16, 185, 129, 0.3);
+          box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 15px rgba(16, 185, 129, 0.05);
         }
         /* Thermal Receipt Slot & Printing Styles */
         .receipt-printer-slot {
@@ -83,7 +83,7 @@ const CajaView = {
         }
         /* Neon Pulsing Badge */
         .led-active {
-          box-shadow: 0 0 10px rgba(195,244,0,0.5);
+          box-shadow: 0 0 10px rgba(16,185,129,0.5);
         }
         .led-inactive {
           box-shadow: 0 0 10px rgba(239,68,68,0.5);
@@ -93,7 +93,7 @@ const CajaView = {
       <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 class="text-3xl font-black text-on-surface tracking-tight flex items-center gap-3">
-            <span class="material-symbols-outlined text-[#c3f400]" style="font-size: 32px;">point_of_sale</span>
+            <span class="material-symbols-outlined text-[#10B981]" style="font-size: 32px;">point_of_sale</span>
             Caja Diaria
           </h1>
           <p class="text-on-surface-variant mt-1 text-sm">Apertura interactiva 3D, libro diario en tiempo real y arqueos automatizados en ${sucursal === 'lanus' ? 'Lanús' : 'Belgrano'}.</p>
@@ -184,7 +184,7 @@ const CajaView = {
                     <!-- Wheel spokes -->
                     <div class="absolute w-2 h-16 bg-slate-500 rounded-full" style="top: -8px;"></div>
                     <div class="absolute w-16 h-2 bg-slate-500 rounded-full" style="left: -8px;"></div>
-                    <div class="absolute w-2.5 h-2.5 bg-[#c3f400] rounded-full shadow-[0_0_8px_#c3f400]"></div>
+                    <div class="absolute w-2.5 h-2.5 bg-[#10B981] rounded-full shadow-[0_0_8px_#10B981]"></div>
                   </div>
                   <!-- Numbers on dial -->
                   <span class="absolute text-[9px] font-mono font-bold text-slate-400" style="top: 10px;">0</span>
@@ -193,13 +193,13 @@ const CajaView = {
                   <span class="absolute text-[9px] font-mono font-bold text-slate-400" style="left: 10px;">75</span>
                 </div>
               </div>
-              <div class="mt-3 font-mono text-[9px] text-slate-500 uppercase tracking-widest font-bold">CanchaOS SecureLock v2</div>
+              <div class="mt-3 font-mono text-[9px] text-slate-500 uppercase tracking-widest font-bold">CanchaControl SecureLock v2</div>
             </div>
 
             <!-- Safe Inside content (seen when open) -->
             <div class="absolute inset-4 rounded-2xl bg-[#090b10] border border-slate-800 shadow-[inset_0_8px_20px_rgba(0,0,0,0.9)] flex flex-col items-center justify-center text-center p-4">
-              <span class="material-symbols-outlined text-[#c3f400] text-5xl animate-bounce">lock_open</span>
-              <h4 class="text-xs font-black text-[#c3f400] uppercase mt-3 tracking-widest">¡TURNO AVALADO!</h4>
+              <span class="material-symbols-outlined text-[#10B981] text-5xl animate-bounce">lock_open</span>
+              <h4 class="text-xs font-black text-[#10B981] uppercase mt-3 tracking-widest">¡TURNO AVALADO!</h4>
               <p class="text-[9px] text-slate-500 mt-1.5 max-w-[150px] leading-relaxed">Caja fuerte abierta. Registros de transacciones habilitados.</p>
             </div>
           </div>
@@ -207,20 +207,20 @@ const CajaView = {
           <!-- Fintech Keypad & Control Panel -->
           <div class="w-full max-w-sm bg-slate-950/80 p-6 rounded-2xl border border-slate-800/80 shadow-2xl flex flex-col text-left">
             <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-2">
-              <span class="material-symbols-outlined text-[#c3f400]" style="font-size:18px;">key</span>
+              <span class="material-symbols-outlined text-[#10B981]" style="font-size:18px;">key</span>
               Apertura del Turno
             </h3>
             <p class="text-xs text-slate-500 mb-4 leading-normal">Ingresá el saldo físico inicial disponible en el mostrador para desbloquear la sesión.</p>
 
             <!-- Digital Display -->
             <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 mb-4 flex flex-col relative overflow-hidden">
-              <div class="absolute top-0 right-0 bg-[#c3f400]/5 px-2 py-0.5 rounded-bl text-[8px] text-[#c3f400] font-mono uppercase tracking-widest">DISPLAY</div>
+              <div class="absolute top-0 right-0 bg-[#10B981]/5 px-2 py-0.5 rounded-bl text-[8px] text-[#10B981] font-mono uppercase tracking-widest">DISPLAY</div>
               <label class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Monto Inicial en Efectivo</label>
               <div class="flex items-center">
                 <span class="text-2xl font-black text-slate-600 mr-1.5">$</span>
                 <input type="text" id="inputMontoInicial" value="" 
                   oninput="this.value = this.value.replace(/\D/g, '')"
-                  class="w-full bg-transparent border-none text-2xl font-black text-[#c3f400] focus:ring-0 focus:outline-none p-0 placeholder-slate-800 font-mono" 
+                  class="w-full bg-transparent border-none text-2xl font-black text-[#10B981] focus:ring-0 focus:outline-none p-0 placeholder-slate-800 font-mono" 
                   placeholder="0" autofocus>
               </div>
             </div>
@@ -242,7 +242,7 @@ const CajaView = {
             </div>
 
             <!-- Action Button -->
-            <button onclick="CajaView.animarYAbrirCaja()" class="w-full py-3.5 rounded-xl font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#c3f400]/20 hover:scale-[1.01] border-none font-h3 cursor-pointer">
+            <button onclick="CajaView.animarYAbrirCaja()" class="w-full py-3.5 rounded-xl font-bold bg-[#10B981] text-[#0B0F19] hover:bg-emerald-400 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#10B981]/20 hover:scale-[1.01] border-none font-h3 cursor-pointer">
               <span class="material-symbols-outlined text-[20px] font-bold">rotate_right</span>
               Girar Dial y Habilitar Caja
             </button>
@@ -363,7 +363,7 @@ const CajaView = {
   renderCajaAbierta() {
     const badge = document.getElementById('cajaStatusBadge');
     if(badge) {
-      badge.innerHTML = `<span class="bg-lime-400/10 text-lime-400 border border-lime-400/20 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 led-active"><span class="w-2.5 h-2.5 rounded-full bg-[#c3f400] animate-pulse shadow-[0_0_8px_#c3f400]"></span> TURNO ACTIVO</span>`;
+      badge.innerHTML = `<span class="bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 led-active"><span class="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-pulse shadow-[0_0_8px_#10B981]"></span> TURNO ACTIVO</span>`;
     }
 
     const inicial = parseFloat(this.sesionActiva.monto_inicial || 0);
@@ -421,7 +421,7 @@ const CajaView = {
             </div>
             <div class="flex justify-between items-center pb-3.5 border-b border-slate-800/60">
               <span class="text-slate-400 text-sm">Total de Ingresos</span>
-              <span class="font-bold text-[#c3f400] font-mono">+$${totalIngresos.toLocaleString()}</span>
+              <span class="font-bold text-[#10B981] font-mono">+$${totalIngresos.toLocaleString()}</span>
             </div>
             <div class="flex justify-between items-center pb-3.5 border-b border-slate-800/60">
               <span class="text-slate-400 text-sm">Total de Egresos</span>
@@ -430,7 +430,7 @@ const CajaView = {
             <div class="flex flex-col gap-1 pt-3 border-t border-slate-800/60">
               <span class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Ganancia Neta del Turno 🏆</span>
               <div class="flex items-baseline justify-between">
-                <span class="text-3xl font-black ${gananciaNeta >= 0 ? 'text-[#c3f400] drop-shadow-[0_0_10px_rgba(195,244,0,0.25)]' : 'text-red-400'} tracking-tight font-mono">
+                <span class="text-3xl font-black ${gananciaNeta >= 0 ? 'text-[#10B981] drop-shadow-[0_0_10px_rgba(16,185,129,0.25)]' : 'text-red-400'} tracking-tight font-mono">
                   ${gananciaNeta >= 0 ? '+' : ''}$${gananciaNeta.toLocaleString()}
                 </span>
               </div>
@@ -462,7 +462,7 @@ const CajaView = {
                   <circle cx="50" cy="50" r="36" stroke="#00e3fd" stroke-width="12" fill="transparent"
                     stroke-dasharray="226.2" stroke-dashoffset="0" />
                   <!-- Cash Fill (Efectivo) -->
-                  <circle cx="50" cy="50" r="36" stroke="#c3f400" stroke-width="12" fill="transparent"
+                  <circle cx="50" cy="50" r="36" stroke="#10B981" stroke-width="12" fill="transparent"
                     stroke-dasharray="226.2" stroke-dashoffset="${strokeDigital}" />
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
@@ -474,7 +474,7 @@ const CajaView = {
               <!-- Legend -->
               <div class="flex flex-col gap-3 text-left">
                 <div class="flex items-center gap-2.5">
-                  <span class="w-3 h-3 rounded-full bg-[#c3f400] shadow-[0_0_6px_#c3f400]"></span>
+                  <span class="w-3 h-3 rounded-full bg-[#10B981] shadow-[0_0_6px_#10B981]"></span>
                   <div>
                     <div class="text-[10px] text-slate-500 uppercase font-bold">Efectivo (${pctEfectivo}%)</div>
                     <div class="text-sm font-bold text-slate-200 font-mono">$${efectivoIngresos.toLocaleString()}</div>
@@ -508,23 +508,23 @@ const CajaView = {
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
               <label class="block text-xs font-bold text-slate-400 mb-2">Operación</label>
-              <select id="movTipo" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#c3f400] transition-colors cursor-pointer" onchange="CajaView.updateCategorias()">
+              <select id="movTipo" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors cursor-pointer" onchange="CajaView.updateCategorias()">
                 <option value="ingreso">🟢 Ingreso</option>
                 <option value="egreso">🔴 Egreso (Gasto)</option>
               </select>
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-400 mb-2">Categoría</label>
-              <select id="movCat" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#c3f400] transition-colors cursor-pointer">
+              <select id="movCat" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors cursor-pointer">
                 <!-- Llenado dinámicamente -->
               </select>
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-400 mb-2">Importe ($)</label>
-              <input type="number" id="movMonto" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#c3f400] transition-colors font-mono" placeholder="0">
+              <input type="number" id="movMonto" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors font-mono" placeholder="0">
             </div>
             <div>
-              <button onclick="CajaView.registrarMovimiento()" class="w-full py-2 rounded-lg font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] active:scale-95 transition-all flex items-center justify-center gap-1.5 border-none cursor-pointer">
+              <button onclick="CajaView.registrarMovimiento()" class="w-full py-2 rounded-lg font-bold bg-[#10B981] text-[#0B0F19] hover:bg-[#34D399] active:scale-95 transition-all flex items-center justify-center gap-1.5 border-none cursor-pointer">
                 <span class="material-symbols-outlined text-[18px]">add_circle</span>
                 Registrar
               </button>
@@ -534,7 +534,7 @@ const CajaView = {
           <div class="mt-4 flex flex-col md:flex-row gap-4">
             <div class="md:w-1/3">
               <label class="block text-xs font-bold text-slate-400 mb-2">Canal de Pago</label>
-              <select id="movMetodo" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#c3f400] transition-colors cursor-pointer">
+              <select id="movMetodo" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors cursor-pointer">
                 <option value="Efectivo">💵 Efectivo</option>
                 <option value="Mercado Pago">📱 Mercado Pago</option>
                 <option value="Transferencia">⚡ Transferencia Bancaria</option>
@@ -543,7 +543,7 @@ const CajaView = {
             </div>
             <div class="md:w-2/3">
               <label class="block text-xs font-bold text-slate-400 mb-2">Concepto / Glosa (Opcional)</label>
-              <input type="text" id="movDesc" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#c3f400] transition-colors" placeholder="Ej: Compra de carbón para buffet, etc...">
+              <input type="text" id="movDesc" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] transition-colors" placeholder="Ej: Compra de carbón para buffet, etc...">
             </div>
           </div>
         </div>
@@ -573,13 +573,13 @@ const CajaView = {
                     <tr class="border-b border-slate-900 hover:bg-slate-800/20 transition-colors">
                       <td class="py-3.5 text-slate-500 font-mono text-xs">${hora}</td>
                       <td class="py-3.5">
-                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold ${esIngreso ? 'bg-lime-400/10 text-lime-400 border border-lime-400/20' : 'bg-red-400/10 text-red-400 border border-red-400/20'}">
+                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold ${esIngreso ? 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20' : 'bg-red-400/10 text-red-400 border border-red-400/20'}">
                           <span class="material-symbols-outlined text-[12px]">${esIngreso ? 'arrow_downward' : 'arrow_upward'}</span>
                           ${m.categoria.toUpperCase()}
                         </span>
                       </td>
                       <td class="py-3.5 text-slate-300 truncate max-w-[240px]" title="${m.descripcion || '-'}">${m.descripcion || '-'}</td>
-                      <td class="py-3.5 text-right font-black font-mono ${esIngreso ? 'text-lime-400' : 'text-red-400'}">
+                      <td class="py-3.5 text-right font-black font-mono ${esIngreso ? 'text-[#10B981]' : 'text-red-400'}">
                         ${esIngreso ? '+' : '-'}$${parseFloat(m.monto).toLocaleString()}
                       </td>
                     </tr>
@@ -678,19 +678,19 @@ const CajaView = {
         
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex justify-between items-center mb-6">
           <span class="text-xs text-slate-400 uppercase tracking-widest font-bold">Caja Esperada (Sistema):</span>
-          <span class="text-xl font-mono font-black text-[#c3f400]">$${cajaEsperada.toLocaleString()}</span>
+          <span class="text-xl font-mono font-black text-[#10B981]">$${cajaEsperada.toLocaleString()}</span>
         </div>
 
         <div class="text-left mb-6">
           <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Efectivo Físico Contado ($)</label>
-          <input type="number" id="inputArqueo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-[#c3f400] text-3xl font-black text-center font-mono placeholder-slate-800" placeholder="0">
+          <input type="number" id="inputArqueo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-[#10B981] text-3xl font-black text-center font-mono placeholder-slate-800" placeholder="0">
         </div>
 
         <div class="flex gap-3">
           <button onclick="document.getElementById('modalOverlay').classList.remove('open')" class="flex-1 py-3.5 rounded-xl font-bold bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-all cursor-pointer border border-slate-800">
             Volver
           </button>
-          <button onclick="CajaView.ejecutarCierre(${cajaEsperada})" class="flex-1 py-3.5 rounded-xl font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] transition-all flex items-center justify-center gap-2 border-none font-h3 cursor-pointer">
+          <button onclick="CajaView.ejecutarCierre(${cajaEsperada})" class="flex-1 py-3.5 rounded-xl font-bold bg-[#10B981] text-[#0B0F19] hover:bg-emerald-400 transition-all flex items-center justify-center gap-2 border-none font-h3 cursor-pointer">
             <span class="material-symbols-outlined text-[18px]">lock_clock</span>
             Cerrar Turno
           </button>
@@ -794,7 +794,7 @@ const CajaView = {
       : (diferencia > 0 ? `  [+] SOBRANTE:  +$${diferencia.toLocaleString()}` : `  [-] FALTANTE:  -$${Math.abs(diferencia).toLocaleString()}`);
 
     const ticketTexto = `--------------------------------
-   CANCHAOS DEPORTIVO PREMIUM
+   CANCHACONTROL DEPORTIVO PREMIUM
    SEDE: ${this.sesionActiva.sucursal.toUpperCase()}
 --------------------------------
 FECHA: ${fecha} | HORA: ${hora}
@@ -817,13 +817,13 @@ DESGLOSE EGRESOS:
 ${desgloseEgresos}
 --------------------------------
       ¡GRACIAS POR EL TURNO!
-       canchaOS Blindaje Fintech
+       CanchaControl Blindaje Fintech
 ================================`;
 
     // Si hay un faltante y el gateway está configurado, mandar alerta de WhatsApp automatizada
     if (diferencia < 0 && window.WhatsappGateway) {
       const settings = window.WhatsappGateway.getSettings();
-      const alertMsg = `🚨 *ALERTA CANCHAOS: FALTANTE DE CAJA* 🚨\n\n` +
+      const alertMsg = `🚨 *ALERTA CANCHACONTROL: FALTANTE DE CAJA* 🚨\n\n` +
         `Hola Ariel, Nico al habla. Se cerró la caja en la sede *${this.sesionActiva.sucursal.toUpperCase()}* con una diferencia negativa de *-$${Math.abs(diferencia).toLocaleString()}*.\n\n` +
         `Te comparto el ticket contable completo:\n\n\`\`\`\n${ticketTexto}\n\`\`\``;
       
@@ -835,14 +835,14 @@ ${desgloseEgresos}
         });
     }
 
-    const encodedText = encodeURIComponent(`🏟️ *CIERRE DE CAJA — CANCHAOS ${this.sesionActiva.sucursal.toUpperCase()}* 🏟️\n\n` + ticketTexto);
+    const encodedText = encodeURIComponent(`🏟️ *CIERRE DE CAJA — CANCHACONTROL ${this.sesionActiva.sucursal.toUpperCase()}* 🏟️\n\n` + ticketTexto);
     const waLink = `https://wa.me/?text=${encodedText}`;
-    const mailLink = `mailto:admin@canchaos.com?subject=Arqueo%20Caja%20${this.sesionActiva.sucursal}%20${fecha}&body=${encodedText}`;
+    const mailLink = `mailto:admin@canchacontrol.com?subject=Arqueo%20Caja%20${this.sesionActiva.sucursal}%20${fecha}&body=${encodedText}`;
 
     const overlay = document.getElementById('modalOverlay');
     const body = document.getElementById('modalBody');
     
-    document.querySelector('#modalReserva h2').innerHTML = '<span class="material-symbols-outlined text-[#c3f400]">receipt_long</span> Ticket de Cierre Imprimiéndose';
+    document.querySelector('#modalReserva h2').innerHTML = '<span class="material-symbols-outlined text-[#10B981]">receipt_long</span> Ticket de Cierre Imprimiéndose';
 
     body.innerHTML = `
       <div class="bg-surface-container rounded-2xl text-center">

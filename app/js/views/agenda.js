@@ -110,9 +110,9 @@ const AgendaView = {
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .slot-night:hover {
-            background: linear-gradient(135deg, rgba(109, 40, 217, 0.22) 0%, rgba(76, 29, 149, 0.08) 100%) !important;
-            border-color: #c3f400 !important;
-            box-shadow: 0 0 15px rgba(195, 244, 0, 0.3);
+            background: linear-gradient(135deg, rgba(109, 40, 217, 0.12) 0%, rgba(76, 29, 149, 0.04) 100%) !important;
+            border-color: #10B981 !important;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
             transform: translateY(-2px);
         }
       `;
@@ -307,7 +307,7 @@ const AgendaView = {
                       accentLabel = 'Soleado ☀️';
                     } else {
                       slotClass = 'slot-night';
-                      accentColor = 'text-[#c3f400]';
+                      accentColor = 'text-[#10B981]';
                       accentLabel = 'Premium 🌙';
                     }
 
@@ -399,7 +399,7 @@ const AgendaView = {
               <span class="material-symbols-outlined text-md">link</span>
               GENERAR LINK MP
             </button>
-            <button onclick="AgendaView.abrirModalAbono('${canchaNombre.replace(/'/g, "\\'")}', '${hora}', '${clienteNombre.replace(/'/g, "\\'")}', ${precio})" class="w-full bg-[#c3f400]/10 border border-[#c3f400]/40 text-[#c3f400] font-bold py-3 rounded-xl hover:bg-[#c3f400] hover:text-[#161e00] transition-all flex justify-center items-center gap-2 text-sm border-none cursor-pointer font-h3">
+            <button onclick="AgendaView.abrirModalAbono('${canchaNombre.replace(/'/g, "\\'")}', '${hora}', '${clienteNombre.replace(/'/g, "\\'")}', ${precio})" class="w-full bg-[#10B981]/10 border border-[#10B981]/40 text-[#10B981] font-bold py-3 rounded-xl hover:bg-[#10B981] hover:text-[#0B0F19] transition-all flex justify-center items-center gap-2 text-sm border-none cursor-pointer font-h3">
               <span class="material-symbols-outlined text-md">workspace_premium</span>
               REGISTRAR ABONO 🏅
             </button>
@@ -417,7 +417,7 @@ const AgendaView = {
     const body = document.getElementById('modalBody');
     if (!overlay || !body) return;
 
-    document.querySelector('#modalReserva h2').innerHTML = '<span class="material-symbols-outlined text-[#c3f400]">workspace_premium</span> Cobrar Abono Mensual';
+    document.querySelector('#modalReserva h2').innerHTML = '<span class="material-symbols-outlined text-[#10B981]">workspace_premium</span> Cobrar Abono Mensual';
     
     const steps = document.querySelector('#modalReserva .step')?.parentElement;
     if (steps) steps.style.display = 'none';
@@ -430,13 +430,13 @@ const AgendaView = {
           <div class="flex justify-between text-xs text-slate-400"><span>Cliente:</span> <strong class="text-white">${clienteNombre}</strong></div>
           <div class="flex justify-between text-xs text-slate-400"><span>Cancha:</span> <strong class="text-white">${canchaNombre}</strong></div>
           <div class="flex justify-between text-xs text-slate-400"><span>Horario:</span> <strong class="text-white">${hora} hs</strong></div>
-          <div class="flex justify-between text-xs text-slate-400"><span>Valor Unitario:</span> <strong class="text-[#c3f400] font-bold">${fmt.money(precio)}</strong></div>
+          <div class="flex justify-between text-xs text-slate-400"><span>Valor Unitario:</span> <strong class="text-[#10B981] font-bold">${fmt.money(precio)}</strong></div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Fechas del Mes</label>
-            <select id="abonoFechas" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-[#c3f400] cursor-pointer" onchange="AgendaView.calcularTotalAbono(${precio})">
+            <select id="abonoFechas" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-[#10B981] cursor-pointer" onchange="AgendaView.calcularTotalAbono(${precio})">
               <option value="4">4 Fechas (Mensual)</option>
               <option value="5">5 Fechas (Mensual Largo)</option>
             </select>
@@ -451,7 +451,7 @@ const AgendaView = {
           <button onclick="document.getElementById('modalOverlay').classList.remove('open')" class="flex-1 py-3.5 rounded-xl font-bold bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-all cursor-pointer border border-slate-800 font-body-md">
             Volver
           </button>
-          <button onclick="AgendaView.ejecutarRegistroAbono('${cliente.replace(/'/g, "\\'")}', '${canchaNombre.replace(/'/g, "\\'")}', '${hora}', ${precio})" class="flex-1 py-3.5 rounded-xl font-bold bg-[#c3f400] text-[#161e00] hover:bg-[#d4ff1a] transition-all flex items-center justify-center gap-2 border-none cursor-pointer font-h3">
+          <button onclick="AgendaView.ejecutarRegistroAbono('${cliente.replace(/'/g, "\\'")}', '${canchaNombre.replace(/'/g, "\\'")}', '${hora}', ${precio})" class="flex-1 py-3.5 rounded-xl font-bold bg-[#10B981] text-[#0B0F19] hover:bg-emerald-400 transition-all flex items-center justify-center gap-2 border-none cursor-pointer font-h3">
             <span class="material-symbols-outlined text-[18px] font-bold">payments</span>
             Confirmar y Cobrar
           </button>
@@ -567,7 +567,7 @@ const AgendaView = {
     
     const dragCard = event.currentTarget;
     dragCard.style.opacity = '0.5';
-    dragCard.style.border = '2px dashed #c3f400';
+    dragCard.style.border = '2px dashed #10B981';
     dragCard.style.transform = 'scale(0.98)';
   },
 
@@ -581,20 +581,20 @@ const AgendaView = {
   handleDragEnter(event) {
     event.preventDefault();
     const el = event.currentTarget;
-    el.classList.add('bg-lime-400/20', 'border-2', 'border-dashed', 'border-[#c3f400]');
+    el.classList.add('bg-[#10B981]/20', 'border-2', 'border-dashed', 'border-[#10B981]');
     el.style.transform = 'scale(1.03)';
   },
 
   handleDragLeave(event) {
     const el = event.currentTarget;
-    el.classList.remove('bg-lime-400/20', 'border-2', 'border-dashed', 'border-[#c3f400]');
+    el.classList.remove('bg-[#10B981]/20', 'border-2', 'border-dashed', 'border-[#10B981]');
     el.style.transform = 'scale(1)';
   },
 
   async handleDrop(event, targetTurnoId, targetCanchaNombre, targetHora, targetPrecio) {
     event.preventDefault();
     const el = event.currentTarget;
-    el.classList.remove('bg-lime-400/20', 'border-2', 'border-dashed', 'border-[#c3f400]');
+    el.classList.remove('bg-[#10B981]/20', 'border-2', 'border-dashed', 'border-[#10B981]');
     el.style.transform = 'scale(1)';
 
     try {

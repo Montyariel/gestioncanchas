@@ -1,4 +1,4 @@
-// ===== APP.JS — Motor principal de CanchaOS =====
+// ===== APP.JS — Motor principal de CanchaControl =====
 const App = {
   state: {
     sucursal: 'lanus',
@@ -183,13 +183,13 @@ const App = {
     const btnL = document.getElementById('btnLanus');
     const btnB = document.getElementById('btnBelgrano');
     // Lanús styles
-    btnL.style.background   = sucursal === 'lanus' ? 'rgba(195,244,0,.1)' : 'transparent';
-    btnL.style.color        = sucursal === 'lanus' ? '#c3f400' : '#94a3b8';
-    btnL.style.borderColor  = sucursal === 'lanus' ? '#c3f400' : '#334155';
+    btnL.style.background   = sucursal === 'lanus' ? 'rgba(16,185,129,.1)' : 'transparent';
+    btnL.style.color        = sucursal === 'lanus' ? '#10B981' : '#94a3b8';
+    btnL.style.borderColor  = sucursal === 'lanus' ? '#10B981' : '#1e293b';
     // Belgrano styles
-    btnB.style.background   = sucursal === 'belgrano' ? 'rgba(195,244,0,.1)' : 'transparent';
-    btnB.style.color        = sucursal === 'belgrano' ? '#c3f400' : '#94a3b8';
-    btnB.style.borderColor  = sucursal === 'belgrano' ? '#c3f400' : '#334155';
+    btnB.style.background   = sucursal === 'belgrano' ? 'rgba(16,185,129,.1)' : 'transparent';
+    btnB.style.color        = sucursal === 'belgrano' ? '#10B981' : '#94a3b8';
+    btnB.style.borderColor  = sucursal === 'belgrano' ? '#10B981' : '#1e293b';
     document.getElementById('currentSucursalLabel').textContent = sucursal === 'lanus' ? '🏟️ Lanús' : '🏟️ Belgrano';
     await this.navigate(this.state.currentView);
   },
@@ -209,14 +209,14 @@ const App = {
       if (!el) return;
       const span = el.querySelector('span');
       if (i === step) {
-        el.style.color = '#c3f400';
-        if (span) { span.style.borderColor = '#c3f400'; span.style.background = 'rgba(195,244,0,.1)'; span.style.color = '#c3f400'; }
+        el.style.color = '#10B981';
+        if (span) { span.style.borderColor = '#10B981'; span.style.background = 'rgba(16,185,129,.1)'; span.style.color = '#10B981'; }
       } else if (i < step) {
-        el.style.color = '#c3f400';
-        if (span) { span.style.borderColor = '#c3f400'; span.style.background = '#c3f400'; span.style.color = '#161e00'; }
+        el.style.color = '#10B981';
+        if (span) { span.style.borderColor = '#10B981'; span.style.background = '#10B981'; span.style.color = '#0B0F19'; }
       } else {
-        el.style.color = '#8e9379';
-        if (span) { span.style.borderColor = '#444933'; span.style.background = 'transparent'; span.style.color = '#8e9379'; }
+        el.style.color = '#6b7280';
+        if (span) { span.style.borderColor = '#1e293b'; span.style.background = 'transparent'; span.style.color = '#6b7280'; }
       }
     });
 
@@ -228,25 +228,25 @@ const App = {
         <div style="text-align:center;padding:16px 0 8px">
           <div style="font-size:44px;margin-bottom:10px">🏟️</div>
           <h3 style="font-size:20px;font-weight:800;margin-bottom:4px;color:#e2e2eb">${d.canchaName}</h3>
-          <p style="color:#8e9379;margin-bottom:4px">Horario: <strong style="color:#e2e2eb">${d.hora}</strong></p>
-          <p style="font-size:26px;font-weight:800;color:#c3f400;margin:10px 0">${fmt.money(d.precio)}</p>
+          <p style="color:#6b7280;margin-bottom:4px">Horario: <strong style="color:#e2e2eb">${d.hora}</strong></p>
+          <p style="font-size:26px;font-weight:800;color:#10B981;margin:10px 0">${fmt.money(d.precio)}</p>
         </div>
         ${bebidasDisp.length ? `
-        <div style="background:rgba(195,244,0,.06);border-radius:14px;padding:14px;border:1px solid rgba(195,244,0,.2)">
-          <div style="font-weight:700;font-size:13px;color:#c3f400;margin-bottom:10px">🎯 ¿Sumamos algo del buffet al pedido?</div>
+        <div style="background:rgba(16,185,129,.06);border-radius:14px;padding:14px;border:1px solid rgba(16,185,129,.2)">
+          <div style="font-weight:700;font-size:13px;color:#10B981;margin-bottom:10px">🎯 ¿Sumamos algo del buffet al pedido?</div>
           <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px" id="comboSelector">
             ${bebidasDisp.map(s => `
               <div id="combo-${s.id}" onclick="App.toggleCombo(${s.id}, '${s.item.replace(/'/g,"\\'")}}', ${s.precio_venta||0})"
-                style="background:#1e1f26;border:1.5px solid #444933;border-radius:10px;padding:10px;cursor:pointer;transition:all 0.2s;text-align:center">
-                <div style="font-size:12px;font-weight:600;color:#c4c9ac">${s.item}</div>
-                <div style="font-size:14px;font-weight:800;color:#c3f400">${fmt.money(s.precio_venta)}</div>
+                style="background:#111827;border:1.5px solid #1e293b;border-radius:10px;padding:10px;cursor:pointer;transition:all 0.2s;text-align:center">
+                <div style="font-size:12px;font-weight:600;color:#d1d5db">${s.item}</div>
+                <div style="font-size:14px;font-weight:800;color:#10B981">${fmt.money(s.precio_venta)}</div>
               </div>`).join('')}
           </div>
-          <div id="comboPrecioTotal" style="margin-top:8px;font-size:13px;color:#8e9379"></div>
+          <div id="comboPrecioTotal" style="margin-top:8px;font-size:13px;color:#6b7280"></div>
         </div>` : ''}
         <div style="display:flex;justify-content:flex-end;gap:10px;padding:16px 0 0">
-          <button style="padding:10px 20px;border-radius:10px;border:1.5px solid #444933;background:transparent;color:#c4c9ac;font-size:14px;font-weight:600;cursor:pointer" onclick="App.closeModal()">Cancelar</button>
-          <button style="padding:10px 20px;border-radius:10px;background:#c3f400;color:#161e00;font-size:14px;font-weight:700;cursor:pointer" onclick="App.renderModalStep(2)">Siguiente →</button>
+          <button style="padding:10px 20px;border-radius:10px;border:1.5px solid #1e293b;background:transparent;color:#d1d5db;font-size:14px;font-weight:600;cursor:pointer" onclick="App.closeModal()">Cancelar</button>
+          <button style="padding:10px 20px;border-radius:10px;background:#10B981;color:#0B0F19;font-size:14px;font-weight:700;cursor:pointer" onclick="App.renderModalStep(2)">Siguiente →</button>
         </div>`;
 
       // Precargar stock en cache
@@ -256,29 +256,29 @@ const App = {
       const comboTotal = d.comboItems.reduce((s, i) => s + i.precio, 0);
       body.innerHTML = `
         <div style="display:flex;flex-direction:column;gap:6px">
-          <label style="font-size:13px;font-weight:600;color:#c4c9ac">👤 Nombre del cliente *</label>
+          <label style="font-size:13px;font-weight:600;color:#d1d5db">👤 Nombre del cliente *</label>
           <input id="clienteNombre" placeholder="Ej: Juan Pérez" autofocus value="${d.clienteNombre || ''}"
-            style="background:#111319;border:1.5px solid #444933;border-radius:10px;padding:11px 14px;font-size:14px;color:#e2e2eb;outline:none;width:100%;font-family:Inter,sans-serif" />
+            style="background:#0B0F19;border:1.5px solid #1e293b;border-radius:10px;padding:11px 14px;font-size:14px;color:#e2e2eb;outline:none;width:100%;font-family:Inter,sans-serif" />
         </div>
         <div style="display:flex;flex-direction:column;gap:6px">
-          <label style="font-size:13px;font-weight:600;color:#c4c9ac">🎂 Cumpleaños (opcional)</label>
+          <label style="font-size:13px;font-weight:600;color:#d1d5db">🎂 Cumpleaños (opcional)</label>
           <input id="clienteCumple" type="date" value="${d.clienteCumple || ''}"
-            style="background:#111319;border:1.5px solid #444933;border-radius:10px;padding:11px 14px;font-size:14px;color:#e2e2eb;outline:none;width:100%;font-family:Inter,sans-serif" />
+            style="background:#0B0F19;border:1.5px solid #1e293b;border-radius:10px;padding:11px 14px;font-size:14px;color:#e2e2eb;outline:none;width:100%;font-family:Inter,sans-serif" />
         </div>
         ${d.comboItems.length ? `
-        <div style="background:rgba(195,244,0,.06);border-radius:12px;padding:12px;border:1px solid rgba(195,244,0,.2)">
-          <div style="font-weight:700;font-size:13px;color:#c3f400;margin-bottom:6px">🛒 Combo seleccionado</div>
-          ${d.comboItems.map(i => `<div style="font-size:13px;color:#c4c9ac">• ${i.nombre} — ${fmt.money(i.precio)}</div>`).join('')}
-          <div style="font-weight:800;font-size:15px;color:#c3f400;margin-top:6px">Subtotal: ${fmt.money(comboTotal)}</div>
+        <div style="background:rgba(16,185,129,.06);border-radius:12px;padding:12px;border:1px solid rgba(16,185,129,.2)">
+          <div style="font-weight:700;font-size:13px;color:#10B981;margin-bottom:6px">🛒 Combo seleccionado</div>
+          ${d.comboItems.map(i => `<div style="font-size:13px;color:#d1d5db">• ${i.nombre} — ${fmt.money(i.precio)}</div>`).join('')}
+          <div style="font-weight:800;font-size:15px;color:#10B981;margin-top:6px">Subtotal: ${fmt.money(comboTotal)}</div>
         </div>` : ''}
-        <div style="background:#111319;border-radius:12px;padding:14px;border:1px solid #444933">
-          <div style="display:flex;justify-content:space-between;font-size:14px;color:#c4c9ac"><span>Cancha:</span><strong style="color:#e2e2eb">${fmt.money(d.precio)}</strong></div>
-          ${d.comboItems.length ? `<div style="display:flex;justify-content:space-between;font-size:14px;color:#c4c9ac;margin-top:6px"><span>Combo:</span><strong style="color:#e2e2eb">${fmt.money(comboTotal)}</strong></div>` : ''}
-          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:800;color:#c3f400;margin-top:10px;padding-top:10px;border-top:1px solid #444933"><span>Total:</span><span>${fmt.money(d.precio + comboTotal)}</span></div>
+        <div style="background:#0B0F19;border-radius:12px;padding:14px;border:1px solid #1e293b">
+          <div style="display:flex;justify-content:space-between;font-size:14px;color:#d1d5db"><span>Cancha:</span><strong style="color:#e2e2eb">${fmt.money(d.precio)}</strong></div>
+          ${d.comboItems.length ? `<div style="display:flex;justify-content:space-between;font-size:14px;color:#d1d5db;margin-top:6px"><span>Combo:</span><strong style="color:#e2e2eb">${fmt.money(comboTotal)}</strong></div>` : ''}
+          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:800;color:#10B981;margin-top:10px;padding-top:10px;border-top:1px solid #1e293b"><span>Total:</span><span>${fmt.money(d.precio + comboTotal)}</span></div>
         </div>
         <div style="display:flex;justify-content:flex-end;gap:10px;padding-top:4px">
-          <button style="padding:10px 20px;border-radius:10px;border:1.5px solid #444933;background:transparent;color:#c4c9ac;font-size:14px;font-weight:600;cursor:pointer" onclick="App.renderModalStep(1)">← Atrás</button>
-          <button style="padding:10px 20px;border-radius:10px;background:#c3f400;color:#161e00;font-size:14px;font-weight:700;cursor:pointer" onclick="App.confirmarReserva()">Confirmar →</button>
+          <button style="padding:10px 20px;border-radius:10px;border:1.5px solid #1e293b;background:transparent;color:#d1d5db;font-size:14px;font-weight:600;cursor:pointer" onclick="App.renderModalStep(1)">← Atrás</button>
+          <button style="padding:10px 20px;border-radius:10px;background:#10B981;color:#0B0F19;font-size:14px;font-weight:700;cursor:pointer" onclick="App.confirmarReserva()">Confirmar →</button>
         </div>`;
 
     } else if (step === 3) {
@@ -286,29 +286,29 @@ const App = {
       body.innerHTML = `
         <div style="text-align:center;padding:16px 0">
           <div style="font-size:52px;margin-bottom:10px;animation:bounce .5s ease">⚽</div>
-          <h3 style="font-size:22px;font-weight:800;color:#c3f400;margin-bottom:8px">¡GOLAZO!</h3>
-          <p style="color:#c4c9ac;margin-bottom:4px">Reserva confirmada para <strong style="color:#e2e2eb">${d.clienteNombre}</strong></p>
-          <p style="color:#8e9379;font-size:14px">${d.canchaName} · ${d.hora}</p>
-          <p style="font-size:20px;font-weight:800;color:#c3f400;margin-top:10px">Total: ${fmt.money(total)}</p>
-          ${d.comboItems?.length ? `<p style="font-size:12px;color:#8e9379">Incluye combo buffet 🎉</p>` : ''}
+          <h3 style="font-size:22px;font-weight:800;color:#10B981;margin-bottom:8px">¡GOLAZO!</h3>
+          <p style="color:#d1d5db;margin-bottom:4px">Reserva confirmada para <strong style="color:#e2e2eb">${d.clienteNombre}</strong></p>
+          <p style="color:#6b7280;font-size:14px">${d.canchaName} · ${d.hora}</p>
+          <p style="font-size:20px;font-weight:800;color:#10B981;margin-top:10px">Total: ${fmt.money(total)}</p>
+          ${d.comboItems?.length ? `<p style="font-size:12px;color:#6b7280">Incluye combo buffet 🎉</p>` : ''}
         </div>
-        <div style="background:rgba(195,244,0,.06);border:1.5px dashed rgba(195,244,0,.3);border-radius:12px;padding:14px;text-align:center;margin-bottom:12px">
+        <div style="background:rgba(16,185,129,.06);border:1.5px dashed rgba(16,185,129,.3);border-radius:12px;padding:14px;text-align:center;margin-bottom:12px">
           <div style="font-weight:700;font-size:14px;margin-bottom:6px;color:#e2e2eb">💥 Oferta exclusiva</div>
-          <div style="font-size:13px;color:#c4c9ac;margin-bottom:10px">
-            Mirá crack, si pagás ahora te hago un <strong style="color:#c3f400">10% de descuento</strong>.<br>
-            Total con descuento: <strong style="color:#c3f400">${fmt.money(Math.round(total * 0.9))}</strong>
+          <div style="font-size:13px;color:#d1d5db;margin-bottom:10px">
+            Mirá crack, si pagás ahora te hago un <strong style="color:#10B981">10% de descuento</strong>.<br>
+            Total con descuento: <strong style="color:#10B981">${fmt.money(Math.round(total * 0.9))}</strong>
           </div>
-          <button style="padding:8px 18px;border-radius:8px;background:#c3f400;color:#161e00;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px" onclick="App.aplicarDescuento()">🔥 Aplicar 10% descuento</button>
+          <button style="padding:8px 18px;border-radius:8px;background:#10B981;color:#0B0F19;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:10px" onclick="App.aplicarDescuento()">🔥 Aplicar 10% descuento</button>
           
-          <div style="border-top:1px solid rgba(195,244,0,0.2);margin-top:10px;padding-top:10px">
+          <div style="border-top:1px solid rgba(16,185,129,0.2);margin-top:10px;padding-top:10px">
             <button id="modalMpBtn" style="padding:10px 20px;border-radius:10px;background:#009EE3;color:#white;font-size:13px;font-weight:800;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px" onclick="App.generarLinkModal(${total})">
               <span class="material-symbols-outlined">payments</span> GENERAR LINK DE PAGO
             </button>
           </div>
         </div>
         <div style="display:flex;justify-content:flex-end;gap:10px;padding-top:4px">
-          <button style="padding:10px 20px;border-radius:10px;border:1.5px solid #444933;background:transparent;color:#c4c9ac;font-size:14px;font-weight:600;cursor:pointer" onclick="App.closeModal()">Cerrar</button>
-          <button style="padding:10px 20px;border-radius:10px;border:1.5px solid #444933;background:transparent;color:#c4c9ac;font-size:14px;font-weight:600;cursor:pointer" onclick="App.navigate('reservas')">Ver Reservas</button>
+          <button style="padding:10px 20px;border-radius:10px;border:1.5px solid #1e293b;background:transparent;color:#d1d5db;font-size:14px;font-weight:600;cursor:pointer" onclick="App.closeModal()">Cerrar</button>
+          <button style="padding:10px 20px;border-radius:10px;border:1.5px solid #1e293b;background:transparent;color:#d1d5db;font-size:14px;font-weight:600;cursor:pointer" onclick="App.navigate('reservas')">Ver Reservas</button>
         </div>`;
     }
   },
@@ -319,10 +319,10 @@ const App = {
     const el = document.getElementById(`combo-${id}`);
     if (idx >= 0) {
       d.comboItems.splice(idx, 1);
-      if (el) { el.style.borderColor = '#444933'; el.style.background = '#1e1f26'; }
+      if (el) { el.style.borderColor = '#1e293b'; el.style.background = '#111827'; }
     } else {
       d.comboItems.push({ id, nombre, precio });
-      if (el) { el.style.borderColor = '#c3f400'; el.style.background = 'rgba(195,244,0,.08)'; }
+      if (el) { el.style.borderColor = '#10B981'; el.style.background = 'rgba(16,185,129,.08)'; }
     }
     const total = d.comboItems.reduce((s, i) => s + i.precio, 0);
     const el2 = document.getElementById('comboPrecioTotal');

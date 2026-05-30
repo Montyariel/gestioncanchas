@@ -261,17 +261,17 @@ function attachListeners() {
                     <button onclick="location.reload()" class="text-slate-500"><span class="material-symbols-outlined">close</span></button>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                    <input id="regNombre" type="text" placeholder="Nombre" list="crmJugadoresList" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
-                    <input id="regApellido" type="text" placeholder="Apellido" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
+                    <input id="regNombre" type="text" placeholder="Nombre" list="crmJugadoresList" class="w-full bg-[#111827] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
+                    <input id="regApellido" type="text" placeholder="Apellido" class="w-full bg-[#111827] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
                 </div>
-                <input id="regTel" type="tel" placeholder="WhatsApp (Ej: 1122334455)" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
+                <input id="regTel" type="tel" placeholder="WhatsApp (Ej: 1122334455)" class="w-full bg-[#111827] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
                 
                 <div class="flex flex-col gap-1">
                     <label class="text-[10px] text-slate-500 font-bold ml-1 uppercase">Fecha de Nacimiento 🎂</label>
                     <div class="grid grid-cols-3 gap-2">
-                        <input id="regDia" type="number" placeholder="Día" min="1" max="31" class="bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 text-center outline-none focus:border-primary">
-                        <input id="regMes" type="number" placeholder="Mes" min="1" max="12" class="bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 text-center outline-none focus:border-primary">
-                        <input id="regAnio" type="number" placeholder="Año" min="1940" max="2020" class="bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 text-center outline-none focus:border-primary">
+                        <input id="regDia" type="number" placeholder="Día" min="1" max="31" class="bg-[#111827] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 text-center outline-none focus:border-primary">
+                        <input id="regMes" type="number" placeholder="Mes" min="1" max="12" class="bg-[#111827] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 text-center outline-none focus:border-primary">
+                        <input id="regAnio" type="number" placeholder="Año" min="1940" max="2020" class="bg-[#111827] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 text-center outline-none focus:border-primary">
                     </div>
                 </div>
 
@@ -291,6 +291,7 @@ function attachListeners() {
                 j.nombre.toLowerCase() === val
             );
             if (match) {
+                regNombreInput.value = match.nombre;
                 document.getElementById('regApellido').value = match.apellido || '';
                 document.getElementById('regTel').value = match.telefono || '';
                 if (match.fecha_nacimiento) {
@@ -339,6 +340,19 @@ function attachListeners() {
                     sucursal_preferida: state.sede
                 });
 
+                // 3. Agregamos automáticamente al creador de la reserva al Equipo A en el vestuario
+                try {
+                    await DB.confirmarAsistenciaPartido({
+                        turnoId: state.selectedSlot.id,
+                        nombre,
+                        apellido,
+                        telefono,
+                        equipo: 'A'
+                    });
+                } catch (asistenciaErr) {
+                    console.error("Error al auto-confirmar asistencia del creador:", asistenciaErr);
+                }
+
                 state.clienteNombre = nombre;
                 showSuccess();
             } catch (err) {
@@ -363,13 +377,19 @@ async function showSuccess() {
     const fechaTxt = d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
     const horaTxt = (state.selectedSlot.hora || '').substring(0, 5);
     
-    const msg = `¡Gente! ⚽🔥 Reservé la cancha en CanchaOS para el ${fechaTxt} a las ${horaTxt} hs (${state.selectedSlot.canchas.nombre}).\n\nEntren al link para confirmar su lugar en el equipo, ver quiénes jugamos y cuánto ponemos cada uno:\n👉 ${lobbyLink} 🏃‍♂️💨`;
+    const msg = `¡Gente! ⚽🔥 Reservé la cancha en CanchaControl para el ${fechaTxt} a las ${horaTxt} hs (${state.selectedSlot.canchas.nombre}).\n\nEntren al link para confirmar su lugar en el equipo, ver quiénes jugamos y cuánto ponemos cada uno:\n👉 ${lobbyLink} 🏃‍♂️💨`;
     
     UI.waLink.href = `https://wa.me/?text=${encodeURIComponent(msg)}`;
 
+    const listo = document.getElementById('successListoBtn');
+    if (listo) {
+        listo.onclick = () => {
+            window.location.href = lobbyLink;
+        };
+    }
+
     // Mostrar el botón de Listo inmediatamente después de hacer click en WhatsApp (Convocatoria obligatoria)
     UI.waLink.onclick = () => {
-        const listo = document.getElementById('successListoBtn');
         if (listo) {
             listo.classList.remove('hidden');
             listo.classList.add('animate-bounce');
@@ -414,14 +434,14 @@ function openWaitlistForm() {
             <p class="text-[11px] text-slate-400">Si se libera un turno de <b class="text-primary">${state.deporte}</b> el <b class="text-white">${state.fecha}</b> en <b class="text-white">${state.sede.toUpperCase()}</b>, te avisamos por WhatsApp al instante crack.</p>
             
             <div class="grid grid-cols-2 gap-3">
-                <input id="waitNombre" type="text" placeholder="Nombre" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-accent">
-                <input id="waitApellido" type="text" placeholder="Apellido" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-accent">
+                <input id="waitNombre" type="text" placeholder="Nombre" class="w-full bg-[#111827] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-accent">
+                <input id="waitApellido" type="text" placeholder="Apellido" class="w-full bg-[#111827] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-accent">
             </div>
-            <input id="waitTel" type="tel" placeholder="WhatsApp (Ej: 1122334455)" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-accent">
+            <input id="waitTel" type="tel" placeholder="WhatsApp (Ej: 1122334455)" class="w-full bg-[#111827] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-accent">
             
             <div class="flex flex-col gap-1">
                 <label class="text-[10px] text-slate-500 font-bold ml-1 uppercase">Horario de Preferencia ⏰</label>
-                <select id="waitHora" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white outline-none focus:border-accent">
+                <select id="waitHora" class="w-full bg-[#111827] border border-slate-700 rounded-xl p-4 text-white outline-none focus:border-accent">
                     <option value="18:00">18:00 hs (Tarde)</option>
                     <option value="19:00">19:00 hs (Tarde/Noche)</option>
                     <option value="20:00">20:00 hs (Central)</option>
@@ -434,7 +454,7 @@ function openWaitlistForm() {
             <button id="finalWaitlistConfirmBtn" class="w-full bg-accent text-white py-5 rounded-2xl font-black shadow-lg shadow-accent/20 flex items-center justify-center gap-2 active:scale-95 transition-transform cursor-pointer">
                 ACTIVAR ALERTA DE CANCHA <span class="material-symbols-outlined text-sm">notifications_active</span>
             </button>
-            <p class="text-[9px] text-center text-slate-500 italic">Te sumás al sistema automático de alertas de cancha de canchaOS.</p>
+            <p class="text-[9px] text-center text-slate-500 italic">Te sumás al sistema automático de alertas de cancha de CanchaControl.</p>
         </div>
     `;
     
@@ -787,7 +807,7 @@ function renderMatchLobbyView(container, turno, asistentes) {
                 <span class="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center text-white text-2xl shadow-lg shadow-accent/20 animate-bounce">smart_toy</span>
                 <div>
                     <h4 class="font-black text-white italic text-md">¿Querés armar los partidos al toque? 📲</h4>
-                    <p class="text-xs text-slate-400 mt-1 max-w-xs mx-auto">Bajate la app oficial de CanchaOS en tu pantalla de inicio para ver quiénes juegan y reservar en 2 clicks.</p>
+                    <p class="text-xs text-slate-400 mt-1 max-w-xs mx-auto">Bajate la app oficial de CanchaControl en tu pantalla de inicio para ver quiénes juegan y reservar en 2 clicks.</p>
                 </div>
                 <button onclick="installPWA()" class="w-full py-4 bg-white text-dark rounded-2xl font-black shadow-xl hover:scale-95 transition-all text-xs">
                     AGREGAR A MI PANTALLA PRINCIPAL
@@ -805,12 +825,12 @@ function promptJoinLobby(turnoId, equipo) {
                 <h3 class="text-primary font-black italic flex items-center gap-1.5"><span class="material-symbols-outlined">sports_soccer</span> ENTRAR AL EQUIPO ${equipo} 🏟️</h3>
                 <button onclick="location.reload()" class="text-slate-500"><span class="material-symbols-outlined">close</span></button>
             </div>
-            <p class="text-[11px] text-slate-400">Sumate a la formación oficial. Pone tus datos para que tus amigos sepan que jugás y sumarte al club de beneficios de CanchaOS.</p>
+            <p class="text-[11px] text-slate-400">Sumate a la formación oficial. Pone tus datos para que tus amigos sepan que jugás y sumarte al club de beneficios de CanchaControl.</p>
             <div class="grid grid-cols-2 gap-3">
-                <input id="joinNombre" type="text" placeholder="Tu Nombre" list="crmJugadoresList" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
-                <input id="joinApellido" type="text" placeholder="Tu Apellido" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
+                <input id="joinNombre" type="text" placeholder="Tu Nombre" list="crmJugadoresList" class="w-full bg-[#111827] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
+                <input id="joinApellido" type="text" placeholder="Tu Apellido" class="w-full bg-[#111827] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
             </div>
-            <input id="joinTel" type="tel" placeholder="WhatsApp (Ej: 1122334455)" class="w-full bg-[#1e1f26] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
+            <input id="joinTel" type="tel" placeholder="WhatsApp (Ej: 1122334455)" class="w-full bg-[#111827] border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 outline-none focus:border-primary">
             
             <button id="joinConfirmBtn" class="w-full bg-primary text-dark py-5 rounded-2xl font-black shadow-lg shadow-primary/20 flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all">
                 CONFIRMAR Y CONVOCARME <span class="material-symbols-outlined">bolt</span>
@@ -827,6 +847,7 @@ function promptJoinLobby(turnoId, equipo) {
             j.nombre.toLowerCase() === val
         );
         if (match) {
+            joinNombreInput.value = match.nombre;
             document.getElementById('joinApellido').value = match.apellido || '';
             document.getElementById('joinTel').value = match.telefono || '';
         }
@@ -851,7 +872,8 @@ function promptJoinLobby(turnoId, equipo) {
         try {
             await DB.confirmarAsistenciaPartido({
                 turnoId,
-                nombre: `${nombre} ${apellido}`,
+                nombre,
+                apellido,
                 telefono,
                 equipo
             });
@@ -862,7 +884,10 @@ function promptJoinLobby(turnoId, equipo) {
                     <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-dark text-3xl mx-auto shadow-lg shadow-primary/20">🏟️</div>
                     <h3 class="text-2xl font-black italic text-white uppercase tracking-tighter">¡LISTO CRACK CONVOCADO!</h3>
                     <p class="text-xs text-slate-400">Te sumaste con éxito al Equipo ${equipo}. ¡Nos vemos en la cancha!</p>
-                    <button onclick="location.reload()" class="w-full bg-white text-dark py-4 rounded-2xl font-black">ENTRAR AL VESTUARIO 🏃‍♂️</button>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="location.reload()" class="w-full bg-surface-high border border-slate-700 text-white py-4 rounded-2xl font-black text-xs active:scale-95 transition-all">VER VESTUARIO 🏃‍♂️</button>
+                        <button onclick="window.location.href='index.html'" class="w-full bg-primary text-dark py-4 rounded-2xl font-black text-xs shadow-lg shadow-primary/20 active:scale-95 transition-all">IR AL INICIO 🏠</button>
+                    </div>
                 </div>
             `;
         } catch (err) {
@@ -890,7 +915,7 @@ async function installPWA() {
         console.log(`User choice PWA install: ${outcome}`);
         deferredPrompt = null;
     } else {
-        alert("Para instalar CanchaOS:\n🤖 En Android: Tocá los 3 puntos de Chrome y elegí 'Instalar aplicación'.\n🍏 En iPhone: Tocá compartir en Safari y elegí 'Agregar a pantalla de inicio'.");
+        alert("Para instalar CanchaControl:\n🤖 En Android: Tocá los 3 puntos de Chrome y elegí 'Instalar aplicación'.\n🍏 En iPhone: Tocá compartir en Safari y elegí 'Agregar a pantalla de inicio'.");
     }
 }
 

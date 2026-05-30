@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CanchaControl – Sistema de Gestión 360° para Complejos Deportivos</title>
+  <meta name="description" content="CanchaControl es el sistema de gestión integral 360° para complejos de fútbol y pádel. Automatizá reservas, abonos, buffet y finanzas en tiempo real desde cualquier dispositivo." />
+  <meta name="keywords" content="gestión canchas fútbol, sistema reservas canchas, software complejo deportivo, CanchaControl, gestión pádel Argentina" />
+  <meta property="og:title" content="CanchaControl – Gestión 360° para Complejos Deportivos" />
+  <meta property="og:description" content="El sistema que automatiza y hace crecer tu complejo. Reservas, abonos, buffet y reportes en un solo lugar." />
+  <meta property="og:type" content="website" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { brand: '#10B981' },
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0B0F19;
+      color: #F9FAFB;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Gradient text ── */
+    .gradient-text {
+      background: linear-gradient(135deg, #10B981 0%, #34D399 50%, #6EE7B7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Glow blobs ── */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .blob-green  { background: radial-gradient(circle, rgba(16,185,129,.18) 0%, transparent 70%); }
+    .blob-blue   { background: radial-gradient(circle, rgba(59,130,246,.12)  0%, transparent 70%); }
+    .blob-purple { background: radial-gradient(circle, rgba(139,92,246,.10)  0%, transparent 70%); }
+
+    /* ── Grid pattern ── */
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 52px 52px;
+    }
+
+    /* ── Glassmorphism ── */
+    .glass {
+      background: rgba(255,255,255,.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,.07);
+    }
+
+    /* ── Section separator ── */
+    .sep {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(16,185,129,.25), transparent);
+    }
+
+    /* ── Gradient border card ── */
+    .grad-border {
+      position: relative;
+      background: #111827;
+      border-radius: 16px;
+    }
+    .grad-border::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 17px;
+      background: linear-gradient(135deg, rgba(16,185,129,.45), rgba(59,130,246,.2), rgba(16,185,129,.1));
+      z-index: -1;
+    }
+
+    /* ── CTA button ── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: #fff;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform .25s ease, box-shadow .25s ease;
+      border: none;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+      transition: left .5s ease;
+    }
+    .btn-primary:hover::after  { left: 100%; }
+    .btn-primary:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 32px rgba(16,185,129,.45);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #D1D5DB;
+      font-weight: 500;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      cursor: pointer;
+      transition: color .2s, border-color .2s, background .2s;
+      background: transparent;
+    }
+    .btn-outline:hover {
+      color: #fff;
+      border-color: rgba(255,255,255,.35);
+      background: rgba(255,255,255,.04);
+    }
+
+    /* ── Hover cards ── */
+    .card-hover {
+      transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+      border: 1px solid rgba(255,255,255,.05);
+      border-radius: 20px;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      border-color: rgba(16,185,129,.25);
+      box-shadow: 0 24px 48px rgba(16,185,129,.08);
+    }
+
+    /* ── Float animation ── */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+    .float  { animation: float 4s ease-in-out infinite; }
+    .float2 { animation: float 4s ease-in-out infinite; animation-delay: .6s; }
+    .float3 { animation: float 4s ease-in-out infinite; animation-delay: 1.2s; }
+
+    /* ── Pulse badge ── */
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,.5); }
+      50%       { box-shadow: 0 0 0 6px rgba(16,185,129,0); }
+    }
+    .pulse-dot { animation: pulse-dot 2s infinite; }
+
+    /* ── Scroll reveal ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal.delay-1 { transition-delay: .12s; }
+    .reveal.delay-2 { transition-delay: .24s; }
+    .reveal.delay-3 { transition-delay: .36s; }
+    .reveal.delay-4 { transition-delay: .48s; }
+
+    /* ── Nav scrolled ── */
+    nav.scrolled {
+      background: rgba(11,15,25,.85) !important;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    /* ── Input focus ── */
+    .form-input {
+      width: 100%;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #F9FAFB;
+      font-size: 15px;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    .form-input::placeholder { color: #6B7280; }
+    .form-input:focus {
+      border-color: rgba(16,185,129,.5);
+      box-shadow: 0 0 0 3px rgba(16,185,129,.1);
+    }
+
+    /* ── Stat counter ── */
+    .stat-value {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    /* ── Mobile nav overlay ── */
+    #mobile-menu {
+      transition: max-height .35s ease, opacity .35s ease;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+    #mobile-menu.open {
+      max-height: 300px;
+      opacity: 1;
+    }
+
+    /* ── Pricing card highlighted ── */
+    .pricing-featured {
+      background: linear-gradient(145deg, rgba(16,185,129,.12), rgba(16,185,129,.04));
+      border: 1px solid rgba(16,185,129,.35) !important;
+      position: relative;
+    }
+
+    /* ── FAQ accordion ── */
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .4s ease, padding .4s ease;
+    }
+    .faq-content.open {
+      max-height: 300px;
+      padding-top: 12px;
+    }
+    .faq-icon {
+      transition: transform .3s ease;
+    }
+    .faq-item.open .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    /* ── Step connector ── */
+    .step-connector {
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(16,185,129,.4), rgba(16,185,129,.1));
+    }
+
+    /* ── Ticker strip ── */
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-track {
+      display: flex;
+      animation: ticker 24s linear infinite;
+      width: max-content;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+
+    /* ── Stat counter animation ── */
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .stat-animated { animation: countUp .6s ease forwards; }
+
+    /* ── Stars ── */
+    .stars { color: #FBBF24; letter-spacing: 2px; }
+
+    /* ── Section dark alt ── */
+    .section-alt { background: rgba(255,255,255,.015); }
+
+    /* ══════════════════════════════
+       NICO PHONE CAROUSEL
+    ══════════════════════════════ */
+    .nico-phone-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      user-select: none;
+    }
+
+    /* Phone outer frame */
+    .nico-phone {
+      width: 260px;
+      background: #111;
+      border-radius: 42px;
+      padding: 12px;
+      box-shadow:
+        0 0 0 1.5px #333,
+        0 0 0 3px #222,
+        0 40px 80px rgba(0,0,0,.6),
+        0 0 60px rgba(16,185,129,.12);
+      position: relative;
+    }
+
+    /* Dynamic island */
+    .nico-island {
+      width: 96px;
+      height: 28px;
+      background: #000;
+      border-radius: 50px;
+      margin: 0 auto 8px;
+    }
+
+    /* Screen */
+    .nico-screen {
+      background: #0d1117;
+      border-radius: 32px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 420px;
+    }
+
+    /* WA Header */
+    .nico-wa-header {
+      background: #1a2633;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .nico-wa-back {
+      color: #25D366;
+      font-size: 22px;
+      font-weight: 300;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .nico-wa-avatar {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, #10B981, #059669);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .nico-wa-info { flex: 1; min-width: 0; }
+    .nico-wa-name { font-size: 13px; font-weight: 700; color: #fff; }
+    .nico-wa-status { font-size: 10px; color: #25D366; }
+    .nico-wa-icons { font-size: 13px; color: #aaa; letter-spacing: 4px; }
+
+    /* Chat area */
+    .nico-chat-area {
+      flex: 1;
+      overflow: hidden;
+      padding: 10px 10px 6px;
+      background: #0d1117;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      position: relative;
+    }
+
+    .nico-date-chip {
+      text-align: center;
+      font-size: 10px;
+      color: #aaa;
+      background: rgba(255,255,255,.08);
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      margin: 0 auto 10px;
+      display: block;
+      width: fit-content;
+    }
+
+    /* Slides */
+    .nico-slides {
+      position: relative;
+      height: calc(100% - 28px);
+    }
+
+    .nico-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .5s ease, transform .5s ease;
+      pointer-events: none;
+    }
+    .nico-slide.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .nico-slide.exit {
+      opacity: 0;
+      transform: translateY(-12px);
+    }
+
+    /* Bubbles */
+    .nico-bubble {
+      border-radius: 16px 16px 16px 4px;
+      padding: 10px 12px;
+      font-size: 11px;
+      line-height: 1.55;
+      color: #e8f5e9;
+      max-width: 95%;
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
+    }
+
+    .nico-bubble--green  { background: linear-gradient(145deg, #1a3a2a, #163324); border: 1px solid rgba(16,185,129,.25); }
+    .nico-bubble--orange { background: linear-gradient(145deg, #3a2a1a, #2e1e10); border: 1px solid rgba(251,146,60,.25); }
+    .nico-bubble--purple { background: linear-gradient(145deg, #2a1a3a, #221032); border: 1px solid rgba(167,139,250,.25); }
+    .nico-bubble--yellow { background: linear-gradient(145deg, #3a3010, #2c2408); border: 1px solid rgba(251,191,36,.25); }
+    .nico-bubble--red    { background: linear-gradient(145deg, #3a1a1a, #2c1010); border: 1px solid rgba(248,113,113,.25); }
+
+    .nico-label {
+      font-weight: 800;
+      font-size: 10.5px;
+      color: #fff;
+      letter-spacing: .3px;
+      margin-bottom: 4px;
+    }
+    .nico-divider {
+      height: 1px;
+      background: rgba(255,255,255,.1);
+      margin: 6px 0;
+    }
+    .nico-row {
+      color: #d4e8d4;
+      font-size: 10.5px;
+      line-height: 1.6;
+    }
+    .nico-val    { color: #4ade80; font-weight: 700; }
+    .nico-muted  { color: #8fa898; font-size: 10px; }
+    .nico-danger { color: #fb923c; font-weight: 700; }
+    .nico-highlight {
+      color: #fff;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+    .nico-time {
+      text-align: right;
+      font-size: 9px;
+      color: #6b8f6b;
+      margin-top: 6px;
+    }
+
+    /* WA bottom bar */
+    .nico-wa-bar {
+      background: #1a2633;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .nico-wa-input {
+      flex: 1;
+      background: rgba(255,255,255,.06);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 10px;
+      color: #666;
+    }
+    .nico-wa-mic {
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Dots */
+    .nico-dots {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+    .nico-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      cursor: pointer;
+      transition: all .3s ease;
+      border: none;
+    }
+    .nico-dot.active {
+      background: #10B981;
+      width: 22px;
+      border-radius: 4px;
+      box-shadow: 0 0 8px rgba(16,185,129,.5);
+    }
+
+    /* Caption */
+    .nico-caption {
+      font-size: 12px;
+      color: #6b7280;
+      text-align: center;
+      font-style: italic;
+      min-height: 18px;
+      transition: opacity .3s ease;
+    }
+  </style>
+</head>
+
+<body class="bg-[#0B0F19] text-white">
+  <script>
+    // Fallback de ultra-seguridad: si fallan CDNs de iconos o hay errores de red, revelamos todas las secciones en 1 segundo
+    setTimeout(() => {
+      document.querySelectorAll('.reveal').forEach(el => {
+        el.classList.add('visible');
+      });
+    }, 1000);
+  </script>
+
+  <!-- ══════════════════════════════════════════
+       NAV
+  ══════════════════════════════════════════ -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#0B0F19]/80 backdrop-blur-md border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-between">
+
+      <!-- Logo -->
+      <a href="#hero" class="flex items-center gap-2.5" aria-label="CanchaControl inicio">
+        <div class="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+          <i data-lucide="layout-dashboard" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="font-extrabold text-xl tracking-tight">Cancha<span class="text-emerald-400">Control</span></span>
+      </a>
+
+      <!-- Desktop links -->
+      <ul class="hidden md:flex items-center gap-8 text-sm text-gray-400">
+        <li><a href="#como-funciona" class="hover:text-white transition-colors">¿Cómo funciona?</a></li>
+        <li><a href="#modulos"       class="hover:text-white transition-colors">Módulos</a></li>
+        <li><a href="#precios"       class="hover:text-white transition-colors">Precios</a></li>
+        <li><a href="#faq"           class="hover:text-white transition-colors">FAQ</a></li>
+        <li><a href="#contacto"      class="hover:text-white transition-colors">Contacto</a></li>
+      </ul>
+
+      <!-- Desktop CTA -->
+      <a href="#contacto" class="btn-primary hidden md:inline-flex text-sm px-5 py-2.5">
+        Solicitar Demo Gratis
+      </a>
+
+      <!-- Hamburger -->
+      <button id="hamburger" class="md:hidden p-2 rounded-lg text-gray-400 hover:text-white" aria-label="Menú">
+        <i data-lucide="menu" class="w-6 h-6" id="ham-icon"></i>
+      </button>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="glass border-t border-white/5 md:hidden">
+      <ul class="flex flex-col gap-1 px-5 py-4 text-sm text-gray-300">
+        <li><a href="#como-funciona" class="block py-2 hover:text-white transition-colors" onclick="closeMobileMenu()">¿Cómo funciona?</a></li>
+        <li><a href="#modulos"       class="block py-2 hover:text-white transition-colors" onclick="closeMobileMenu()">Módulos</a></li>
+        <li><a href="#precios"       class="block py-2 hover:text-white transition-colors" onclick="closeMobileMenu()">Precios</a></li>
+        <li><a href="#faq"           class="block py-2 hover:text-white transition-colors" onclick="closeMobileMenu()">FAQ</a></li>
+        <li><a href="#contacto"      class="block py-2 hover:text-white transition-colors" onclick="closeMobileMenu()">Contacto</a></li>
+        <li class="pt-2">
+          <a href="#contacto" class="btn-primary w-full py-3 text-sm" onclick="closeMobileMenu()">Solicitar Demo Gratis</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════ -->
+  <section id="hero" class="relative min-h-screen flex flex-col justify-center pt-36 pb-20 overflow-hidden grid-bg">
+
+    <!-- Blobs -->
+    <div class="blob blob-green w-[700px] h-[700px] -top-32 -left-40 opacity-80"></div>
+    <div class="blob blob-blue  w-[500px] h-[500px] bottom-0 right-0"></div>
+
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 w-full">
+      <div class="grid lg:grid-cols-2 gap-14 items-center">
+
+        <!-- LEFT: Text -->
+        <div>
+          <!-- NEW badge -->
+          <div class="inline-flex items-center gap-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-1.5 text-sm text-emerald-400 font-semibold mb-4">
+            <span class="w-2 h-2 bg-emerald-400 rounded-full pulse-dot"></span>
+            NUEVO: Nico IA 24/7 activo
+          </div>
+
+          <!-- H1 -->
+          <h1 class="text-4xl sm:text-5xl lg:text-[3.4rem] font-extrabold leading-[1.12] mb-6">
+            El sistema que
+            <span class="gradient-text"> automatiza y hace crecer</span>
+            tu complejo deportivo.
+          </h1>
+
+          <!-- Subtitle -->
+          <p class="text-gray-400 text-lg leading-relaxed mb-9 max-w-xl">
+            Controlá tus turnos, abonos, stock de buffet y finanzas en tiempo real desde cualquier dispositivo. Una plataforma diseñada exclusivamente para la lógica de canchas de fútbol y pádel que trabaja para aumentar tu rentabilidad.
+          </p>
+
+          <!-- CTA row -->
+          <div class="flex flex-col sm:flex-row gap-4">
+            <a href="#contacto" class="btn-primary text-base px-8 py-4">
+              🚀 Solicitar Demo Gratis
+            </a>
+            <a href="#como-funciona" class="btn-outline text-base px-8 py-4">
+              Ver cómo funciona <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+          <!-- Hero stats -->
+          <div class="mt-10 grid grid-cols-3 gap-4 max-w-sm">
+            <div class="glass rounded-2xl p-4 text-center">
+              <p class="text-2xl font-extrabold text-emerald-400 leading-none" id="stat-complejos">0</p>
+              <p class="text-xs text-gray-500 mt-1">Complejos activos</p>
+            </div>
+            <div class="glass rounded-2xl p-4 text-center">
+              <p class="text-2xl font-extrabold text-emerald-400 leading-none" id="stat-turnos">0</p>
+              <p class="text-xs text-gray-500 mt-1">Turnos gestionados</p>
+            </div>
+            <div class="glass rounded-2xl p-4 text-center">
+              <p class="text-2xl font-extrabold text-emerald-400 leading-none">360°</p>
+              <p class="text-xs text-gray-500 mt-1">Gestión integral</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Mockup -->
+        <div class="relative flex justify-center items-center min-h-[380px]">
+
+          <!-- Main dashboard mockup -->
+          <div class="float relative z-10 w-full max-w-lg">
+            <img
+              src="assets/mockup_dashboard.png"
+              alt="Dashboard de gestión de canchas CanchaControl – vista de ocupación y finanzas en tiempo real"
+              class="rounded-2xl w-full"
+              style="box-shadow: 0 30px 70px rgba(16,185,129,.22);"
+            />
+          </div>
+
+          <!-- Floating: reporte WhatsApp -->
+          <div class="float2 absolute -bottom-6 -left-2 sm:-left-8 z-20 glass rounded-2xl p-3.5 flex items-center gap-3 max-w-[210px]">
+            <div class="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center flex-shrink-0 border border-emerald-500/20">
+              <i data-lucide="message-circle" class="w-5 h-5 text-emerald-400"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-white leading-tight">📊 Reporte del día</p>
+              <p class="text-xs text-gray-400 mt-0.5">Ingreso: $48.500 ✅</p>
+              <p class="text-xs text-gray-500">Ganancia neta: $31.200</p>
+            </div>
+          </div>
+
+          <!-- Floating: stat card -->
+          <div class="float3 absolute -top-4 -right-2 sm:-right-6 z-20 glass rounded-2xl p-4">
+            <p class="text-xs text-gray-400 mb-0.5">Ocupación hoy</p>
+            <p class="text-3xl font-extrabold text-emerald-400 leading-none">78%</p>
+            <p class="text-xs text-emerald-500 mt-1 flex items-center gap-1">
+              <i data-lucide="trending-up" class="w-3 h-3"></i> +12% vs ayer
+            </p>
+          </div>
+
+          <!-- Floating: waiting list badge -->
+          <div class="float2 absolute top-1/2 -right-4 sm:-right-8 z-20 glass rounded-2xl p-3 text-center" style="transform:translateY(-50%)">
+            <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center mx-auto mb-1 border border-orange-500/20">
+              <i data-lucide="users" class="w-4 h-4 text-orange-400"></i>
+            </div>
+            <p class="text-xs text-gray-400">Lista espera</p>
+            <p class="text-base font-bold text-white">5 clientes</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TICKER de features ── -->
+  <div class="py-4 overflow-hidden border-y border-white/5 bg-white/[.02]">
+    <div class="ticker-track gap-12 px-8">
+      <!-- duplicado para loop infinito -->
+      <template id="ticker-items">
+        <span class="flex items-center gap-2.5 text-sm text-gray-400 whitespace-nowrap">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Agenda visual de turnos
+        </span>
+        <span class="flex items-center gap-2.5 text-sm text-gray-400 whitespace-nowrap">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Links de pago MercadoPago
+        </span>
+        <span class="flex items-center gap-2.5 text-sm text-gray-400 whitespace-nowrap">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Cierre de caja automático
+        </span>
+        <span class="flex items-center gap-2.5 text-sm text-gray-400 whitespace-nowrap">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Abonos mensuales
+        </span>
+        <span class="flex items-center gap-2.5 text-sm text-gray-400 whitespace-nowrap">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Buffet integrado
+        </span>
+        <span class="flex items-center gap-2.5 text-sm text-gray-400 whitespace-nowrap">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Multi-sucursal
+        </span>
+        <span class="flex items-center gap-2.5 text-sm text-gray-400 whitespace-nowrap">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> CRM Deportivo – Goleadores
+        </span>
+        <span class="flex items-center gap-2.5 text-sm text-gray-400 whitespace-nowrap">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Happy Hour automático
+        </span>
+        <span class="flex items-center gap-2.5 text-sm text-gray-400 whitespace-nowrap">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Lista de espera inteligente
+        </span>
+        <span class="flex items-center gap-2.5 text-sm text-gray-400 whitespace-nowrap">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Nico IA 24/7
+        </span>
+      </template>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- ══════════════════════════════════════════
+       BENEFICIOS
+  ══════════════════════════════════════════ -->
+  <section id="beneficios" class="py-28 px-5 sm:px-8">
+    <div class="max-w-7xl mx-auto">
+
+      <!-- Header -->
+      <div class="text-center mb-16 reveal">
+        <p class="text-emerald-400 font-semibold text-sm uppercase tracking-widest mb-3">¿Por qué CanchaControl?</p>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">Beneficios que se ven<br/>en la caja</h2>
+        <p class="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
+          No es solo un sistema de turnos. Es tu socio tecnológico que trabaja activamente para aumentar tu rentabilidad.
+        </p>
+      </div>
+
+      <!-- Cards -->
+      <div class="grid md:grid-cols-3 gap-6">
+
+        <div class="card-hover glass p-8 reveal">
+          <div class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 border border-emerald-500/20">
+            <i data-lucide="users" class="w-7 h-7 text-emerald-400"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3">Lista de Espera Inteligente</h3>
+          <p class="text-gray-400 leading-relaxed">
+            El sistema detecta cancelaciones y avisa proactivamente de forma automática a los clientes interesados en los horarios más demandados.
+            <strong class="text-white"> No pierdas ni una venta.</strong>
+          </p>
+          <div class="mt-6 pt-6 border-t border-white/5 flex items-center gap-2 text-sm text-emerald-400 font-medium">
+            <i data-lucide="zap" class="w-4 h-4"></i> 0 turnos vacíos sin gestión
+          </div>
+        </div>
+
+        <div class="card-hover glass p-8 reveal delay-1">
+          <div class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/20">
+            <i data-lucide="bar-chart-2" class="w-7 h-7 text-blue-400"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3">Cierre de Caja por WhatsApp</h3>
+          <p class="text-gray-400 leading-relaxed">
+            Recibí un reporte completo de ingresos, egresos operativos y
+            <strong class="text-white"> ganancia neta exacta</strong>
+            en segundos directo a tu celular al finalizar la jornada.
+          </p>
+          <div class="mt-6 pt-6 border-t border-white/5 flex items-center gap-2 text-sm text-blue-400 font-medium">
+            <i data-lucide="smartphone" class="w-4 h-4"></i> Desde cualquier dispositivo
+          </div>
+        </div>
+
+        <div class="card-hover glass p-8 reveal delay-2">
+          <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 border border-purple-500/20">
+            <i data-lucide="shopping-bag" class="w-7 h-7 text-purple-400"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3">Buffet y Combos Integrados</h3>
+          <p class="text-gray-400 leading-relaxed">
+            Controlá el inventario en tiempo real con descuento automático de stock y vendé combos de
+            <strong class="text-white"> cancha + productos en un solo link de pago.</strong>
+          </p>
+          <div class="mt-6 pt-6 border-t border-white/5 flex items-center gap-2 text-sm text-purple-400 font-medium">
+            <i data-lucide="link" class="w-4 h-4"></i> Un link, múltiples productos
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- ══════════════════════════════════════════
+       ¿CÓMO FUNCIONA?
+  ══════════════════════════════════════════ -->
+  <section id="como-funciona" class="py-28 px-5 sm:px-8 section-alt relative overflow-hidden">
+
+    <div class="blob blob-purple w-[400px] h-[400px] top-0 right-0 opacity-50"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+
+      <div class="text-center mb-20 reveal">
+        <p class="text-emerald-400 font-semibold text-sm uppercase tracking-widest mb-3">Proceso simple</p>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">
+          Arrancás en <span class="gradient-text">un día.</span>
+        </h2>
+        <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+          Sin instalaciones ni capacitaciones largas. CanchaControl está pensado para que puedas operar desde el primer día.
+        </p>
+      </div>
+
+      <!-- Steps -->
+      <div class="relative">
+        <!-- Connector line (desktop) -->
+        <div class="hidden lg:block absolute top-14 left-1/6 right-1/6 h-px bg-gradient-to-r from-emerald-500/30 via-emerald-500/50 to-emerald-500/30 z-0"></div>
+
+        <div class="grid md:grid-cols-3 gap-8 lg:gap-12 relative z-10">
+
+          <!-- Paso 1 -->
+          <div class="reveal text-center">
+            <div class="relative inline-flex items-center justify-center w-28 h-28 mb-6">
+              <div class="absolute inset-0 bg-emerald-500/10 rounded-3xl border border-emerald-500/20"></div>
+              <div class="absolute -top-3 -right-3 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-sm font-black text-white shadow-lg shadow-emerald-500/40">1</div>
+              <i data-lucide="settings" class="w-12 h-12 text-emerald-400 relative z-10"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3">Configurás tu complejo</h3>
+            <p class="text-gray-400 leading-relaxed text-sm">
+              Cargás tus canchas, horarios, precios y sucursales. En menos de 30 minutos el sistema ya está listo para operar.
+            </p>
+          </div>
+
+          <!-- Paso 2 -->
+          <div class="reveal delay-1 text-center">
+            <div class="relative inline-flex items-center justify-center w-28 h-28 mb-6">
+              <div class="absolute inset-0 bg-blue-500/10 rounded-3xl border border-blue-500/20"></div>
+              <div class="absolute -top-3 -right-3 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-sm font-black text-white shadow-lg shadow-blue-500/40">2</div>
+              <i data-lucide="bot" class="w-12 h-12 text-blue-400 relative z-10"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3">Nico gestiona por vos</h3>
+            <p class="text-gray-400 leading-relaxed text-sm">
+              La IA de Nico monitorea reservas, genera links de cobro, detecta stock crítico y te avisa de cumpleaños. Trabaja 24/7 sin parar.
+            </p>
+          </div>
+
+          <!-- Paso 3 -->
+          <div class="reveal delay-2 text-center">
+            <div class="relative inline-flex items-center justify-center w-28 h-28 mb-6">
+              <div class="absolute inset-0 bg-emerald-500/10 rounded-3xl border border-emerald-500/20"></div>
+              <div class="absolute -top-3 -right-3 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-sm font-black text-white shadow-lg shadow-emerald-500/40">3</div>
+              <i data-lucide="trophy" class="w-12 h-12 text-emerald-400 relative z-10"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3">Vos revisás y cobrás</h3>
+            <p class="text-gray-400 leading-relaxed text-sm">
+              Al final del día te llega el resumen en WhatsApp con ganancia neta exacta. Solo manejás la estrategia. El sistema hace el resto. 🏆
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Screenshot del sistema en acción -->
+      <div class="mt-20 reveal">
+        <div class="grad-border p-1">
+          <img
+            src="assets/mockup_reportes.png"
+            alt="Panel de reportes y analítica de CanchaControl – ingresos, ocupación y ranking de canchas"
+            class="rounded-2xl w-full"
+          />
+        </div>
+        <p class="text-center text-sm text-gray-500 mt-4">
+          📊 Panel de analítica en tiempo real — Reportes de CanchaControl
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- ══════════════════════════════════════════
+       MÓDULOS
+  ══════════════════════════════════════════ -->
+  <section id="modulos" class="py-28 px-5 sm:px-8 relative overflow-hidden">
+
+    <div class="blob blob-blue w-[500px] h-[500px] top-20 -right-40"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+
+      <!-- Header -->
+      <div class="text-center mb-20 reveal">
+        <p class="text-emerald-400 font-semibold text-sm uppercase tracking-widest mb-3">Plataforma completa</p>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">
+          Todo lo que tu complejo necesita,<br/>
+          <span class="gradient-text">en un solo lugar</span>
+        </h2>
+        <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+          Cuatro módulos integrados que cubren el 100% de la operación de tu complejo.
+        </p>
+      </div>
+
+      <!-- ─── MODULE 1: Turnos ─── -->
+      <div class="grid lg:grid-cols-2 gap-14 items-center mb-24 reveal">
+        <div>
+          <div class="inline-flex items-center gap-2 bg-emerald-500/10 rounded-lg px-3 py-1.5 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-5">
+            <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Módulo 01
+          </div>
+          <h3 class="text-2xl sm:text-3xl font-extrabold mb-4">Gestión de Turnos y Reservas</h3>
+          <p class="text-gray-400 leading-relaxed mb-7 text-base">
+            Agenda visual rápida por horario y cancha, links de pago automáticos y soporte multi-sucursal. Reservas confirmadas en segundos, desde el celular o la PC.
+          </p>
+          <ul class="space-y-3.5">
+            <li class="flex items-center gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-emerald-500/15 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i>
+              </span>
+              Vista de agenda por cancha y horario en tiempo real
+            </li>
+            <li class="flex items-center gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-emerald-500/15 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i>
+              </span>
+              Links de pago automáticos vía MercadoPago
+            </li>
+            <li class="flex items-center gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-emerald-500/15 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i>
+              </span>
+              Gestión multi-sucursal centralizada
+            </li>
+            <li class="flex items-center gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-emerald-500/15 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i>
+              </span>
+              Descuentos y promociones configurables al instante
+            </li>
+          </ul>
+        </div>
+        <div class="grad-border p-1">
+          <img
+            src="assets/mockup_agenda_dashboard.png"
+            alt="Sistema de gestión de turnos y reservas de canchas deportivas – CanchaControl"
+            class="rounded-2xl w-full"
+          />
+        </div>
+      </div>
+
+      <!-- ─── NUEVO MÓDULO 01.5: El Vestuario Virtual — Multiplicador CRM 10x ─── -->
+      <div class="grid lg:grid-cols-2 gap-14 items-center mb-24 reveal">
+        <!-- MAQUETA / MOCKUP VISUAL -->
+        <div class="float3 relative flex justify-center items-center">
+          <!-- Brillo de fondo -->
+          <div class="absolute w-[280px] h-[480px] bg-emerald-500/10 rounded-[40px] filter blur-3xl -z-10"></div>
+          
+          <div class="grad-border p-1 max-w-[280px] sm:max-w-[300px]">
+            <img
+              src="assets/vestuario_mockup.png"
+              alt="Maqueta del Vestuario Virtual CanchaControl – cancha táctica 2D y función Corta la Bocha para dividir gastos"
+              class="rounded-[28px] w-full shadow-2xl shadow-emerald-500/20"
+            />
+          </div>
+          
+          <!-- Badge flotante de CRM -->
+          <div class="absolute -bottom-4 -right-4 sm:-right-8 z-20 glass rounded-2xl p-4 border border-emerald-500/30 max-w-[180px]">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
+              <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Base de Datos</p>
+            </div>
+            <p class="text-xs font-bold text-white leading-tight">📈 ¡CRM x10 Jugadores!</p>
+            <p class="text-[9px] text-gray-400 mt-1">Registramos a todos los que pisan la cancha, no solo al capitán.</p>
+          </div>
+        </div>
+
+        <!-- CONTENIDO Y PROPUESTA DE VALOR -->
+        <div>
+          <div class="inline-flex items-center gap-2 bg-emerald-500/10 rounded-lg px-3 py-1.5 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-5">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Módulo 01.5 • Exclusivo
+          </div>
+          <h3 class="text-2xl sm:text-3xl font-extrabold mb-4">El Vestuario Virtual:<br/>La máquina de viralizar y captar clientes</h3>
+          <p class="text-gray-400 leading-relaxed mb-6 text-base">
+            Los softwares comunes solo guardan los datos del capitán que reserva. Pero en el fútbol juegan 10 y en el pádel juegan 4. <strong class="text-white">CanchaControl rompe esta limitación.</strong>
+          </p>
+          <p class="text-gray-400 leading-relaxed mb-6 text-base text-sm">
+            Cuando el capitán confirma la reserva, recibe un link único para compartir por WhatsApp. Sus amigos entran a un <strong class="text-white">Vestuario Virtual en vivo</strong> para armar el equipo en una cancha táctica 2D, dividir el costo de la cancha ("Corta la Bocha") y registrar sus datos de contacto para sumarse al partido.
+          </p>
+          
+          <ul class="space-y-4 mb-7">
+            <li class="flex items-start gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-emerald-500/15 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i data-lucide="users" class="w-3.5 h-3.5 text-emerald-400"></i>
+              </span>
+              <div>
+                <strong class="text-white">Captación Masiva CRM (10x):</strong> Multiplicás tu base de datos de clientes por 10 en fútbol y por 4 en pádel automáticamente en cada reserva.
+              </div>
+            </li>
+            <li class="flex items-start gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-emerald-500/15 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i data-lucide="dollar-sign" class="w-3.5 h-3.5 text-emerald-400"></i>
+              </span>
+              <div>
+                <strong class="text-white">Widget "Corta la Bocha":</strong> Los jugadores ven al instante cuánto pone cada uno por cabeza, acelerando los cobros de seña y saldo.
+              </div>
+            </li>
+            <li class="flex items-start gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-emerald-500/15 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i data-lucide="cake" class="w-3.5 h-3.5 text-emerald-400"></i>
+              </span>
+              <div>
+                <strong class="text-white">Marketing Automatizado Integrado:</strong> Al tener el WhatsApp y cumpleaños de todos los jugadores, el sistema los fideliza de por vida con promos automatizadas.
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ─── MODULE 2: Nico IA — Carrusel de notificaciones ─── -->
+      <div class="grid lg:grid-cols-2 gap-14 items-center mb-24 reveal">
+
+        <!-- PHONE MOCKUP CAROUSEL -->
+        <div class="order-2 lg:order-1 flex justify-center">
+          <div class="nico-phone-wrap">
+
+            <!-- Phone frame -->
+            <div class="nico-phone">
+
+              <!-- Dynamic island -->
+              <div class="nico-island"></div>
+
+              <!-- Screen -->
+              <div class="nico-screen">
+
+                <!-- WA Header -->
+                <div class="nico-wa-header">
+                  <div class="nico-wa-back">‹</div>
+                  <div class="nico-wa-avatar">N</div>
+                  <div class="nico-wa-info">
+                    <div class="nico-wa-name">Nico CanchaOS</div>
+                    <div class="nico-wa-status">● en línea</div>
+                  </div>
+                  <div class="nico-wa-icons">📞 ⋮</div>
+                </div>
+
+                <!-- Chat area -->
+                <div class="nico-chat-area">
+                  <div class="nico-date-chip">Hoy</div>
+
+                  <!-- Slides container -->
+                  <div class="nico-slides" id="nicoSlides">
+
+                    <!-- Slide 1: Cierre de caja -->
+                    <div class="nico-slide active">
+                      <div class="nico-bubble nico-bubble--green">
+                        <div class="nico-label">📊 CIERRE DE CAJA — 29/05/2025</div>
+                        <div class="nico-divider"></div>
+                        <div class="nico-row">🏟️ <strong>LANÚS</strong></div>
+                        <div class="nico-row">💰 Ingresos: &nbsp;<span class="nico-val">$48.500</span></div>
+                        <div class="nico-row">💸 Egresos: &nbsp;&nbsp;<span class="nico-muted">$12.800</span></div>
+                        <div class="nico-row">💵 Neto: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nico-val">$35.700</span></div>
+                        <div class="nico-row">🏟️ Ocupación: <span class="nico-val">78%</span> (14/18)</div>
+                        <div class="nico-divider"></div>
+                        <div class="nico-row nico-highlight">🏆 GANANCIA NETA: <strong>$35.700</strong> 🔥</div>
+                        <div class="nico-time">23:59 ✓✓</div>
+                      </div>
+                    </div>
+
+                    <!-- Slide 2: Stock crítico -->
+                    <div class="nico-slide">
+                      <div class="nico-bubble nico-bubble--orange">
+                        <div class="nico-label">📦 ALERTA DE STOCK CRÍTICO</div>
+                        <div class="nico-divider"></div>
+                        <div class="nico-row">⚠️ <strong>Gatorade Naranja</strong></div>
+                        <div class="nico-row nico-muted">Quedan solo <span class="nico-danger">3 unidades</span></div>
+                        <div class="nico-row" style="margin-top:6px">⚠️ <strong>Agua 500ml</strong></div>
+                        <div class="nico-row nico-muted">Quedan solo <span class="nico-danger">5 unidades</span></div>
+                        <div class="nico-divider"></div>
+                        <div class="nico-row nico-highlight">🛒 Avisale a Ariel para reponer antes del partido de las 21:00 hs.</div>
+                        <div class="nico-time">18:32 ✓✓</div>
+                      </div>
+                    </div>
+
+                    <!-- Slide 3: Cumpleaños -->
+                    <div class="nico-slide">
+                      <div class="nico-bubble nico-bubble--purple">
+                        <div class="nico-label">🎂 CUMPLEAÑOS DE HOY</div>
+                        <div class="nico-divider"></div>
+                        <div class="nico-row">🎁 <strong>Marcelo R.</strong></div>
+                        <div class="nico-row nico-muted">Cliente frecuente · 18 partidos</div>
+                        <div class="nico-row" style="margin-top:6px">🎁 <strong>Lucas G.</strong></div>
+                        <div class="nico-row nico-muted">Cliente frecuente · 12 partidos</div>
+                        <div class="nico-divider"></div>
+                        <div class="nico-row nico-highlight">💬 ¿Les mandamos el regalo? Gatorade gratis o 10% OFF en su próxima reserva 🎉</div>
+                        <div class="nico-time">09:00 ✓✓</div>
+                      </div>
+                    </div>
+
+                    <!-- Slide 4: Happy Hour -->
+                    <div class="nico-slide">
+                      <div class="nico-bubble nico-bubble--yellow">
+                        <div class="nico-label">⚡ ALERTA DE BACHE HORARIO</div>
+                        <div class="nico-divider"></div>
+                        <div class="nico-row">📉 <strong>Lunes 17:00 — 19:00</strong></div>
+                        <div class="nico-row nico-muted">Ocupación: <span class="nico-danger">28%</span> (bajo el 40%)</div>
+                        <div class="nico-divider"></div>
+                        <div class="nico-row">💡 <strong>Estrategia Happy Hour:</strong></div>
+                        <div class="nico-row nico-muted">Cancha + 6 Aguas al costo</div>
+                        <div class="nico-row nico-muted">Precio especial solo ese horario</div>
+                        <div class="nico-divider"></div>
+                        <div class="nico-row nico-highlight">🔥 ¿Activamos la promo, Ariel?</div>
+                        <div class="nico-time">14:15 ✓✓</div>
+                      </div>
+                    </div>
+
+                    <!-- Slide 5: Pagos pendientes -->
+                    <div class="nico-slide">
+                      <div class="nico-bubble nico-bubble--red">
+                        <div class="nico-label">💳 PAGOS PENDIENTES</div>
+                        <div class="nico-divider"></div>
+                        <div class="nico-row">• <strong>Rodrigo P.</strong> — Cancha 2, 21:00</div>
+                        <div class="nico-row">• <strong>Ana M.</strong> — Cancha 1, 20:00</div>
+                        <div class="nico-row">• <strong>Diego F.</strong> — Cancha 3, 22:00</div>
+                        <div class="nico-divider"></div>
+                        <div class="nico-row nico-highlight">⚡ Total pendiente: <strong>$27.600</strong></div>
+                        <div class="nico-row nico-muted" style="margin-top:4px">¿Les mando el link de pago?</div>
+                        <div class="nico-time">20:05 ✓✓</div>
+                      </div>
+                    </div>
+
+                  </div><!-- /slides -->
+                </div><!-- /chat area -->
+
+                <!-- WA Bottom bar -->
+                <div class="nico-wa-bar">
+                  <div class="nico-wa-input">Escribí un mensaje...</div>
+                  <div class="nico-wa-mic">🎤</div>
+                </div>
+
+              </div><!-- /screen -->
+            </div><!-- /phone -->
+
+            <!-- Dot indicators -->
+            <div class="nico-dots" id="nicoDots">
+              <span class="nico-dot active" onclick="goToSlide(0)"></span>
+              <span class="nico-dot" onclick="goToSlide(1)"></span>
+              <span class="nico-dot" onclick="goToSlide(2)"></span>
+              <span class="nico-dot" onclick="goToSlide(3)"></span>
+              <span class="nico-dot" onclick="goToSlide(4)"></span>
+            </div>
+
+            <!-- Label under phone -->
+            <p class="nico-caption" id="nicoCaption">📊 Cierre de caja automático</p>
+
+          </div>
+        </div>
+
+        <!-- TEXT -->
+        <div class="order-1 lg:order-2">
+          <div class="inline-flex items-center gap-2 bg-blue-500/10 rounded-lg px-3 py-1.5 text-blue-400 text-xs font-bold uppercase tracking-wider mb-5">
+            <i data-lucide="bot" class="w-3.5 h-3.5"></i> Módulo 02
+          </div>
+          <h3 class="text-2xl sm:text-3xl font-extrabold mb-4">Nico IA — Tu agente<br/>trabajando 24/7</h3>
+          <p class="text-gray-400 leading-relaxed mb-7 text-base">
+            Nico monitorea tu complejo en tiempo real y te avisa por WhatsApp de todo lo que necesitás saber: cierres de caja, stock crítico, cumpleaños de clientes, horarios vacíos y pagos pendientes. Vos solo tomás la decisión.
+          </p>
+          <ul class="space-y-3.5">
+            <li class="flex items-center gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-emerald-500/15 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i>
+              </span>
+              Cierre de caja automático al final del día
+            </li>
+            <li class="flex items-center gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-orange-500/15 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-orange-400"></i>
+              </span>
+              Alertas de stock crítico en tiempo real
+            </li>
+            <li class="flex items-center gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-purple-500/15 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-purple-400"></i>
+              </span>
+              Cumpleaños de clientes con regalo automático
+            </li>
+            <li class="flex items-center gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-yellow-500/15 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-yellow-400"></i>
+              </span>
+              Detección de baches y sugerencia de Happy Hour
+            </li>
+            <li class="flex items-center gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-red-500/15 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-red-400"></i>
+              </span>
+              Recordatorio de pagos pendientes con link listo
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ─── MODULE 3: Buffet ─── -->
+      <div class="grid lg:grid-cols-2 gap-14 items-center mb-24 reveal">
+        <div>
+          <div class="inline-flex items-center gap-2 bg-orange-500/10 rounded-lg px-3 py-1.5 text-orange-400 text-xs font-bold uppercase tracking-wider mb-5">
+            <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i> Módulo 03
+          </div>
+          <h3 class="text-2xl sm:text-3xl font-extrabold mb-4">Buffet y POS Integrado</h3>
+          <p class="text-gray-400 leading-relaxed mb-7 text-base">
+            Punto de venta integrado directamente en el sistema. Vendé bebidas, combos y snacks con descuento automático de stock y registro en las finanzas del día.
+          </p>
+          <ul class="space-y-3.5">
+            <li class="flex items-center gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-orange-500/15 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-orange-400"></i>
+              </span>
+              Control de stock en tiempo real
+            </li>
+            <li class="flex items-center gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-orange-500/15 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-orange-400"></i>
+              </span>
+              Alerta automática de stock crítico
+            </li>
+            <li class="flex items-center gap-3 text-sm text-gray-300">
+              <span class="w-6 h-6 bg-orange-500/15 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-orange-400"></i>
+              </span>
+              Combos cancha + bebidas en un solo link de pago
+            </li>
+          </ul>
+        </div>
+        <div class="grad-border p-1">
+          <img
+            src="assets/mockup_buffet.png"
+            alt="Sistema de gestión de buffet y stock para canchas deportivas – CanchaControl"
+            class="rounded-2xl w-full"
+          />
+        </div>
+      </div>
+
+      <!-- ─── MODULE 4: Analítica + CRM cards ─── -->
+      <div class="grid md:grid-cols-2 gap-6 reveal">
+
+        <!-- Analítica -->
+        <div class="card-hover glass p-8">
+          <div class="inline-flex items-center gap-2 bg-emerald-500/10 rounded-lg px-3 py-1.5 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-5">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> Módulo 04
+          </div>
+          <h3 class="text-xl font-bold mb-3">Analítica y Estrategia Comercial</h3>
+          <p class="text-gray-400 leading-relaxed mb-5">
+            El sistema detecta automáticamente baches horarios con menos del 40% de ocupación y te sugiere promociones de <strong class="text-white">"Happy Hour"</strong> para maximizar cada hora de tu complejo.
+          </p>
+          <div class="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
+            <p class="text-xs text-emerald-300 font-mono leading-relaxed">
+              💡 "Ariel, los lunes a las 17:00 tienen 30% de ocupación.<br/>
+              Sugerencia: Cancha + 6 Aguas a precio especial."
+            </p>
+          </div>
+        </div>
+
+        <!-- CRM -->
+        <div class="card-hover glass p-8">
+          <div class="inline-flex items-center gap-2 bg-purple-500/10 rounded-lg px-3 py-1.5 text-purple-400 text-xs font-bold uppercase tracking-wider mb-5">
+            <i data-lucide="star" class="w-3.5 h-3.5"></i> Módulo 05
+          </div>
+          <h3 class="text-xl font-bold mb-3">CRM Deportivo: Goleadores del Mes</h3>
+          <p class="text-gray-400 leading-relaxed mb-5">
+            Base de datos con historial de consumos, alertas de cumpleaños y ranking de clientes más fieles para <strong class="text-white">campañas automáticas de retención</strong> que fidelizan de por vida.
+          </p>
+          <div class="bg-purple-500/5 border border-purple-500/20 rounded-xl p-4">
+            <p class="text-xs text-purple-300 font-mono leading-relaxed">
+              🏆 "Este cliente jugó 12 partidos este mes.<br/>
+              ¿Le regalamos un pack de aguas o 20% de descuento?"
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- ══════════════════════════════════════════
+       TESTIMONIOS
+  ══════════════════════════════════════════ -->
+  <section id="testimonios" class="py-28 px-5 sm:px-8 section-alt relative overflow-hidden">
+
+    <div class="blob blob-green w-[400px] h-[400px] bottom-0 left-0 opacity-30"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+
+      <div class="text-center mb-16 reveal">
+        <p class="text-emerald-400 font-semibold text-sm uppercase tracking-widest mb-3">Lo que dicen los complejos</p>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">
+          Resultados reales,<br/><span class="gradient-text">canchas reales</span>
+        </h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+
+        <!-- Testimonio 1 -->
+        <div class="card-hover glass p-8 reveal">
+          <div class="stars text-base mb-4">★★★★★</div>
+          <p class="text-gray-300 leading-relaxed text-sm mb-6 italic">
+            "En una semana dejé de pelear con el cuaderno. Ahora Nico me manda el reporte a las 00:00 y ya está. La ganancia neta me aparece sola, sin calcular nada."
+          </p>
+          <div class="flex items-center gap-3 mt-auto">
+            <div class="w-11 h-11 bg-emerald-600 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">MR</div>
+            <div>
+              <p class="font-semibold text-sm text-white">Marcelo R.</p>
+              <p class="text-xs text-gray-500">Complejo 4 canchas · Lanús, GBA</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonio 2 -->
+        <div class="card-hover glass p-8 reveal delay-1" style="border-color: rgba(16,185,129,.2);">
+          <div class="stars text-base mb-4">★★★★★</div>
+          <p class="text-gray-300 leading-relaxed text-sm mb-6 italic">
+            "El módulo de abonos me salvó la vida. Cobro las 5 fechas de una sola vez y los clientes están más contentos porque tienen el turno asegurado. ¡Groso!"
+          </p>
+          <div class="flex items-center gap-3 mt-auto">
+            <div class="w-11 h-11 bg-blue-600 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">LG</div>
+            <div>
+              <p class="font-semibold text-sm text-white">Lucas G.</p>
+              <p class="text-xs text-gray-500">Complejo mixto pádel + fútbol · Palermo</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonio 3 -->
+        <div class="card-hover glass p-8 reveal delay-2">
+          <div class="stars text-base mb-4">★★★★★</div>
+          <p class="text-gray-300 leading-relaxed text-sm mb-6 italic">
+            "Pensé que era para complejos grandes. Lo configuré sola en un día y funciona perfecto. El stock del buffet se descuenta solo y ya no se me va el inventario sin control."
+          </p>
+          <div class="flex items-center gap-3 mt-auto">
+            <div class="w-11 h-11 bg-purple-600 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">SM</div>
+            <div>
+              <p class="font-semibold text-sm text-white">Sabrina M.</p>
+              <p class="text-xs text-gray-500">Complejo familiar · Quilmes, GBA</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- ══════════════════════════════════════════
+       DIFERENCIAL
+  ══════════════════════════════════════════ -->
+  <section id="diferencial" class="py-28 px-5 sm:px-8 relative overflow-hidden">
+
+    <div class="blob blob-green w-[600px] h-[600px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-40"></div>
+
+    <div class="max-w-5xl mx-auto relative z-10">
+      <div class="glass rounded-3xl p-10 sm:p-16 text-center reveal">
+
+        <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-1.5 text-sm text-emerald-400 font-semibold mb-7">
+          <i data-lucide="shield-check" class="w-4 h-4"></i> Nuestro diferencial
+        </div>
+
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-6 leading-tight">
+          Tu complejo no es genérico.<br/>
+          <span class="gradient-text">Tu software tampoco debería serlo.</span>
+        </h2>
+
+        <p class="text-gray-400 text-lg leading-relaxed max-w-3xl mx-auto mb-14">
+          A diferencia de agendas genéricas o planillas de Excel rígidas,
+          <strong class="text-white">CanchaControl fue construido entendiendo el día a día de las canchas</strong>.
+          Nos enfocamos en crear soluciones flexibles a la medida de tu modelo de negocio,
+          ofreciendo soporte directo y cercano.
+        </p>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-6 max-w-2xl mx-auto">
+          <div>
+            <p class="stat-value gradient-text">+50</p>
+            <p class="text-sm text-gray-400 mt-2">Complejos activos</p>
+          </div>
+          <div class="border-x border-white/10">
+            <p class="stat-value gradient-text">360°</p>
+            <p class="text-sm text-gray-400 mt-2">Gestión integral</p>
+          </div>
+          <div>
+            <p class="stat-value gradient-text">0</p>
+            <p class="text-sm text-gray-400 mt-2">Planillas de Excel</p>
+          </div>
+        </div>
+
+        <!-- Feature pills -->
+        <div class="mt-12 flex flex-wrap justify-center gap-3">
+          <span class="glass border border-white/10 rounded-full px-4 py-2 text-sm text-gray-300 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Multi-sucursal
+          </span>
+          <span class="glass border border-white/10 rounded-full px-4 py-2 text-sm text-gray-300 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Sin permanencia
+          </span>
+          <span class="glass border border-white/10 rounded-full px-4 py-2 text-sm text-gray-300 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Soporte directo
+          </span>
+          <span class="glass border border-white/10 rounded-full px-4 py-2 text-sm text-gray-300 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> 100% en la nube
+          </span>
+          <span class="glass border border-white/10 rounded-full px-4 py-2 text-sm text-gray-300 flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Mobile-first
+          </span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- ══════════════════════════════════════════
+       PRECIOS
+  ══════════════════════════════════════════ -->
+  <section id="precios" class="py-28 px-5 sm:px-8 section-alt relative overflow-hidden">
+
+    <div class="blob blob-blue w-[400px] h-[400px] top-0 right-0 opacity-40"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+
+      <div class="text-center mb-16 reveal">
+        <p class="text-emerald-400 font-semibold text-sm uppercase tracking-widest mb-3">Transparente desde el día 1</p>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">
+          Planes que se adaptan<br/><span class="gradient-text">a tu complejo</span>
+        </h2>
+        <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+          Sin costos ocultos, sin letra chica. Todos los planes incluyen soporte directo y actualizaciones incluidas.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+
+        <!-- Plan Starter -->
+        <div class="card-hover glass p-8 reveal flex flex-col">
+          <div class="mb-6">
+            <p class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-2">Starter</p>
+            <div class="flex items-end gap-1 mb-1">
+              <span class="text-4xl font-extrabold text-white">$14.900</span>
+              <span class="text-gray-400 text-sm mb-1">/mes</span>
+            </div>
+            <p class="text-xs text-emerald-400 font-semibold flex items-center gap-1">🎁 1° MES DE PRUEBA GRATIS</p>
+          </div>
+          <ul class="space-y-3 mb-8 flex-1">
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> 1 sucursal
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Hasta 3 canchas
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Agenda + reservas básicas
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Links de pago MercadoPago
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-400 line-through">
+              <i data-lucide="x" class="w-4 h-4 text-gray-600 flex-shrink-0"></i> Nico IA 24/7
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-400 line-through">
+              <i data-lucide="x" class="w-4 h-4 text-gray-600 flex-shrink-0"></i> Buffet y stock
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-400 line-through">
+              <i data-lucide="x" class="w-4 h-4 text-gray-600 flex-shrink-0"></i> Multi-sucursal
+            </li>
+          </ul>
+          <a href="#contacto" class="btn-outline w-full py-3 text-sm text-center">Probar mes gratis</a>
+        </div>
+
+        <!-- Plan Pro (featured) -->
+        <div class="pricing-featured rounded-[20px] p-8 reveal delay-1 flex flex-col relative">
+          <!-- Badge -->
+          <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg shadow-emerald-500/40 whitespace-nowrap">
+            ⭐ MÁS POPULAR
+          </div>
+          <div class="mb-6 mt-2">
+            <p class="text-sm font-semibold text-emerald-400 uppercase tracking-widest mb-2">Pro</p>
+            <div class="flex items-end gap-1 mb-1">
+              <span class="text-4xl font-extrabold text-white">$29.900</span>
+              <span class="text-gray-400 text-sm mb-1">/mes</span>
+            </div>
+            <p class="text-xs text-gray-500">Para complejos en crecimiento</p>
+          </div>
+          <ul class="space-y-3 mb-8 flex-1">
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Hasta 2 sucursales
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Canchas ilimitadas
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> <strong class="text-white">Nico IA 24/7</strong>
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Buffet y POS integrado
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Abonos mensuales
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Reportes y analítica
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> CRM Goleadores
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Soporte prioritario
+            </li>
+          </ul>
+          <a href="#contacto" class="btn-primary w-full py-3 text-sm text-center">Solicitar Demo</a>
+        </div>
+
+        <!-- Plan Enterprise -->
+        <div class="card-hover glass p-8 reveal delay-2 flex flex-col">
+          <div class="mb-6">
+            <p class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-2">Enterprise</p>
+            <div class="flex items-end gap-1 mb-1">
+              <span class="text-4xl font-extrabold text-white">$59.900</span>
+              <span class="text-gray-400 text-sm mb-1">/mes</span>
+            </div>
+            <p class="text-xs text-emerald-400 font-semibold">De 7 canchas en adelante</p>
+          </div>
+          <ul class="space-y-3 mb-8 flex-1">
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Sucursales ilimitadas
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Todo el Plan Pro
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Integración MercadoPago ilimitada
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Branding personalizado
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Soporte dedicado directo
+            </li>
+            <li class="flex items-center gap-2.5 text-sm text-gray-300">
+              <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> SLA garantizado
+            </li>
+          </ul>
+          <a href="#contacto" class="btn-outline w-full py-3 text-sm text-center">Hablar con ventas</a>
+        </div>
+
+      </div>
+
+      <p class="text-center text-xs text-gray-600 mt-8 reveal">
+        * Precios en pesos argentinos (ARS). Los precios pueden actualizarse con previo aviso. Sin permanencia mínima.
+      </p>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- ══════════════════════════════════════════
+       FAQ
+  ══════════════════════════════════════════ -->
+  <section id="faq" class="py-28 px-5 sm:px-8 relative overflow-hidden">
+
+    <div class="blob blob-purple w-[350px] h-[350px] top-0 left-0 opacity-30"></div>
+
+    <div class="max-w-3xl mx-auto relative z-10">
+
+      <div class="text-center mb-16 reveal">
+        <p class="text-emerald-400 font-semibold text-sm uppercase tracking-widest mb-3">Preguntas frecuentes</p>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">
+          Todo lo que querés<br/><span class="gradient-text">saber antes de arrancar</span>
+        </h2>
+      </div>
+
+      <div class="space-y-4 reveal">
+
+        <div class="faq-item glass rounded-2xl overflow-hidden border border-white/5">
+          <button class="faq-trigger w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+            <span class="font-semibold text-sm sm:text-base pr-4">¿Necesito instalar algo en mi celular o PC?</span>
+            <i data-lucide="plus" class="w-5 h-5 text-emerald-400 faq-icon flex-shrink-0"></i>
+          </button>
+          <div class="faq-content px-6 pb-6">
+            <p class="text-gray-400 text-sm leading-relaxed">No. CanchaControl es 100% en la nube. Accedés desde cualquier navegador en tu celular, tablet o PC, sin descargar nada. También tiene modo PWA para instalar el ícono en tu pantalla de inicio como si fuera una app nativa.</p>
+          </div>
+        </div>
+
+        <div class="faq-item glass rounded-2xl overflow-hidden border border-white/5">
+          <button class="faq-trigger w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+            <span class="font-semibold text-sm sm:text-base pr-4">¿Funciona sin conexión a internet?</span>
+            <i data-lucide="plus" class="w-5 h-5 text-emerald-400 faq-icon flex-shrink-0"></i>
+          </button>
+          <div class="faq-content px-6 pb-6">
+            <p class="text-gray-400 text-sm leading-relaxed">Sí. Contamos con un Modo Resiliente: si se corta internet, el sistema sigue funcionando con los datos cacheados localmente. Cuando vuelve la conexión, se sincroniza todo automáticamente sin perder ninguna operación.</p>
+          </div>
+        </div>
+
+        <div class="faq-item glass rounded-2xl overflow-hidden border border-white/5">
+          <button class="faq-trigger w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+            <span class="font-semibold text-sm sm:text-base pr-4">¿Cómo funciona la integración con MercadoPago?</span>
+            <i data-lucide="plus" class="w-5 h-5 text-emerald-400 faq-icon flex-shrink-0"></i>
+          </button>
+          <div class="faq-content px-6 pb-6">
+            <p class="text-gray-400 text-sm leading-relaxed">El sistema genera links de pago de Mercado Pago automáticamente por cada reserva. El cliente hace clic, paga, y el sistema actualiza el estado de la reserva en tiempo real. Sin copia-pega, sin errores. También soporta combos cancha + buffet en un único link.</p>
+          </div>
+        </div>
+
+        <div class="faq-item glass rounded-2xl overflow-hidden border border-white/5">
+          <button class="faq-trigger w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+            <span class="font-semibold text-sm sm:text-base pr-4">¿Puedo gestionar más de una sucursal?</span>
+            <i data-lucide="plus" class="w-5 h-5 text-emerald-400 faq-icon flex-shrink-0"></i>
+          </button>
+          <div class="faq-content px-6 pb-6">
+            <p class="text-gray-400 text-sm leading-relaxed">Sí. El Plan Pro soporta hasta 2 sucursales y el Plan Enterprise es ilimitado. Desde un solo panel podés ver la agenda, el stock y las finanzas de todos tus complejos separados, con reportes comparativos entre sedes.</p>
+          </div>
+        </div>
+
+        <div class="faq-item glass rounded-2xl overflow-hidden border border-white/5">
+          <button class="faq-trigger w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+            <span class="font-semibold text-sm sm:text-base pr-4">¿Qué pasa si quiero cancelar el servicio?</span>
+            <i data-lucide="plus" class="w-5 h-5 text-emerald-400 faq-icon flex-shrink-0"></i>
+          </button>
+          <div class="faq-content px-6 pb-6">
+            <p class="text-gray-400 text-sm leading-relaxed">No hay permanencia ni contratos de largo plazo. Podés cancelar cuando quieras sin costo. Tus datos quedan disponibles para exportar durante 30 días. Sin letras chicas, sin sorpresas.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- ══════════════════════════════════════════
+       CONTACTO / FORM
+  ══════════════════════════════════════════ -->
+  <section id="contacto" class="py-28 px-5 sm:px-8 relative overflow-hidden section-alt">
+
+    <div class="blob blob-blue w-[400px] h-[400px] bottom-0 right-0 opacity-60"></div>
+
+    <div class="max-w-2xl mx-auto relative z-10">
+
+      <!-- Header -->
+      <div class="text-center mb-12 reveal">
+        <p class="text-emerald-400 font-semibold text-sm uppercase tracking-widest mb-3">Empezá hoy</p>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">
+          ¿Querés transformar tu complejo?<br/>
+          <span class="gradient-text">Hablemos hoy mismo.</span>
+        </h2>
+        <p class="text-gray-400 text-base">
+          Completá el formulario y te contactamos por WhatsApp en menos de 2 horas. ⚽
+        </p>
+      </div>
+
+      <!-- Form card -->
+      <div class="glass rounded-3xl p-8 sm:p-10 reveal delay-1">
+
+        <form id="contactForm" novalidate>
+          <div class="grid sm:grid-cols-2 gap-5 mb-5">
+            <div>
+              <label class="block text-sm font-semibold text-gray-300 mb-2" for="nombre">Nombre completo</label>
+              <input
+                type="text" id="nombre" name="nombre" required autocomplete="name"
+                class="form-input" placeholder="Juan García"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-300 mb-2" for="complejo">Nombre del Complejo</label>
+              <input
+                type="text" id="complejo" name="complejo" required
+                class="form-input" placeholder="Complejo El Crack"
+              />
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-5 mb-5">
+            <div>
+              <label class="block text-sm font-semibold text-gray-300 mb-2" for="telefono">Teléfono / WhatsApp</label>
+              <input
+                type="tel" id="telefono" name="telefono" required autocomplete="tel"
+                class="form-input" placeholder="+54 9 11 0000-0000"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-300 mb-2" for="localidad">Localidad</label>
+              <input
+                type="text" id="localidad" name="localidad" required
+                class="form-input" placeholder="Buenos Aires, GBA, ..."
+              />
+            </div>
+          </div>
+
+          <!-- Plan select -->
+          <div class="mb-7">
+            <label class="block text-sm font-semibold text-gray-300 mb-2" for="plan">Plan de interés</label>
+            <select id="plan" name="plan" class="form-input">
+              <option value="starter">Starter ($14.900/mes - 1° Mes Gratis)</option>
+              <option value="pro" selected>Pro ($29.900/mes)</option>
+              <option value="enterprise">Enterprise ($59.900/mes - 7+ Canchas)</option>
+            </select>
+          </div>
+
+          <button type="submit" id="submitBtn" class="btn-primary w-full text-base py-4">
+            🚀 Llevá tu complejo al siguiente nivel
+          </button>
+
+          <p class="text-center text-xs text-gray-500 mt-4">
+            Sin compromiso. Te contactamos por WhatsApp en menos de 2 horas. ⚽
+          </p>
+        </form>
+
+        <!-- Success state -->
+        <div id="successMsg" class="hidden text-center py-8">
+          <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-5 border border-emerald-500/30">
+            <i data-lucide="check-circle" class="w-8 h-8 text-emerald-400"></i>
+          </div>
+          <h3 class="text-2xl font-bold mb-2">¡Mensaje enviado! 🎉</h3>
+          <p class="text-gray-400 mb-6">Te contactamos por WhatsApp en menos de 2 horas. ¡Prepará el complejo, viene lo bueno! ⚽🔥</p>
+          <a id="whatsappDirectLink" href="#" target="_blank" class="btn-primary inline-flex px-8 py-3 text-sm">
+            📱 También podés escribirnos directo
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════ -->
+  <footer class="border-t border-white/5 py-12 px-5 sm:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+        <a href="#hero" class="flex items-center gap-2.5" aria-label="CanchaControl">
+          <div class="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center">
+            <i data-lucide="layout-dashboard" class="w-4 h-4 text-white"></i>
+          </div>
+          <span class="font-extrabold text-lg">Cancha<span class="text-emerald-400">Control</span></span>
+        </a>
+        <nav class="flex flex-wrap gap-6 text-sm text-gray-500">
+          <a href="#como-funciona" class="hover:text-white transition-colors">¿Cómo funciona?</a>
+          <a href="#modulos"       class="hover:text-white transition-colors">Módulos</a>
+          <a href="#precios"       class="hover:text-white transition-colors">Precios</a>
+          <a href="#faq"           class="hover:text-white transition-colors">FAQ</a>
+          <a href="#contacto"      class="hover:text-white transition-colors">Contacto</a>
+        </nav>
+        <a href="#contacto" class="btn-primary text-sm px-5 py-2.5">Solicitar Demo Gratis</a>
+      </div>
+      <div class="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-600">
+        <p>© 2025 CanchaControl · Sistema 360° para complejos deportivos · Argentina</p>
+        <span>⚽ Hecho con ❤️ para los dueños de canchas</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══════════════════════════════════════════
+       JAVASCRIPT
+  ══════════════════════════════════════════ -->
+  <script>
+    // ── Init icons ──
+    try {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    } catch (e) {
+      console.warn("Lucide icons load failed:", e);
+    }
+
+    // ── TICKER: inyectar items duplicados ──
+    const tickerEl = document.querySelector('.ticker-track');
+    const template = document.getElementById('ticker-items');
+    if (tickerEl && template) {
+      const originalHTML = template.innerHTML;
+      // duplicar 4 veces para loop suave
+      tickerEl.innerHTML = originalHTML.repeat(4);
+      tickerEl.style.gap = '48px';
+      try {
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons(); // re-render icons in ticker
+        }
+      } catch (e) {
+        console.warn("Lucide ticker icons load failed:", e);
+      }
+    }
+
+    // ── Nav scroll effect ──
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    // ── Mobile menu ──
+    const hamburger  = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const hamIcon    = document.getElementById('ham-icon');
+    let menuOpen = false;
+
+    hamburger.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('open', menuOpen);
+      hamIcon.setAttribute('data-lucide', menuOpen ? 'x' : 'menu');
+      lucide.createIcons();
+    });
+
+    function closeMobileMenu() {
+      menuOpen = false;
+      mobileMenu.classList.remove('open');
+      hamIcon.setAttribute('data-lucide', 'menu');
+      lucide.createIcons();
+    }
+
+    // ── Scroll reveal ──
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => revealObs.observe(el));
+
+    // ── Animated hero counters ──
+    function animateCounter(el, target, suffix = '', duration = 1800) {
+      let start = 0;
+      const step = target / (duration / 16);
+      const timer = setInterval(() => {
+        start += step;
+        if (start >= target) {
+          el.textContent = target + suffix;
+          clearInterval(timer);
+        } else {
+          el.textContent = Math.floor(start) + suffix;
+        }
+      }, 16);
+    }
+
+    const heroObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounter(document.getElementById('stat-complejos'), 50, '+');
+          animateCounter(document.getElementById('stat-turnos'), 12000, '+');
+          heroObs.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    const heroSection = document.getElementById('hero');
+    if (heroSection) heroObs.observe(heroSection);
+
+    // ── FAQ Accordion ──
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const content = item.querySelector('.faq-content');
+      const isOpen = item.classList.contains('open');
+
+      // Cerrar todos
+      document.querySelectorAll('.faq-item.open').forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.faq-content').classList.remove('open');
+      });
+
+      // Abrir el clickeado si estaba cerrado
+      if (!isOpen) {
+        item.classList.add('open');
+        content.classList.add('open');
+      }
+    }
+
+    // ── Form submit → WhatsApp ──
+    // ⚠️ REEMPLAZÁ este número con el número real de CanchaControl
+    const WA_NUMBER = '541137908579'; // CanchaControl — Ariel
+
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nombre   = document.getElementById('nombre').value.trim();
+      const complejo = document.getElementById('complejo').value.trim();
+      const telefono = document.getElementById('telefono').value.trim();
+      const localidad= document.getElementById('localidad').value.trim();
+      const plan     = document.getElementById('plan').value;
+
+      // Validación básica
+      if (!nombre || !complejo || !telefono || !localidad) {
+        // Highlight campos vacíos
+        [['nombre', nombre], ['complejo', complejo], ['telefono', telefono], ['localidad', localidad]].forEach(([id, val]) => {
+          const el = document.getElementById(id);
+          if (!val) {
+            el.style.borderColor = 'rgba(248,113,113,.6)';
+            el.style.boxShadow = '0 0 0 3px rgba(248,113,113,.1)';
+          } else {
+            el.style.borderColor = '';
+            el.style.boxShadow = '';
+          }
+        });
+        return;
+      }
+
+      const planLabel = { starter: 'Starter ($14.900/mes - 1° Mes Gratis)', pro: 'Pro ($29.900/mes)', enterprise: 'Enterprise ($59.900/mes - 7+ Canchas)' }[plan] || plan;
+
+      const btn = document.getElementById('submitBtn');
+      btn.textContent = 'Preparando tu mensaje...';
+      btn.disabled = true;
+      btn.style.opacity = '.7';
+
+      const mensaje = encodeURIComponent(
+        `¡Hola! ⚽ Soy *${nombre}* de *${complejo}* en ${localidad}.\n\n` +
+        `Me interesa conocer CanchaControl. Estoy mirando el *Plan ${planLabel}*.\n\n` +
+        `Mi WhatsApp es: ${telefono}\n\n` +
+        `¿Podemos charlar sobre una demo? 🚀`
+      );
+
+      const waUrl = `https://wa.me/${WA_NUMBER}?text=${mensaje}`;
+
+      // Actualizar link directo en success
+      document.getElementById('whatsappDirectLink').href = waUrl;
+
+      setTimeout(() => {
+        document.getElementById('contactForm').style.display = 'none';
+        document.getElementById('successMsg').classList.remove('hidden');
+        lucide.createIcons();
+        // Abrir WA automáticamente
+        window.open(waUrl, '_blank');
+      }, 800);
+    });
+
+    // ── Reset form field styles on input ──
+    document.querySelectorAll('.form-input').forEach(el => {
+      el.addEventListener('input', () => {
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
+      });
+    });
+
+    // ── Smooth scroll ──
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // ── Nico Phone Carousel JS ──
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.nico-slide');
+    const dots = document.querySelectorAll('.nico-dot');
+    const captionEl = document.getElementById('nicoCaption');
+    
+    const captions = [
+      "📊 Cierre de caja automático",
+      "📦 Alerta de stock crítico",
+      "🎂 Cumpleaños de hoy con beneficios",
+      "⚡ Alerta de bache horario y Happy Hour",
+      "💳 Control de pagos pendientes"
+    ];
+
+    let carouselInterval = setInterval(nextSlide, 5000);
+
+    function showSlide(index) {
+      if (index === currentSlide) return;
+      if (index < 0 || index >= slides.length) return;
+      
+      const oldSlide = slides[currentSlide];
+      const newSlide = slides[index];
+
+      // Animación de salida para el viejo slide
+      if (oldSlide) {
+        oldSlide.classList.remove('active');
+        oldSlide.classList.add('exit');
+        // Quitar la clase 'exit' después de la transición para dejarlo limpio
+        setTimeout(() => {
+          oldSlide.classList.remove('exit');
+        }, 500);
+      }
+
+      // Animación de entrada para el nuevo slide
+      if (newSlide) {
+        newSlide.classList.remove('exit');
+        newSlide.classList.add('active');
+      }
+
+      // Actualizar dots
+      dots.forEach((dot, idx) => {
+        if (idx === index) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+
+      // Actualizar texto explicativo
+      currentSlide = index;
+      if (captionEl) {
+        captionEl.textContent = captions[currentSlide];
+      }
+    }
+
+    function nextSlide() {
+      let next = (currentSlide + 1) % slides.length;
+      showSlide(next);
+    }
+
+    window.goToSlide = function(index) {
+      // Reiniciar intervalo al interactuar
+      clearInterval(carouselInterval);
+      showSlide(index);
+      carouselInterval = setInterval(nextSlide, 5000);
+    };
+  </script>
+
+</body>
+</html>

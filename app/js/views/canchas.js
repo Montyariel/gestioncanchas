@@ -42,12 +42,12 @@ const CanchasView = {
         }
         .cancha-3d-box.selected {
           transform: translateZ(25px) scale(1.03) !important;
-          box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 25px rgba(195,244,0,0.6);
-          border-color: #c3f400 !important;
+          box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 25px rgba(16,185,129,0.6);
+          border-color: #10B981 !important;
         }
         .cancha-3d-box:hover:not(.selected) {
           transform: translateZ(12px) scale(1.01);
-          box-shadow: 0 18px 35px rgba(0,0,0,0.7), 0 0 15px rgba(195,244,0,0.25);
+          box-shadow: 0 18px 35px rgba(0,0,0,0.7), 0 0 15px rgba(16,185,129,0.25);
         }
         /* Surfaces Styling */
         .surface-futbol {
@@ -76,8 +76,8 @@ const CanchasView = {
           border-radius: 50%;
         }
         .led-indicator-green {
-          background: #c3f400;
-          box-shadow: 0 0 8px #c3f400;
+          background: #10B981;
+          box-shadow: 0 0 8px #10B981;
         }
         .led-indicator-red {
           background: #ef4444;
@@ -94,9 +94,9 @@ const CanchasView = {
         }
         /* Tab active neón */
         .tab-active {
-          background: rgba(195,244,0,0.1) !important;
-          color: #c3f400 !important;
-          border-color: #c3f400 !important;
+          background: rgba(16,185,129,0.1) !important;
+          color: #10B981 !important;
+          border-color: #10B981 !important;
           font-weight: bold;
         }
       `;
@@ -109,7 +109,7 @@ const CanchasView = {
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
           <div>
             <h1 class="text-3xl font-black text-white tracking-tight flex items-center gap-2">
-              <span class="material-symbols-outlined text-[#c3f400]" style="font-size:32px">stadium</span>
+              <span class="material-symbols-outlined text-[#10B981]" style="font-size:32px">stadium</span>
               Instalaciones 🏟️
             </h1>
             <p class="text-on-surface-variant font-medium mt-1">Configuración física, tipo de superficies y estados de cancha · Sede ${sucursal.charAt(0).toUpperCase()+sucursal.slice(1)}</p>
@@ -208,8 +208,8 @@ const CanchasView = {
 
       // Inyectar título del panel
       document.getElementById('leftPanelTitle').innerHTML = this.currentView === '3d'
-        ? `<span class="material-symbols-outlined text-[#c3f400]">3d_rotation</span> Maqueta Táctica 3D`
-        : `<span class="material-symbols-outlined text-[#c3f400]">view_list</span> Lista de Instalaciones`;
+        ? `<span class="material-symbols-outlined text-[#10B981]">3d_rotation</span> Maqueta Táctica 3D`
+        : `<span class="material-symbols-outlined text-[#10B981]">view_list</span> Lista de Instalaciones`;
 
       if (this.currentView === '3d') {
         this.render3DMaquette(canchas, turnosPorCancha, renderArea);
@@ -263,7 +263,7 @@ const CanchasView = {
                 <!-- Text Labels in 3D -->
                 <div class="relative z-10 text-center space-y-1">
                   <h4 class="font-black text-xs text-white uppercase tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">${c.nombre}</h4>
-                  <p class="text-[9px] font-black text-[#c3f400] uppercase tracking-widest drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">${c.tipo?.toUpperCase() || 'FÚTBOL'}</p>
+                  <p class="text-[9px] font-black text-[#10B981] uppercase tracking-widest drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">${c.tipo?.toUpperCase() || 'FÚTBOL'}</p>
                 </div>
               </div>
             `;
@@ -284,10 +284,10 @@ const CanchasView = {
           const estado = c.disponible === false ? 'maintenance' : (libres > 0 ? 'available' : 'occupied');
 
           let statusBadge = '';
-          let rowClass = 'border-slate-800/80 hover:border-[#c3f400]/40';
+          let rowClass = 'border-slate-800/80 hover:border-[#10B981]/40';
 
           if (estado === 'available') {
-            statusBadge = `<span class="bg-[#c3f400]/10 text-[#c3f400] border border-[#c3f400]/20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#c3f400] led-pulse-green"></span> Disponible</span>`;
+            statusBadge = `<span class="bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#10B981] led-pulse-green"></span> Disponible</span>`;
           } else if (estado === 'occupied') {
             statusBadge = `<span class="bg-red-500/10 text-red-400 border border-red-500/20 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-red-400 led-pulse-red"></span> Completo</span>`;
           } else {
@@ -304,8 +304,8 @@ const CanchasView = {
               id="canchaRow-${c.id}" 
               class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border ${rowClass} bg-slate-900/30 hover:bg-slate-900/60 transition-all cursor-pointer group">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center border border-slate-800 group-hover:border-[#c3f400]/40 transition-colors">
-                  <span class="material-symbols-outlined text-slate-400 group-hover:text-[#c3f400] transition-colors">${typeIcon}</span>
+                <div class="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center border border-slate-800 group-hover:border-[#10B981]/40 transition-colors">
+                  <span class="material-symbols-outlined text-slate-400 group-hover:text-[#10B981] transition-colors">${typeIcon}</span>
                 </div>
                 <div>
                   <div class="flex items-center gap-2">
@@ -321,7 +321,7 @@ const CanchasView = {
                   <div class="text-sm font-black text-white">${fmt.money(c.precio)}</div>
                   <div class="text-[8px] text-slate-500 uppercase tracking-widest font-bold">Base x Hora</div>
                 </div>
-                <span class="material-symbols-outlined text-slate-600 group-hover:text-[#c3f400] transition-colors" style="font-size:16px">chevron_right</span>
+                <span class="material-symbols-outlined text-slate-600 group-hover:text-[#10B981] transition-colors" style="font-size:16px">chevron_right</span>
               </div>
             </div>
           `;
@@ -333,14 +333,14 @@ const CanchasView = {
   clickCancha3d(canchaId) {
     // Quitar clases seleccionadas de todos los renders
     document.querySelectorAll('.cancha-3d-box').forEach(el => el.classList.remove('selected'));
-    document.querySelectorAll('[id^="canchaRow-"]').forEach(el => el.classList.remove('border-[#c3f400]', 'bg-slate-900/50'));
+    document.querySelectorAll('[id^="canchaRow-"]').forEach(el => el.classList.remove('border-[#10B981]', 'bg-slate-900/50'));
 
     const element3d = document.getElementById(`cancha3d-${canchaId}`);
     if (element3d) element3d.classList.add('selected');
 
     const elementRow = document.getElementById(`canchaRow-${canchaId}`);
     if (elementRow) {
-      elementRow.classList.add('border-[#c3f400]', 'bg-slate-900/50');
+      elementRow.classList.add('border-[#10B981]', 'bg-slate-900/50');
     }
 
     this.selectedCanchaId = canchaId;
@@ -372,7 +372,7 @@ const CanchasView = {
           <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
             <div>
               <h3 class="text-sm font-black text-white uppercase tracking-tight">${cancha.nombre}</h3>
-              <span class="text-[9px] text-[#c3f400] font-black uppercase tracking-wider">Detalles de Instalación</span>
+              <span class="text-[9px] text-[#10B981] font-black uppercase tracking-wider">Detalles de Instalación</span>
             </div>
             <span class="material-symbols-outlined text-slate-500 text-lg">admin_panel_settings</span>
           </div>
@@ -383,7 +383,7 @@ const CanchasView = {
               <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider block">Ocupación Hoy</span>
               <span class="text-lg font-black text-white block mt-0.5">${fillPercent}%</span>
               <div class="w-full bg-slate-950 h-1 mt-2 rounded-full overflow-hidden">
-                <div class="bg-[#c3f400] h-full" style="width: ${fillPercent}%"></div>
+                <div class="bg-[#10B981] h-full" style="width: ${fillPercent}%"></div>
               </div>
             </div>
             <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800/60">
@@ -396,14 +396,14 @@ const CanchasView = {
         <!-- BENTO ADMIN CARD 2: Formulario de Reconfiguración de Nico -->
         <div class="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4 animate-in fade-in duration-300 shadow-xl">
           <div class="flex items-center gap-2 border-b border-slate-800/80 pb-3">
-            <span class="material-symbols-outlined text-[#c3f400] text-sm">construction</span>
+            <span class="material-symbols-outlined text-[#10B981] text-sm">construction</span>
             <span class="text-xs font-bold text-white uppercase tracking-wider">Ajustar Superficie y Tarifa</span>
           </div>
 
           <!-- Surface Type Select -->
           <div class="space-y-1.5">
             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Tipo de Superficie</label>
-            <select id="editCanchaTipo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#c3f400] cursor-pointer">
+            <select id="editCanchaTipo" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#10B981] cursor-pointer">
               <option value="Fútbol 5" ${tipo === 'fútbol 5' || tipo === 'futbol 5' ? 'selected' : ''}>⚽ Fútbol 5 (Césped Sintético)</option>
               <option value="Fútbol 7" ${tipo === 'fútbol 7' || tipo === 'futbol 7' ? 'selected' : ''}>⚽ Fútbol 7 (Césped Sintético)</option>
               <option value="Pádel" ${tipo === 'pádel' || tipo === 'padel' ? 'selected' : ''}>🎾 Pádel (Cristal Templado)</option>
@@ -413,7 +413,7 @@ const CanchasView = {
           <!-- Price Input -->
           <div class="space-y-1.5">
             <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Tarifa Base por Hora ($)</label>
-            <input type="number" id="editCanchaPrecio" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#c3f400] font-mono font-bold" value="${cancha.precio || 5000}">
+            <input type="number" id="editCanchaPrecio" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-[#10B981] font-mono font-bold" value="${cancha.precio || 5000}">
           </div>
 
           <!-- Status toggle -->
@@ -429,7 +429,7 @@ const CanchasView = {
           </div>
 
           <!-- Save Button -->
-          <button onclick="CanchasView.saveCanchaSettings(${canchaId})" class="w-full py-3 bg-[#c3f400] text-[#161e00] hover:opacity-90 font-black rounded-xl text-xs uppercase tracking-widest transition-transform active:scale-95 shadow-lg shadow-[#c3f400]/10 cursor-pointer flex items-center justify-center gap-1.5">
+          <button onclick="CanchasView.saveCanchaSettings(${canchaId})" class="w-full py-3 bg-[#10B981] text-[#0B0F19] hover:bg-emerald-400 font-black rounded-xl text-xs uppercase tracking-widest transition-transform active:scale-95 shadow-lg shadow-[#10B981]/10 cursor-pointer flex items-center justify-center gap-1.5">
             <span class="material-symbols-outlined text-sm font-bold">save</span>
             Guardar Configuración
           </button>
