@@ -552,7 +552,6 @@ const WhatsappView = {
       </div>
     `;
   },
-  },
 
   renderChatWindowView(container) {
     const chat = this.state.chats.find(c => c.id === this.state.selectedChatId);
