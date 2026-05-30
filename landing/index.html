@@ -881,8 +881,512 @@
   <div class="sep"></div>
 
   <!-- ══════════════════════════════════════════
+       SIMULADOR INTERACTIVO
+  ══════════════════════════════════════════ -->
+  <section id="simulador" class="py-28 px-5 sm:px-8 relative overflow-hidden bg-[#0A0D16]">
+    <!-- Blobs decorativos -->
+    <div class="blob blob-green w-[500px] h-[500px] -top-24 -left-32 opacity-30"></div>
+    <div class="blob blob-purple w-[400px] h-[400px] bottom-10 right-0 opacity-20"></div>
+
+    <style>
+      .sim-btn-active {
+        border-color: rgba(16, 185, 129, 0.45) !important;
+        background: rgba(16, 185, 129, 0.06) !important;
+        box-shadow: 0 0 25px rgba(16, 185, 129, 0.12);
+        transform: translateY(-2px);
+      }
+      .sim-btn-active .sim-icon {
+        background-color: rgba(16, 185, 129, 0.2) !important;
+        color: #10B981 !important;
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+      }
+      .whatsapp-bubble {
+        animation: bubblePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      }
+      @keyframes bubblePop {
+        from { opacity: 0; transform: scale(0.9) translateY(10px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+      }
+      .sim-pulse-glow {
+        animation: pulseGlow 1.5s infinite alternate;
+      }
+      @keyframes pulseGlow {
+        from { box-shadow: 0 0 8px rgba(16, 185, 129, 0.3); }
+        to { box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); }
+      }
+      .sim-pulse-glow-blue {
+        animation: pulseGlowBlue 1.5s infinite alternate;
+      }
+      @keyframes pulseGlowBlue {
+        from { box-shadow: 0 0 8px rgba(59, 130, 246, 0.3); }
+        to { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+      }
+    </style>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+      
+      <!-- Cabecera -->
+      <div class="text-center mb-16 reveal">
+        <p class="text-emerald-400 font-semibold text-sm uppercase tracking-widest mb-3">Viví la experiencia</p>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mb-4">
+          Simulá tu operación en <span class="gradient-text">tiempo real</span>
+        </h2>
+        <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+          Hacé clic en los escenarios típicos de un complejo deportivo y mirá cómo CanchaControl y Nico IA automatizan tu día a día al instante.
+        </p>
+      </div>
+
+      <!-- Grid Principal del Simulador -->
+      <div class="grid lg:grid-cols-12 gap-10 items-stretch reveal">
+        
+        <!-- COLUMNA IZQUIERDA: Control Deck (Botones de acción) -->
+        <div class="lg:col-span-5 flex flex-col justify-center gap-4">
+          
+          <!-- Botón 1: Reserva -->
+          <button onclick="runSimulation('reserva')" id="sim-btn-reserva" class="sim-btn-active text-left w-full p-5 rounded-2xl glass border border-white/5 hover:border-emerald-500/30 transition-all duration-300 flex items-start gap-4 cursor-pointer">
+            <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/25 flex-shrink-0 text-emerald-400 sim-icon transition-all">
+              <i data-lucide="calendar-plus" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-base mb-1">Capitán reserva por WhatsApp</h3>
+              <p class="text-xs text-gray-400">Juan Pérez quiere reservar Cancha 2 a las 14:00. Nico responde, valida el turno y lo agenda al instante.</p>
+            </div>
+          </button>
+
+          <!-- Botón 2: Combo/Upsell -->
+          <button onclick="runSimulation('combo')" id="sim-btn-combo" class="text-left w-full p-5 rounded-2xl glass border border-white/5 hover:border-emerald-500/30 transition-all duration-300 flex items-start gap-4 cursor-pointer">
+            <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/25 flex-shrink-0 text-blue-400 sim-icon transition-all">
+              <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-base mb-1">Psicología de venta: Upsell Buffet</h3>
+              <p class="text-xs text-gray-400">Fede Fazio reserva. Nico IA le ofrece 4 Gatorades frías. Genera un link único por la cancha + bebidas.</p>
+            </div>
+          </button>
+
+          <!-- Botón 3: Happy Hour -->
+          <button onclick="runSimulation('happyhour')" id="sim-btn-happyhour" class="text-left w-full p-5 rounded-2xl glass border border-white/5 hover:border-emerald-500/30 transition-all duration-300 flex items-start gap-4 cursor-pointer">
+            <div class="w-12 h-12 bg-yellow-500/10 rounded-xl flex items-center justify-center border border-yellow-500/25 flex-shrink-0 text-yellow-400 sim-icon transition-all">
+              <i data-lucide="zap" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-base mb-1">Alerta de Bache Horario</h3>
+              <p class="text-xs text-gray-400">Nico detecta baja ocupación los lunes a las 17:00. Diseña y propone una estrategia de Happy Hour.</p>
+            </div>
+          </button>
+
+          <!-- Botón 4: Cierre Caja -->
+          <button onclick="runSimulation('cierre')" id="sim-btn-cierre" class="text-left w-full p-5 rounded-2xl glass border border-white/5 hover:border-emerald-500/30 transition-all duration-300 flex items-start gap-4 cursor-pointer">
+            <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center border border-purple-500/25 flex-shrink-0 text-purple-400 sim-icon transition-all">
+              <i data-lucide="message-circle" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-base mb-1">Cierre de Caja al final del día</h3>
+              <p class="text-xs text-gray-400">Termina la jornada. Nico calcula los ingresos del Buffet e inyecta la ganancia neta en tu WhatsApp.</p>
+            </div>
+          </button>
+
+        </div>
+
+        <!-- COLUMNA DERECHA: Consola de Pantalla Interactiva -->
+        <div class="lg:col-span-7 flex flex-col">
+          
+          <!-- Mockup del Laptop/Consola -->
+          <div class="grad-border p-1 flex-1 flex flex-col min-h-[460px] relative overflow-hidden">
+            <div class="bg-[#0D111A] rounded-2xl p-4 sm:p-6 flex-1 flex flex-col h-full justify-between">
+              
+              <!-- Barra superior del navegador -->
+              <div class="flex items-center justify-between border-b border-white/5 pb-3 mb-4 flex-shrink-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-3 h-3 rounded-full bg-red-500/70"></span>
+                  <span class="w-3 h-3 rounded-full bg-yellow-500/70"></span>
+                  <span class="w-3 h-3 rounded-full bg-green-500/70"></span>
+                </div>
+                <div class="glass border border-white/10 rounded-lg px-6 py-1 text-[10px] text-gray-400 font-mono tracking-wider">
+                  canchacontrol.com/admin/dashboard
+                </div>
+                <div class="w-10"></div>
+              </div>
+
+              <!-- CONTENEDOR DINÁMICO DE PANTALLAS -->
+              <div class="flex-1 relative overflow-hidden flex flex-col justify-center items-center min-h-[280px]">
+                
+                <!-- PANTALLA A: Agenda en vivo (Simulador de Reserva y Buffet) -->
+                <div id="sim-view-app" class="w-full h-full flex flex-col absolute inset-0 transition-all duration-500 opacity-100 transform translate-y-0">
+                  <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      Agenda Sede Lanús — Hoy
+                    </span>
+                    <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 font-bold">
+                      CanchaControl Live
+                    </span>
+                  </div>
+
+                  <!-- Grilla de Agenda Simplificada -->
+                  <div class="grid grid-cols-2 gap-4 flex-1">
+                    
+                    <!-- Cancha 2 (Fútbol 5) -->
+                    <div class="glass p-4 rounded-xl border border-white/5 flex flex-col justify-between relative transition-all duration-500" id="sim-grid-c2">
+                      <div class="flex justify-between items-start">
+                        <span class="text-[10px] text-gray-500 font-bold uppercase">Cancha 2 - F5</span>
+                        <span class="text-[9px] text-gray-400 font-mono">14:00 hs</span>
+                      </div>
+                      <div class="my-4 text-center" id="sim-grid-c2-status">
+                        <!-- Estado dinámico -->
+                        <span class="text-[11px] text-emerald-400/60 font-semibold">+ Libre</span>
+                      </div>
+                      <div class="flex justify-between items-center text-[8.5px] text-gray-500 border-t border-white/5 pt-2 flex-shrink-0">
+                        <span>Tarifa: $15.000</span>
+                        <span class="text-emerald-400 font-bold tracking-wider" id="sim-grid-c2-badge">DISPONIBLE</span>
+                      </div>
+                    </div>
+
+                    <!-- Cancha 3 (Fútbol 7) -->
+                    <div class="glass p-4 rounded-xl border border-white/5 flex flex-col justify-between bg-white/[0.01]">
+                      <div class="flex justify-between items-start">
+                        <span class="text-[10px] text-gray-500 font-bold uppercase">Cancha 3 - F7</span>
+                        <span class="text-[9px] text-gray-400 font-mono">14:00 hs</span>
+                      </div>
+                      <div class="my-4 text-center">
+                        <span class="text-xs text-white font-extrabold flex items-center justify-center gap-1">MARCOS DI CESARE <i data-lucide="flame" class="w-3.5 h-3.5 text-orange-400"></i></span>
+                      </div>
+                      <div class="flex justify-between items-center text-[8.5px] text-gray-500 border-t border-white/5 pt-2 flex-shrink-0">
+                        <span>Tarifa: $22.000</span>
+                        <span class="text-red-400 font-bold">RESERVADO</span>
+                      </div>
+                    </div>
+
+                    <!-- Pádel 1 (Cristal) -->
+                    <div class="glass p-4 rounded-xl border border-white/5 flex flex-col justify-between relative transition-all duration-500" id="sim-grid-p1">
+                      <div class="flex justify-between items-start">
+                        <span class="text-[10px] text-gray-500 font-bold uppercase">Pádel 1 (Cristal)</span>
+                        <span class="text-[9px] text-gray-400 font-mono">15:00 hs</span>
+                      </div>
+                      <div class="my-4 text-center" id="sim-grid-p1-status">
+                        <span class="text-[11px] text-emerald-400/60 font-semibold">+ Libre</span>
+                      </div>
+                      <div class="flex justify-between items-center text-[8.5px] text-gray-500 border-t border-white/5 pt-2 flex-shrink-0">
+                        <span>Tarifa: $12.000</span>
+                        <span class="text-emerald-400 font-bold tracking-wider" id="sim-grid-p1-badge">DISPONIBLE</span>
+                      </div>
+                    </div>
+
+                    <!-- Pádel 2 (Cristal) -->
+                    <div class="glass p-4 rounded-xl border border-white/5 flex flex-col justify-between bg-white/[0.01]">
+                      <div class="flex justify-between items-start">
+                        <span class="text-[10px] text-gray-500 font-bold uppercase">Pádel 2 (Cristal)</span>
+                        <span class="text-[9px] text-gray-400 font-mono">15:00 hs</span>
+                      </div>
+                      <div class="my-4 text-center">
+                        <span class="text-xs text-white font-extrabold flex items-center justify-center gap-1">SANTI GIMÉNEZ <i data-lucide="bikini" class="w-3.5 h-3.5 text-blue-400"></i></span>
+                      </div>
+                      <div class="flex justify-between items-center text-[8.5px] text-gray-500 border-t border-white/5 pt-2 flex-shrink-0">
+                        <span>Tarifa: $12.000</span>
+                        <span class="text-red-400 font-bold">RESERVADO</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- PANTALLA B: WhatsApp del dueño / Alertas (Simulador de Happy Hour y Cierre de Caja) -->
+                <div id="sim-view-wa" class="w-full h-full flex flex-col absolute inset-0 transition-all duration-500 opacity-0 transform translate-y-10 pointer-events-none">
+                  
+                  <!-- WA Header -->
+                  <div class="nico-wa-header rounded-xl mb-3 flex-shrink-0">
+                    <div class="nico-wa-avatar">N</div>
+                    <div class="nico-wa-info">
+                      <div class="nico-wa-name">Nico CanchaControl</div>
+                      <div class="nico-wa-status">● en línea (IA Asistente)</div>
+                    </div>
+                    <div class="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                      BOT COMERCIAL
+                    </div>
+                  </div>
+
+                  <!-- Chat area -->
+                  <div class="flex-1 overflow-y-auto p-2 flex flex-col gap-3 min-h-[220px]" id="sim-wa-messages">
+                    <div class="text-center text-[9px] text-gray-500 bg-white/5 rounded-full py-1 px-3 self-center">Hoy</div>
+                    
+                    <div class="nico-bubble nico-bubble--green max-w-[85%] whatsapp-bubble">
+                      <div class="nico-label">👋 ¡Hola Ariel!</div>
+                      <div class="nico-row">Acá Nico, listo para pilotear las canchas de Lanús y Belgrano. Elegí un escenario a la izquierda y mirá cómo resolvemos todo al instante. ¡Abrazo, crack! ⚽</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- BARRA DE LOGS DE SISTEMA E IA -->
+              <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-400 font-mono flex-shrink-0">
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400" id="sim-status-dot"></span>
+                  <span id="sim-status-log">Nico IA: Listo para iniciar simulación.</span>
+                </span>
+                <span id="sim-status-timestamp">15:30:00</span>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- JAVASCRIPT DEL SIMULADOR -->
+    <script>
+      // Actualizar reloj de la consola
+      function updateSimClock() {
+        const timeEl = document.getElementById('sim-status-timestamp');
+        if (timeEl) {
+          const now = new Date();
+          timeEl.textContent = now.toTimeString().split(' ')[0];
+        }
+      }
+      setInterval(updateSimClock, 1000);
+      updateSimClock();
+
+      // Instancia inicial del estado de la grilla
+      const initialGridC2 = `
+        <div class="flex justify-between items-start">
+          <span class="text-[10px] text-gray-500 font-bold uppercase">Cancha 2 - F5</span>
+          <span class="text-[9px] text-gray-400 font-mono">14:00 hs</span>
+        </div>
+        <div class="my-4 text-center">
+          <span class="text-[11px] text-emerald-400/60 font-semibold">+ Libre</span>
+        </div>
+        <div class="flex justify-between items-center text-[8.5px] text-gray-500 border-t border-white/5 pt-2 flex-shrink-0">
+          <span>Tarifa: $15.000</span>
+          <span class="text-emerald-400 font-bold tracking-wider">DISPONIBLE</span>
+        </div>
+      `;
+
+      const initialGridP1 = `
+        <div class="flex justify-between items-start">
+          <span class="text-[10px] text-gray-500 font-bold uppercase">Pádel 1 (Cristal)</span>
+          <span class="text-[9px] text-gray-400 font-mono">15:00 hs</span>
+        </div>
+        <div class="my-4 text-center">
+          <span class="text-[11px] text-emerald-400/60 font-semibold">+ Libre</span>
+        </div>
+        <div class="flex justify-between items-center text-[8.5px] text-gray-500 border-t border-white/5 pt-2 flex-shrink-0">
+          <span>Tarifa: $12.000</span>
+          <span class="text-emerald-400 font-bold tracking-wider">DISPONIBLE</span>
+        </div>
+      `;
+
+      // Simular máquina
+      let isSimulating = false;
+
+      function runSimulation(scenario) {
+        if (isSimulating) return;
+        isSimulating = true;
+
+        // Reset active cards
+        document.querySelectorAll('#simulador button').forEach(btn => {
+          btn.classList.remove('sim-btn-active');
+        });
+
+        // Set clicked card active
+        const activeBtn = document.getElementById('sim-btn-' + scenario);
+        if (activeBtn) activeBtn.classList.add('sim-btn-active');
+
+        // Referencias de contenedores
+        const viewApp = document.getElementById('sim-view-app');
+        const viewWA = document.getElementById('sim-view-wa');
+        const logText = document.getElementById('sim-status-log');
+        const logDot = document.getElementById('sim-status-dot');
+
+        logDot.className = 'w-2 h-2 rounded-full bg-yellow-500 animate-ping';
+        
+        // Reset grid views to standard clean state
+        const gridC2 = document.getElementById('sim-grid-c2');
+        const gridP1 = document.getElementById('sim-grid-p1');
+        gridC2.className = "glass p-4 rounded-xl border border-white/5 flex flex-col justify-between transition-all duration-500";
+        gridP1.className = "glass p-4 rounded-xl border border-white/5 flex flex-col justify-between transition-all duration-500";
+        gridC2.innerHTML = initialGridC2;
+        gridP1.innerHTML = initialGridP1;
+
+        if (scenario === 'reserva') {
+          // Switch to Dashboard Grid
+          viewApp.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+          viewApp.classList.add('opacity-100', 'translate-y-0');
+          viewWA.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+          viewWA.classList.remove('opacity-100', 'translate-y-0');
+
+          logText.textContent = "Nico IA: Escuchando solicitud de WhatsApp de Juan Pérez...";
+
+          setTimeout(() => {
+            logText.textContent = "Nico IA: Validando disponibilidad de Cancha 2 (14:00)...";
+          }, 800);
+
+          setTimeout(() => {
+            // Animar celda de grilla ocupada
+            gridC2.classList.add('sim-pulse-glow', 'bg-emerald-500/10', 'border-emerald-500/40');
+            gridC2.innerHTML = `
+              <div class="flex justify-between items-start">
+                <span class="text-[10px] text-emerald-400 font-bold uppercase">Cancha 2 - F5</span>
+                <span class="text-[9px] text-gray-400 font-mono">14:00 hs</span>
+              </div>
+              <div class="my-4 text-center">
+                <span class="text-xs text-white font-extrabold flex items-center justify-center gap-1 whatsapp-bubble">
+                  JUAN PÉREZ ⚽
+                </span>
+              </div>
+              <div class="flex justify-between items-center text-[8.5px] text-emerald-300 border-t border-emerald-500/20 pt-2 flex-shrink-0">
+                <span>Tarifa: $15.000</span>
+                <span class="text-emerald-400 font-bold tracking-wider">RESERVADO</span>
+              </div>
+            `;
+            logDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+            logText.textContent = "CanchaControl: ¡Reserva agendada! Link de pago MercadoPago enviado a Juan.";
+            isSimulating = false;
+          }, 1800);
+
+        } else if (scenario === 'combo') {
+          // Switch to Dashboard Grid
+          viewApp.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+          viewApp.classList.add('opacity-100', 'translate-y-0');
+          viewWA.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+          viewWA.classList.remove('opacity-100', 'translate-y-0');
+
+          logText.textContent = "Nico IA: Fede Fazio solicita Pádel 1. Activando asistente Buffet...";
+
+          setTimeout(() => {
+            logText.textContent = "Nico IA: Ofreciendo combo promocional 4 Gatorades (Upsell)...";
+          }, 800);
+
+          setTimeout(() => {
+            // Animar celda de grilla ocupada con combo
+            gridP1.classList.add('sim-pulse-glow-blue', 'bg-blue-500/10', 'border-blue-500/40');
+            gridP1.innerHTML = `
+              <div class="flex justify-between items-start">
+                <span class="text-[10px] text-blue-400 font-bold uppercase">Pádel 1 (Cristal)</span>
+                <span class="text-[9px] text-gray-400 font-mono">15:00 hs</span>
+              </div>
+              <div class="my-3 text-center flex flex-col items-center justify-center gap-0.5 whatsapp-bubble">
+                <span class="text-xs text-white font-extrabold flex items-center gap-1">FEDE FAZIO 🎾</span>
+                <span class="text-[9px] text-emerald-400 font-bold flex items-center gap-0.5"><i data-lucide="shopping-cart" class="w-2.5 h-2.5"></i> +4 Gatorades 🥤</span>
+              </div>
+              <div class="flex justify-between items-center text-[8.5px] text-blue-300 border-t border-blue-500/20 pt-2 flex-shrink-0">
+                <span>Total: $16.000</span>
+                <span class="text-blue-400 font-bold tracking-wider">CON COMBO</span>
+              </div>
+            `;
+            
+            // Re-renderizar iconos en el mockup dinámico
+            if (window.lucide) {
+              window.lucide.createIcons();
+            }
+
+            logDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+            logText.textContent = "CanchaControl: ¡Upsell Exitoso! Stock descontado y link de pago unificado enviado.";
+            isSimulating = false;
+          }, 1800);
+
+        } else if (scenario === 'happyhour') {
+          // Switch to WA Chat
+          viewApp.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+          viewApp.classList.remove('opacity-100', 'translate-y-0');
+          viewWA.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+          viewWA.classList.add('opacity-100', 'translate-y-0');
+
+          const chatArea = document.getElementById('sim-wa-messages');
+          chatArea.innerHTML = `
+            <div class="text-center text-[9px] text-gray-500 bg-white/5 rounded-full py-1 px-3 self-center">Hoy</div>
+            <div class="nico-bubble nico-bubble--green max-w-[85%] whatsapp-bubble">
+              <div class="nico-label">👋 ¡Hola Ariel!</div>
+              <div class="nico-row">Acá Nico, listo para pilotear las canchas de Lanús y Belgrano. Elegí un escenario a la izquierda y mirá cómo resolvemos todo al instante. ¡Abrazo, crack! ⚽</div>
+            </div>
+            <div class="text-[10px] text-gray-500 italic px-4" id="sim-typing-wa">Nico está escribiendo...</div>
+          `;
+          chatArea.scrollTop = chatArea.scrollHeight;
+
+          logText.textContent = "Nico IA: Analizando puntos flojos de ocupación semanal...";
+
+          setTimeout(() => {
+            logText.textContent = "Nico IA: Detectado bache el Lunes a las 17:00 (Ocupación: 28%).";
+          }, 800);
+
+          setTimeout(() => {
+            const typing = document.getElementById('sim-typing-wa');
+            if (typing) typing.remove();
+
+            chatArea.innerHTML += `
+              <div class="nico-bubble nico-bubble--yellow max-w-[85%] self-start whatsapp-bubble">
+                <div class="nico-label">⚡ DETECTÉ UN BACHE COMERCIAL</div>
+                <div class="nico-divider"></div>
+                <div class="nico-row">📉 <strong>Lunes 17:00 hs:</strong> Solo 28% de reservas.</div>
+                <div class="nico-row" style="margin-top:6px">💡 <strong>Propuesta Happy Hour:</strong> ¿Tiramos promo de Cancha + 6 Aguas al costo para ese horario? Ya armé el segmento de WhatsApp con los capitanes que suelen jugar temprano. ¡Confirmame y la disparamos! 🚀</div>
+                <div class="nico-time">${new Date().toTimeString().split(' ')[0].substring(0, 5)} ✓✓</div>
+              </div>
+            `;
+            chatArea.scrollTop = chatArea.scrollHeight;
+            logDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+            logText.textContent = "CanchaControl: Estrategia de Happy Hour propuesta al administrador.";
+            isSimulating = false;
+          }, 1800);
+
+        } else if (scenario === 'cierre') {
+          // Switch to WA Chat
+          viewApp.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+          viewApp.classList.remove('opacity-100', 'translate-y-0');
+          viewWA.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+          viewWA.classList.add('opacity-100', 'translate-y-0');
+
+          const chatArea = document.getElementById('sim-wa-messages');
+          chatArea.innerHTML = `
+            <div class="text-center text-[9px] text-gray-500 bg-white/5 rounded-full py-1 px-3 self-center">Hoy</div>
+            <div class="nico-bubble nico-bubble--green max-w-[85%] whatsapp-bubble">
+              <div class="nico-label">👋 ¡Hola Ariel!</div>
+              <div class="nico-row">Acá Nico, listo para pilotear las canchas de Lanús y Belgrano. Elegí un escenario a la izquierda y mirá cómo resolvemos todo al instante. ¡Abrazo, crack! ⚽</div>
+            </div>
+            <div class="text-[10px] text-gray-500 italic px-4" id="sim-typing-wa">Nico está escribiendo...</div>
+          `;
+          chatArea.scrollTop = chatArea.scrollHeight;
+
+          logText.textContent = "Nico IA: Recopilando caja diaria, egresos registrados y stock del buffet...";
+
+          setTimeout(() => {
+            logText.textContent = "Nico IA: Calculando rentabilidad neta y formateando reporte corporativo...";
+          }, 800);
+
+          setTimeout(() => {
+            const typing = document.getElementById('sim-typing-wa');
+            if (typing) typing.remove();
+
+            chatArea.innerHTML += `
+              <div class="nico-bubble nico-bubble--green max-w-[85%] self-start whatsapp-bubble">
+                <div class="nico-label">📊 CIERRE DE CAJA — LANÚS</div>
+                <div class="nico-divider"></div>
+                <div class="nico-row">💰 Ingresos Turnos: &nbsp;<span class="nico-val">$48.500</span></div>
+                <div class="nico-row">🥤 Ingresos Buffet: &nbsp;<span class="nico-val">$12.500</span></div>
+                <div class="nico-row">💸 Egresos Luz/Limp: <span class="nico-danger">$15.300</span></div>
+                <div class="nico-divider"></div>
+                <div class="nico-row nico-highlight">🏆 GANANCIA NETA REAL: <strong>$45.700</strong> 🔥</div>
+                <div class="nico-row" style="font-size:8px; color:#aaa; margin-top:4px">Caja guardada y cerrada automáticamente. ¡Gran día! ⚽</div>
+                <div class="nico-time">${new Date().toTimeString().split(' ')[0].substring(0, 5)} ✓✓</div>
+              </div>
+            `;
+            chatArea.scrollTop = chatArea.scrollHeight;
+            logDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+            logText.textContent = "CanchaControl: Reporte de ganancia neta enviado y guardado en caja histórica.";
+            isSimulating = false;
+          }, 1800);
+        }
+      }
+    </script>
+  </section>
+
+  <div class="sep"></div>
+
+  <!-- ══════════════════════════════════════════
        MÓDULOS
   ══════════════════════════════════════════ -->
+
   <section id="modulos" class="py-28 px-5 sm:px-8 relative overflow-hidden">
 
     <div class="blob blob-blue w-[500px] h-[500px] top-20 -right-40"></div>
